@@ -42,7 +42,7 @@ const router = new VueRouter({
 });
 
 if(getRequests()['route']) {
-    router.replace({path: '/' + getRequests()['route'], redirect: '/'});
+    router.replace({path: getRequests()['route'], redirect: '/'});
 } else {
     router.replace({path: '/sets/edit', redirect: '/'});
 }

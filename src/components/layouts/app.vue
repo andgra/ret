@@ -16,14 +16,13 @@
                         Печать
                     </button>
                     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
-                        <li class="mdl-menu__item"><router-link to="/defects/print">Справка по состоянию РЭТ</router-link></li>
-                        <router-link tag="li" to="/works/print" class="mdl-menu__item">Таблица контроля работ представителей промышленности</router-link>
-                        <router-link tag="li" to="/results/print" class="mdl-menu__item">Итоги эксплуатации</router-link>
-                        <router-link tag="li" to="/operations/print" class="mdl-menu__item">Справка по срокам эксплатуации</router-link>
-                        <router-link tag="li" to="/resources/print" class="mdl-menu__item">Ресурс</router-link>
-                        <router-link tag="li" to="/overspend/print" class="mdl-menu__item">Перерасход</router-link>
+                        <li class="mdl-menu__item" onclick="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Итоги эксплуатации</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/overspend/print')">Перерасход</li>
                     </ul>
-                    <router-link to="/defects/edit" target="_blank">df</router-link>
 
                     <button id="tables-menu" class="mdl-button mdl-js-button mdl-button--white">
                         Таблицы

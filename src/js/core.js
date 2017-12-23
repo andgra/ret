@@ -21,7 +21,7 @@ window.isNumeric = function (n){
 }
 
 window.openPdf = function(name) {
-    ngui.Window.open('?route='+name,{show: false});
+    ngui.Window.open('index.html?route='+name,{show: false});
 };
 
 fs.rmRf = function(path) {
