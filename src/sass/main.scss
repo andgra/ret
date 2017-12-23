@@ -1,0 +1,255 @@
+@import 'common/variables';
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'), url(https://fonts.gstatic.com/s/materialicons/v10/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2) format('woff2');
+}
+
+@import '../../node_modules/material-design-lite/src/material-design-lite.scss';
+@import '../../node_modules/font-awesome/scss/font-awesome.scss';
+@import '../../node_modules/jquery-ui/themes/base/all.css';
+@import '../../node_modules/jquery-datetimepicker/jquery.datetimepicker.css';
+//@import '../../node_modules/tablesaw/dist/tablesaw.css';
+
+
+
+body {
+  background-color: #e9e9e9;
+  top: -16px;
+  position: relative;
+}
+
+
+.center-text {
+  text-align: center !important;
+}
+
+.right-text {
+  text-align: right !important;
+}
+
+.center-all {
+  * {
+    text-align: center !important;
+  }
+}
+
+.border-all-cells {
+  td,th {
+    border: $data-table-dividers !important;
+  }
+  th {
+    position: static;
+  }
+}
+
+.overflow-x {
+  overflow-x: auto;
+}
+
+.wide {
+  width: 100%;
+}
+
+.margin-bot {
+  margin-bottom: 20px;
+}
+
+.edited-table {
+    th {
+      font-weight: bold;
+      //background-color: lightcyan;
+      color: black;
+      //border: 1px solid black !important;
+      padding: 0 14px;
+      height: 3.5em;
+    }
+  tbody {
+    td {
+      white-space: normal;
+    }
+  }
+  .mdl-textfield {
+    width: auto;
+    padding: 0;
+  }
+}
+.print-table {
+  font-size: 0.8em;
+  width: 100%;
+  border-collapse: collapse;
+  th {
+    padding: 8px;
+  }
+  td {
+    padding: 5px;
+  }
+}
+
+.compressed-table {
+  td, th {
+    line-height: 1.1em;
+    padding: 4px;
+  }
+}
+
+.smaller {
+  * {
+    font-size: 0.8em;
+  }
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.mdl-th-padding {
+  padding: 0 18px 12px 24px !important;
+}
+
+.mdl-data-table td, .mdl-data-table th {
+  padding: 5px;
+}
+
+.table-container {
+  &>h4 {
+    padding-left: 20px;
+  }
+}
+
+/*.mdl-data-table--zebra {
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background: moccasin;
+      }
+      &:nth-child(even) {
+        background: #FFF;
+
+      }
+      &:hover {
+        background-color: paleturquoise;
+      }
+    }
+  }
+}*/
+
+/*.defects {
+  .mdl-textfield {
+    width: auto;
+    padding: 0;
+  }
+}*/
+
+.clickable {
+  cursor: pointer;
+  .fa {
+    width: 1em;
+  }
+  &:hover {
+    //color: crimson;
+  }
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  background: #616161;
+  position: absolute;
+  transform: translate(-65%);
+  padding: 0 16px;
+  height: 32px;
+  font-size: 14px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  z-index: 5000;
+  content: attr(aria-label);
+  content: attr(data-tooltip);
+  white-space: nowrap;
+  pointer-events: none;
+  margin-top: 0;
+  opacity: 0;
+  /* 350ms transition vs 120ms since it seems more pleasing here and less abrupt. */
+  transition:
+          opacity 250ms cubic-bezier(0, 0, 0.2, 1),
+          margin 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.tooltip:hover::after {
+  opacity: .9;
+  /* 32 height + 24 required margin = 56 total margin */
+  margin-top: 56px;
+}
+
+
+@media(min-width: 1024px) {
+  .tooltip::after {
+    font-size: 10px;
+    height: 22px;
+    padding: 0 8px;
+  }
+  .tooltip:hover::after {
+    margin-top: 36px;
+  }
+}
+
+.mdl-snackbar_padding {
+  margin-bottom: 20px;
+}
+
+.startDate-button {
+  padding: 0 5px;
+}
+
+.mdl-textfield__label:after {
+  bottom: 0;
+}
+
+.sortable {
+  cursor: pointer;
+  position: relative !important;
+}
+
+.pages {
+  div {
+    display: inline-block;
+  }
+  span {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #e6e6e6;
+    display: inline-block;
+    &.active {
+      font-weight: bold;
+      background-color: #eaeaea;
+    }
+  }
+}
+
+.close-coll {
+  font-size: 1.4em;
+  color: #747474;
+  position: absolute;
+  top:0;
+  left: 0;
+  &:hover {
+    font-size: 1.5em;
+    color: #742b2b;
+  }
+}
+
+.mdl-button--white {
+  color: white;
+}
+
+.textarea-output {
+  white-space: pre-line;
+}

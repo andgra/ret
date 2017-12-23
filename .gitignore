@@ -1,0 +1,8 @@
+node_modules/
+dist/
+css/
+fonts/
+js/
+images/
+index.html
+.idea/
