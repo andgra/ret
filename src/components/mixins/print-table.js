@@ -60,7 +60,7 @@ export default function (options) {
                         ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
                             fs.rmRf(dir);
                         });
-                        // nwin.close();
+                        nwin.close();
                     }, this));
             },
         }, options.methods || {}),
