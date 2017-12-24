@@ -60,9 +60,9 @@
                         class="fa fa-times close-coll"></i></th>
                 <th class="sortable" v-if="sel.zip" data-sort="zip">Время доставки<br>ЗИП <i
                         class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.createdAt" data-sort="createdAt" data-type="date">Создан <i
+                <th class="sortable" v-if="sel.createdAt" data-sort="createdAt">Создан <i
                         class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.updatedAt" data-sort="updatedAt" data-type="date">Изменен <i
+                <th class="sortable" v-if="sel.updatedAt" data-sort="updatedAt">Изменен <i
                         class="fa fa-times close-coll"></i></th>
                 <th colspan="2">Действия</th>
             </tr>

@@ -14,11 +14,6 @@ export default function (options) {
                 checkAllChanged: false,
                 savedRow: null,
                 toRemove: [],
-                sort: {
-                    model: "created_at",
-                    asc: true,
-                    type: null
-                },
             }, options.data || {})
         },
         computed: Object.assign({
@@ -31,24 +26,6 @@ export default function (options) {
             selFooter: function () {
                 return 4 + this.getSelCnt(options.selSeed) + 2;
             },
-            sortedRows() {
-                let _this = this;
-                return this.rows.sort(function (a, b) {
-                    let a1 = getObjRec(a, _this.sort.model);
-                    let b1 = getObjRec(b, _this.sort.model);
-                    console.log(123);
-                    let res;
-                    if (_this.sort.type === 'date') {
-                        res = moment(a1) > moment(b1);
-                    } else if (_this.sort.type === 'number') {
-                        res = Number(a1) > Number(b1);
-                    } else {
-                        res = a1 > b1;
-                    }
-                    return _this.sort.asc ? res : !res;
-
-                });
-            }
         }, options.computed || {}),
         methods: Object.assign({
             removeClosed: function () {
@@ -199,7 +176,7 @@ export default function (options) {
                 }
             },
             setRows: function () {
-                db.find({table: options.table}).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
+                db.find({table: options.table}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
                     this.rows = rows;
                 }, this));
             },
@@ -243,77 +220,55 @@ export default function (options) {
                     eval('this.sel.' + model + ' = 0;');
                 }, this))
             }, this));
-            window.trows = this.rows;
 
             $tCont.on('click', '.sortable', $.proxy(function (e) {
                 let $th = $(e.target);
                 if (!$th.hasClass('sortable')) {
                     return false;
                 }
-                function msort(arr){
-                    for(var i =0;i<arr.length;i++){
-                        for(var j= i+1;j<arr.length;j++){
-                            if(arr[i]>arr[j]){
-                                var swap = arr[i];
-                                arr[i] = arr[j];
-                                arr[j] = swap;
-                            }
-                        }
-                    }
-                    return arr;
-                }
-                this.sort.model = $th.data('sort');
-                this.sort.type = $th.data('type');
                 // let rows = JSON.parse(JSON.stringify(this.rows));
+                let sort;
                 if ($th.hasClass('mdl-data-table__header--sorted-ascending')) {
                     $th.removeClass('mdl-data-table__header--sorted-ascending');
                     $th.addClass('mdl-data-table__header--sorted-descending');
-                    this.sort.asc = false;
-                    /*rows.sort(function (a, b) {
-                        let a1 = eval('a.' + model);
-                        let b1 = eval('b.' + model);
-                        if (type === 'date') {
-                            return moment(a1) < moment(b1);
-                        } else if (type === 'number') {
-                            return Number(a1) < Number(b1);
-                        }
-                        return a1 < b1;
-                    });*/
+                    sort = {
+                        model: $th.data('sort'),
+                        type: $th.data('type'),
+                        asc: false
+                    };
                 } else if ($th.hasClass('mdl-data-table__header--sorted-descending')) {
                     $th.removeClass('mdl-data-table__header--sorted-descending');
-                    this.sort.asc = true;
-                    this.sort.model = 'createdAt';
-                    this.sort.type = 'date';
-                    /*rows.sort(function (a, b) {
-                        return moment(a.createdAt) > moment(b.createdAt);
-                    });*/
-
+                    sort = {
+                        model: 'createdAt',
+                        type: '',
+                        asc: true
+                    };
                 } else {
                     $('.mdl-data-table__header--sorted-ascending').removeClass('mdl-data-table__header--sorted-ascending');
                     $('.mdl-data-table__header--sorted-descending').removeClass('mdl-data-table__header--sorted-descending');
                     $th.addClass('mdl-data-table__header--sorted-ascending');
-                    this.sort.asc = true;
-                    /*rows.sort(function (a, b) {
-                        let a1 = eval('a.' + model);
-                        let b1 = eval('b.' + model);
-                        console.log(a1,b1,model,type,moment(a1) > moment(b1));
-                        if (type === 'date') {
-                            return moment(a1) > moment(b1);
-                        } else if (type === 'number') {
-                            console.log(Number(a1),Number(b1),model,type,Number(a1) > Number(b1));
-                            return Number(a1) > Number(b1);
-                        }
-                        return a1 > b1;
-                    });
-                    console.log(JSON.parse(JSON.stringify(rows)));*/
+                    sort = {
+                        model: $th.data('sort'),
+                        type: $th.data('type'),
+                        asc: true
+                    };
                 }
-                // this.rows = JSON.parse(JSON.stringify(rows));
+                let t = sort.asc ? 1 : -1;
+                let f = t*-1;
+                function compare(a, b) {
+                    let a1 = getInObj(a, sort.model);
+                    let b1 = getInObj(b, sort.model);
+                    if (sort.type === 'date') {
+                        a1 = moment(a1);
+                        b1 = moment(b1);
+                    } else if (sort.type === 'number') {
+                        a1 = Number(a1);
+                        b1 = Number(b1);
+                    }
+                    return a1 > b1 ? t : (a1===b1 ? 0 : f);
+                }
+                this.rows.sort(compare);
             }, this));
-            /*let arr = [{v:1},{v:5},{v:3},{v:2}];
-            this.rows.sort(function (a, b) {
-                return moment(a.createdAt) > moment(b.createdAt);
-            });
-            console.log(arr);*/
 
             if(options.mounted) {
                 options.mounted(this);

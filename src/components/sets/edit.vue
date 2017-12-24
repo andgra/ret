@@ -66,13 +66,13 @@
                 <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.kr.per" data-type="number">%</th>
                 <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.cancel.num" data-type="number">час</th>
                 <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.cancel.per" data-type="number">%</th>
-                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="createdAt" data-type="date">Создан</th>
-                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="updatedAt" data-type="date">Изменен</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="createdAt">Создан</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="updatedAt">Изменен</th>
                 <th colspan="2">Действия</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(row, index) in sortedRows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage" :data-id="index">
+            <tr v-for="(row, index) in rows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage" :data-id="index">
                 <td>
                     <mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox>
                 </td>
@@ -273,38 +273,7 @@
                 <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
                 <mdl-button primary @click.native="removeRows()">Удалить</mdl-button>
             </div>
-        </mdl-dialog><!--
-
-
-        <table class="tablesaw" data-tablesaw-mode="columntoggle">
-            <thead>
-            <tr>
-                <th scope="col" class="sortable" data-tablesaw-priority="persist">Movie Title</th>
-                <th scope="col" class="sortable" data-tablesaw-sortable-default-col data-tablesaw-priority="3">Rank</th>
-                <th scope="col" class="sortable" data-tablesaw-priority="2">Year</th>
-                <th scope="col" class="sortable" data-tablesaw-priority="0" colspan="2">Gross</th>
-                <th scope="col" class="sortable" data-tablesaw-priority="1"><abbr title="Rotten Tomato Rating">Rating</abbr></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="title"><a href="http://en.wikipedia.org/wiki/Avatar_(2009_film)">Avatar</a></td>
-                <td>1</td>
-                <td rowspan="2">2009</td>
-                <td>$2.7B</td>
-                <td>$2.7B</td>
-                <td>83%</td>
-            </tr>
-            <tr>
-                <td class="title"><a href="http://en.wikipedia.org/wiki/Titanic_(1997_film)">Titanic</a></td>
-                <td>2</td>
-                <td>$2.1B</td>
-                <td>$2.1B</td>
-                <td>88%</td>
-            </tr>
-            </tbody>
-        </table>
--->
+        </mdl-dialog
         <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 
@@ -417,7 +386,7 @@
                     if(!filter.startDate)
                         return true;
                     return moment(this.createdAt) > moment(filter.startDate, "DD.MM.YYYY");
-                }}).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
+                }}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
                     this.rows = rows;
                 }, this));
             },
