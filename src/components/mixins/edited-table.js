@@ -14,6 +14,11 @@ export default function (options) {
                 checkAllChanged: false,
                 savedRow: null,
                 toRemove: [],
+                sort: {
+                    model: "created_at",
+                    asc: true,
+                    type: null
+                },
             }, options.data || {})
         },
         computed: Object.assign({
@@ -25,6 +30,24 @@ export default function (options) {
             },
             selFooter: function () {
                 return 4 + this.getSelCnt(options.selSeed) + 2;
+            },
+            sortedRows() {
+                let _this = this;
+                return this.rows.sort(function (a, b) {
+                    let a1 = getObjRec(a, _this.sort.model);
+                    let b1 = getObjRec(b, _this.sort.model);
+                    console.log(123);
+                    let res;
+                    if (_this.sort.type === 'date') {
+                        res = moment(a1) > moment(b1);
+                    } else if (_this.sort.type === 'number') {
+                        res = Number(a1) > Number(b1);
+                    } else {
+                        res = a1 > b1;
+                    }
+                    return _this.sort.asc ? res : !res;
+
+                });
             }
         }, options.computed || {}),
         methods: Object.assign({
@@ -214,24 +237,39 @@ export default function (options) {
                 }
             }, this));
 
-            $tCont.on('click', '.close-coll', $.proxy(function (e) {
-                let $th = $(e.target).parents('th');
-                let model = $th.data('sort');
-                eval('this.sel.' + model + ' = 0;');
-                e.preventDefault();
+            $(document).on('change','.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function(e, tablesaw) {
+                $('.tablesaw-toggle-cellhidden').each($.proxy((i,th) => {
+                    let model = th.getAttribute('data-sort');
+                    eval('this.sel.' + model + ' = 0;');
+                }, this))
             }, this));
+            window.trows = this.rows;
 
             $tCont.on('click', '.sortable', $.proxy(function (e) {
                 let $th = $(e.target);
                 if (!$th.hasClass('sortable')) {
                     return false;
                 }
-                let model = $th.data('sort');
-                let type = $th.data('type');
+                function msort(arr){
+                    for(var i =0;i<arr.length;i++){
+                        for(var j= i+1;j<arr.length;j++){
+                            if(arr[i]>arr[j]){
+                                var swap = arr[i];
+                                arr[i] = arr[j];
+                                arr[j] = swap;
+                            }
+                        }
+                    }
+                    return arr;
+                }
+                this.sort.model = $th.data('sort');
+                this.sort.type = $th.data('type');
+                // let rows = JSON.parse(JSON.stringify(this.rows));
                 if ($th.hasClass('mdl-data-table__header--sorted-ascending')) {
                     $th.removeClass('mdl-data-table__header--sorted-ascending');
                     $th.addClass('mdl-data-table__header--sorted-descending');
-                    this.rows.sort(function (a, b) {
+                    this.sort.asc = false;
+                    /*rows.sort(function (a, b) {
                         let a1 = eval('a.' + model);
                         let b1 = eval('b.' + model);
                         if (type === 'date') {
@@ -240,29 +278,42 @@ export default function (options) {
                             return Number(a1) < Number(b1);
                         }
                         return a1 < b1;
-                    });
+                    });*/
                 } else if ($th.hasClass('mdl-data-table__header--sorted-descending')) {
                     $th.removeClass('mdl-data-table__header--sorted-descending');
-                    this.rows.sort(function (a, b) {
-                        return a.createdAt > b.createdAt;
-                    });
+                    this.sort.asc = true;
+                    this.sort.model = 'createdAt';
+                    this.sort.type = 'date';
+                    /*rows.sort(function (a, b) {
+                        return moment(a.createdAt) > moment(b.createdAt);
+                    });*/
 
                 } else {
                     $('.mdl-data-table__header--sorted-ascending').removeClass('mdl-data-table__header--sorted-ascending');
                     $('.mdl-data-table__header--sorted-descending').removeClass('mdl-data-table__header--sorted-descending');
                     $th.addClass('mdl-data-table__header--sorted-ascending');
-                    this.rows.sort(function (a, b) {
+                    this.sort.asc = true;
+                    /*rows.sort(function (a, b) {
                         let a1 = eval('a.' + model);
                         let b1 = eval('b.' + model);
+                        console.log(a1,b1,model,type,moment(a1) > moment(b1));
                         if (type === 'date') {
                             return moment(a1) > moment(b1);
                         } else if (type === 'number') {
+                            console.log(Number(a1),Number(b1),model,type,Number(a1) > Number(b1));
                             return Number(a1) > Number(b1);
                         }
                         return a1 > b1;
                     });
+                    console.log(JSON.parse(JSON.stringify(rows)));*/
                 }
+                // this.rows = JSON.parse(JSON.stringify(rows));
             }, this));
+            /*let arr = [{v:1},{v:5},{v:3},{v:2}];
+            this.rows.sort(function (a, b) {
+                return moment(a.createdAt) > moment(b.createdAt);
+            });
+            console.log(arr);*/
 
             if(options.mounted) {
                 options.mounted(this);

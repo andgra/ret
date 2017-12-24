@@ -51,7 +51,7 @@ if(getRequests()['route']) {
 // Удостоверьтесь, что передали экземпляр роутера в опции `router`,
 // что позволит приложению знать о его наличии
 // $(function() {
-const app = new Vue({
+window.appa = new Vue({
     router,
     ...layout
 }).$mount('#app');

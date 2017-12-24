@@ -1,16 +1,16 @@
 <template>
     <div class="table-container">
-        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table tablesaw" data-tablesaw-mode="columntoggle">
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table" data-tablesaw-mode="columntoggle" ref="table">
             <thead>
-            <tr><th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+            <tr data-tablesaw-ignorerow><th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
                 <h4>Таблица сводных данных</h4>
             </th></tr>
-            <tr class="center-all">
+            <tr class="center-all" data-tablesaw-ignorerow>
                 <th :colspan="selFirstFirst"></th>
                 <th :colspan="getSelCnt(sel.stock)" v-if="getSelCnt(sel.stock)">Запас ресурса образца РЭТ</th>
                 <th :colspan="selFirstLast"></th>
             </tr>
-            <tr class="center-all">
+            <tr class="center-all" data-tablesaw-ignorerow>
                 <th :colspan="selSecondFirst"></th>
                 <th :colspan="getSelCnt(sel.repair)" v-if="getSelCnt(sel.repair)">Вид и год последнего ремонта</th>
                 <th v-if="sel.condition"></th>
@@ -26,53 +26,53 @@
             <tr class="center-all wide-all">
                 <th class="mdl-th-padding"><mdl-checkbox v-model="checkAll" @change.native="toggleCheckAll" id="checkAll" :disabled="edit!==-1"></mdl-checkbox></th>
                 <th colspan="2">Действия</th>
-                <th>№</th>
-                <th class="sortable" v-if="sel.obj" data-sort="obj">в/ч <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.place" data-sort="place">дислокация <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.ret" data-sort="ret">РЭТ <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.pn" data-sort="pn">Наличие<br>ПН <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.type.req" data-sort="type.req">Тип РЭТ<br>по штату <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.type.real" data-sort="type.real">Тип РЭТ<br>в наличии <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.serial" data-sort="serial">Заводской<br>номер <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.year" data-sort="year" data-type="number">Год<br>изготовления <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.repair.type" data-sort="repair.type">Вид <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.repair.year" data-sort="repair.year" data-type="number">Год <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.condition" data-sort="condition">Состояние РЭТ <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.resp.rank" data-sort="resp.rank">В/зв <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.resp.fio" data-sort="resp.fio">Ф.И.О. <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.resp.order" data-sort="resp.order">Пр. о закреплении <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.est.res.kr" data-sort="est.res.kr" data-type="number">ресурс до<br>КР (час.) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.est.res.cancel" data-sort="est.res.cancel" data-type="number">ресурс до<br>списания (час.) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.est.life.kr" data-sort="est.life.kr" data-type="number">срок службы до<br>КР (лет) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.est.life.cancel" data-sort="est.life.cancel" data-type="number">срок службы до<br>списания (лет) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.elabor.total" data-sort="elabor.elabor.total" data-type="number">наработка с начала<br>эксплуатации на<!--01.07.17--><br>
+                <th scope="col">№</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="obj">в/ч</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="place">дислокация</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="ret">РЭТ</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="pn">Наличие<br>ПН</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="type.req">Тип РЭТ<br>по штату</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="type.real">Тип РЭТ<br>в наличии</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="serial">Заводской<br>номер</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="year" data-type="number">Год<br>изготовления</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="repair.type">Вид</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="repair.year" data-type="number">Год</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="condition">Состояние РЭТ</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="resp.rank">В/зв</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="resp.fio">Ф.И.О.</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="resp.order">Пр. о закреплении</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="est.res.kr" data-type="number">ресурс до<br>КР (час.)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="est.res.cancel" data-type="number">ресурс до<br>списания (час.)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="est.life.kr" data-type="number">срок службы до<br>КР (лет)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="est.life.cancel" data-type="number">срок службы до<br>списания (лет)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.elabor.total" data-type="number">наработка с начала<br>эксплуатации на<!--01.07.17--><br>
                     <DatePicker id="startDate"
                                 :value="settings.startDate ? settings.startDate : '01.01.2017'"
                                 :onSelect="startDateSelect"
                                 :isButton="true"
                     ></DatePicker>
                     <!--<mdl-button style="width: 90px"></mdl-button>-->
-                     (час.) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.elabor.before" data-sort="elabor.elabor.before" data-type="number">наработка<br>до КР (час.) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.elabor.after" data-sort="elabor.elabor.after" data-type="number">наработка<br>после КР (час.) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.dev.total" data-sort="elabor.dev.total" data-type="number">отработано<br>ВСЕГО (лет) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.dev.before" data-sort="elabor.dev.before" data-type="number">отработано<br>до КР (лет) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.elabor.dev.after" data-sort="elabor.dev.after" data-type="number">отработано<br>после КР (лет) <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.year.kr.num" data-sort="stock.year.kr.num" data-type="number">лет <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.year.kr.per" data-sort="stock.year.kr.per" data-type="number">% <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.year.cancel.num" data-sort="stock.year.cancel.num" data-type="number">лет <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.year.cancel.per" data-sort="stock.year.cancel.per" data-type="number">% <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.hour.kr.num" data-sort="stock.hour.kr.num" data-type="number">час <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.hour.kr.per" data-sort="stock.hour.kr.per" data-type="number">% <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.hour.cancel.num" data-sort="stock.hour.cancel.num" data-type="number">час <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.stock.hour.cancel.per" data-sort="stock.hour.cancel.per" data-type="number">% <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.createdAt" data-sort="createdAt" data-type="date">Создан <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.updatedAt" data-sort="updatedAt" data-type="date">Изменен <i class="fa fa-times close-coll"></i></th>
+                     (час.)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.elabor.before" data-type="number">наработка<br>до КР (час.)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.elabor.after" data-type="number">наработка<br>после КР (час.)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.dev.total" data-type="number">отработано<br>ВСЕГО (лет)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.dev.before" data-type="number">отработано<br>до КР (лет)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="elabor.dev.after" data-type="number">отработано<br>после КР (лет)</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.year.kr.num" data-type="number">лет</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.year.kr.per" data-type="number">%</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.year.cancel.num" data-type="number">лет</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.year.cancel.per" data-type="number">%</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.kr.num" data-type="number">час</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.kr.per" data-type="number">%</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.cancel.num" data-type="number">час</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="stock.hour.cancel.per" data-type="number">%</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="createdAt" data-type="date">Создан</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1" data-sort="updatedAt" data-type="date">Изменен</th>
                 <th colspan="2">Действия</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(row, index) in rows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage" :data-id="index">
+            <tr v-for="(row, index) in sortedRows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage" :data-id="index">
                 <td>
                     <mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox>
                 </td>
@@ -273,7 +273,38 @@
                 <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
                 <mdl-button primary @click.native="removeRows()">Удалить</mdl-button>
             </div>
-        </mdl-dialog>
+        </mdl-dialog><!--
+
+
+        <table class="tablesaw" data-tablesaw-mode="columntoggle">
+            <thead>
+            <tr>
+                <th scope="col" class="sortable" data-tablesaw-priority="persist">Movie Title</th>
+                <th scope="col" class="sortable" data-tablesaw-sortable-default-col data-tablesaw-priority="3">Rank</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="2">Year</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="0" colspan="2">Gross</th>
+                <th scope="col" class="sortable" data-tablesaw-priority="1"><abbr title="Rotten Tomato Rating">Rating</abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="title"><a href="http://en.wikipedia.org/wiki/Avatar_(2009_film)">Avatar</a></td>
+                <td>1</td>
+                <td rowspan="2">2009</td>
+                <td>$2.7B</td>
+                <td>$2.7B</td>
+                <td>83%</td>
+            </tr>
+            <tr>
+                <td class="title"><a href="http://en.wikipedia.org/wiki/Titanic_(1997_film)">Titanic</a></td>
+                <td>2</td>
+                <td>$2.1B</td>
+                <td>$2.1B</td>
+                <td>88%</td>
+            </tr>
+            </tbody>
+        </table>
+-->
         <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 
@@ -350,6 +381,7 @@
         },
     };
     let selSeed = recValue(rowSeed, 1);
+    selSeed._id = null;
     selSeed.createdAt = 1;
     selSeed.updatedAt = 1;
 
@@ -375,6 +407,7 @@
                     this.getSelCnt(this.sel.est)+this.getSelCnt(this.sel.elabor);
             },
             selFirstLast: function() {
+                console.log(2+this.sel.createdAt+this.sel.updatedAt);
                 return 2+this.sel.createdAt+this.sel.updatedAt;
             }
         },

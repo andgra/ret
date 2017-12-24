@@ -3,9 +3,15 @@ window.nwin = ngui.Window.get();
 window.fs = require("fs");
 
 
-require('tablesaw');
-window.jsPDF = require('jspdf');
+// window.jsPDF = require('jspdf');
 window.$ = window.jQuery = require('jquery');
+/*TablesawConfig  = {
+    getHeaderCells: function() {
+        return this.$table.find( ".sortable" );
+    }
+};*/
+/*window.Tablesaw = */require('tablesaw/dist/tablesaw.jquery');
+require('tablesaw/dist/tablesaw-init');
 require('jquery-ui/ui/widget');
 require('jquery-ui/ui/widgets/button');
 require('jquery-ui/ui/widgets/datepicker');
@@ -18,7 +24,16 @@ console.log(ngui,nwin);
 
 window.isNumeric = function (n){
     return !isNaN(parseFloat(n)) && isFinite(n);
-}
+};
+
+window.getObjRec = function(obj, path) {
+    path = path.split('.');
+    let res = JSON.parse(JSON.stringify(obj));
+    path.forEach((p) => {
+        res = res[p];
+    });
+    return res;
+};
 
 window.openPdf = function(name) {
     ngui.Window.open('index.html?route='+name,{show: false});
