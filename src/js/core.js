@@ -1,16 +1,11 @@
 window.ngui = require('nw.gui');
 window.nwin = ngui.Window.get();
+nwin.maximize();
 window.fs = require("fs");
 
 
-// window.jsPDF = require('jspdf');
 window.$ = window.jQuery = require('jquery');
-/*TablesawConfig  = {
-    getHeaderCells: function() {
-        return this.$table.find( ".sortable" );
-    }
-};*/
-/*window.Tablesaw = */require('tablesaw/dist/tablesaw.jquery');
+require('tablesaw/dist/tablesaw.jquery');
 require('tablesaw/dist/tablesaw-init');
 require('jquery-ui/ui/widget');
 require('jquery-ui/ui/widgets/button');
