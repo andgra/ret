@@ -14,6 +14,56 @@ export default function (options) {
                 checkAllChanged: false,
                 savedRow: null,
                 toRemove: [],
+
+                tfConf: Object.assign({
+
+                    filters_row_index: 2,
+                    /*base_path: '../../node_modules/tablefilter/dist/tablefilter/',
+            col_1: 'select',
+            col_2: 'select',
+            col_3: 'select',
+            alternate_rows: true,
+            rows_counter: true,
+            btn_reset: true,
+            loader: true,
+            status_bar: true,
+            mark_active_columns: true,
+            highlight_keywords: true,
+            col_types: [
+                'string', 'string', 'number',
+                'number', 'number', 'number',
+                'number', 'number', 'number'
+            ],
+            custom_options: {
+                cols:[3],
+                texts: [[
+                    '0 - 25 000',
+                    '100 000 - 1 500 000'
+                ]],
+                values: [[
+                    '>0 && <=25000',
+                    '>100000 && <=1500000'
+                ]],
+                sorts: [false]
+            },
+            col_widths: [
+                '150px', '100px', '100px',
+                '70px', '70px', '70px',
+                '70px', '60px', '60px'
+            ],
+            extensions:[{ name: 'sort' }]*/
+                    paging: {
+                        length: 5,
+                        toolbar_position: 'left',
+                        page_text: 'стр',
+                        of_text: ' из ',
+                        target_id: 'paging'
+                    },
+                    clear_filter_text: " ",
+                    locale: "ru",
+                    refresh_filters: true,
+                }, options.tfConf || {}),
+                tf: null,
             }, options.data || {})
         },
         computed: Object.assign({
@@ -63,7 +113,9 @@ export default function (options) {
                 try {
                     this.rows.splice(index + 1, 0, JSON.parse(JSON.stringify(options.rowSeed)));
                     this.edit = index;
-                    this.page = this.maxPage;
+                    this.tf.refresh();
+                    setTimeout(()=> this.tf.Mod.paging.setPage('last'), 0);
+
                 } catch (e) {
                     console.error(e);
                 }
@@ -107,16 +159,20 @@ export default function (options) {
 
                 // Переносим буфер в актуал
                 this.rows = rows;
-                if (this.page > this.maxPage) {
-                    this.page = this.maxPage;
-                }
                 this.toRemove = [];
                 this.$refs.removeModal.close();
                 this.$root.$emit('msgSent', {message: 'Удалено'})
 
                 if(options.onRemove) {
-                    options.onRemove(this);
+                    $.proxy(options.onRemove,this)();
                 }
+            },
+            initTf () {
+                setTimeout(()=>{
+                    this.tf = new TableFilter(this.$refs.table, this.tfConf,this.tfConf.filters_row_index);
+                    this.tf.init();
+                    console.log(this.tf);
+                },0);
             },
             editRow: function (index) {
                 this.edit = index;
@@ -142,16 +198,24 @@ export default function (options) {
                     console.log('insert');
                     db.insert(Object.assign({table: options.table}, item), $.proxy(function (err, newItem) {
                         item._id = newItem._id;
-                        this.$root.$emit('msgSent', {message: 'Сохранено'})
+                        this.$root.$emit('msgSent', {message: 'Сохранено'});
+                        this.tf.refresh();
+                        if(options.onInsert) {
+                            $.proxy(options.onInsert,this)();
+                        }
                     }, this));
                 } else {
                     console.log('update');
                     db.update({table: options.table, _id: item._id}, {$set: item}, $.proxy(function (err, code) {
-                        this.$root.$emit('msgSent', {message: 'Сохранено'})
+                        this.$root.$emit('msgSent', {message: 'Сохранено'});
+                        this.tf.refresh();
+                        if(options.onUpdate) {
+                            $.proxy(options.onUpdate,this)();
+                        }
                     }, this));
                 }
                 if(options.onSave) {
-                    options.onSave(this);
+                    $.proxy(options.onSave,this)();
                 }
                 this.edit = -1;
             },
@@ -178,6 +242,7 @@ export default function (options) {
             setRows: function () {
                 db.find({table: options.table}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
                     this.rows = rows;
+                    this.initTf();
                 }, this));
             },
             paginating: function () {
@@ -186,14 +251,21 @@ export default function (options) {
         }, options.methods || {}),
         created: function () {
             if(options.init) {
-                options.init(this);
+                $.proxy(options.init,this)();
             } else {
                 this.setRows();
             }
             this.watchCollection(['checks'], this.toggleCheck);
-            this.watchCollection(['page'], this.paginating);
+            // this.watchCollection(['page'], this.paginating);
+            this.watchCollection(['rows'], ()=> {
+                this.tf.refresh();
+            });
+            this.watchCollection(['rows.length'], ()=> {
+                this.tf.refresh();
+                setTimeout(()=>this.tf.Mod.paging.setPage('last'),0);
+            });
             if(options.created) {
-                options.created(this);
+                $.proxy(options.created,this)();
             }
         },
         mounted: function () {
@@ -271,7 +343,7 @@ export default function (options) {
             }, this));
 
             if(options.mounted) {
-                options.mounted(this);
+                $.proxy(options.mounted,this)();
             }
         },
     }

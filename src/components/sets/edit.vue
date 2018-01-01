@@ -220,44 +220,13 @@
             </tbody>
             <tfoot>
 
-            <!--<tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell&#45;&#45;non-numeric pages">
-                    <div v-if="maxPage<=7">
-                        <span v-for="p in maxPage" @click="page=p" :class="{ active: page==p }">
-                            {{p}}
-                        </span>
-                    </div>
-                    <div v-else>
-                        <div v-if="page<5">
-                            <span v-for="p in (1, page+2)" @click="page=p" :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        <div v-else>
-                            <span @click="page=1" :class="{ active: page==1 }">
-                                {{1}}
-                            </span>
-                        </div>
-                        <div v-if="page>=5 && page<=maxPage-4">
-                            ...
-                            <span v-for="p in maxPage" v-if="p>=3 && p<=maxPage-2 && p>page-3 && p<page+3" @click="page=p" :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        ...
-                        <div v-if="page>maxPage-4">
-                            <span v-for="p in maxPage" v-if="p>maxPage-6 && p+3>page" @click="page=p" :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        <div v-else>
-                            <span @click="page=maxPage" :class="{ active: page==maxPage }">
-                                {{maxPage}}
-                            </span>
-                        </div>
+            <tr>
+                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                    <div id="paging">
+
                     </div>
                 </td>
-            </tr>-->
+            </tr>
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
                     <mdl-button class="mdl-js-ripple-effect" :disabled="edit!==-1" @click.native="addRow(rows.length)">Добавить запись</mdl-button>
@@ -274,7 +243,17 @@
                 <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
                 <mdl-button primary @click.native="removeRows()">Удалить</mdl-button>
             </div>
-        </mdl-dialog
+        </mdl-dialog>
+        <!--<mdl-dialog ref="editModal" :title="editRow._id?'Редактирование записи':'Добавление записи'">
+            <input name="_id" v-model="editRow._id" type="hidden"/>
+            <mdl-textfield label=" " v-model="editRow.resp.rank"></mdl-textfield>
+            <mdl-textfield label=" " v-model="row.obj" v-if="edit===index" style="width: 100px;"></mdl-textfield>
+
+            <div slot="actions">
+                <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
+                <mdl-button primary @click.native="saveRow()">Добавить</mdl-button>
+            </div>
+        </mdl-dialog>-->
         <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 
@@ -362,9 +341,24 @@
         data: {
             perPage: 7,
             settings: {},
-            retArray: [{name: 'РЛС', value: 'rls'},{name: 'АСУ', value: 'asu'}],
-            repairTypeArray: [{name: 'КР', value: 'kr'},{name: 'РТС', value: 'rts'}],
-            conditionArray: [{name: 'Свернуто', value: 'closed'},{name: 'Находится в эксплуатации', value: 'in_prod'}],
+            retArray: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}],
+            repairTypeArray: [{name: 'КР', value: 'kr'}, {name: 'РТС', value: 'rts'}],
+            conditionArray: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}],
+        },
+        tfConf: {
+            filters_row_index: 4,
+            col_0: "none",
+            col_1: "none",
+            col_2: "none",
+            col_4: "select",
+            col_6: "select",
+            col_7: "select",
+            col_8: "select",
+            col_9: "select",
+            col_12: "select",
+            col_14: "select",
+            col_38: "none",
+            col_39: "none",
         },
         computed: {
             selSecondFirst: function() {
@@ -389,57 +383,7 @@
                     return moment(this.createdAt) > moment(filter.startDate, "DD.MM.YYYY");
                 }}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
                     this.rows = rows;
-
-                    setTimeout(()=>{
-                    var filtersConfig = {
-
-                        filters_row_index: 4,
-                        /*base_path: '../../node_modules/tablefilter/dist/tablefilter/',
-                col_1: 'select',
-                col_2: 'select',
-                col_3: 'select',
-                alternate_rows: true,
-                rows_counter: true,
-                btn_reset: true,
-                loader: true,
-                status_bar: true,
-                mark_active_columns: true,
-                highlight_keywords: true,
-                col_types: [
-                    'string', 'string', 'number',
-                    'number', 'number', 'number',
-                    'number', 'number', 'number'
-                ],
-                custom_options: {
-                    cols:[3],
-                    texts: [[
-                        '0 - 25 000',
-                        '100 000 - 1 500 000'
-                    ]],
-                    values: [[
-                        '>0 && <=25000',
-                        '>100000 && <=1500000'
-                    ]],
-                    sorts: [false]
-                },
-                col_widths: [
-                    '150px', '100px', '100px',
-                    '70px', '70px', '70px',
-                    '70px', '60px', '60px'
-                ],
-                extensions:[{ name: 'sort' }]*/
-                        col_0: "none",
-                        col_1: "none",
-                        col_2: "none",
-                        col_4: "select",
-                        col_38: "none",
-                        col_39: "none",
-                    };
-
-                        var tf = new TableFilter(this.$refs.table, filtersConfig,5);
-                        tf.init();
-                        console.log('refRow',tf.refRow)
-                    },0);
+                    this.initTf();
                 }, this));
             },
             startDateSelect: function(newVal) {
@@ -465,7 +409,7 @@
                 this.setRows({startDate: newVal})
             }
         },
-        mounted: function(self) {
+        mounted: function() {
             db.find({table: 'settings'}).exec($.proxy(function (err, rows) {
                 let $startDate = $('#startDate');
                 for(let i = 0; i < rows.length; i++) {
@@ -479,11 +423,11 @@
                     }
                 }
                 this.setRows({startDate: this.settings.startDate})
-            }, self));
+            }, this));
         },
-        init: function(self) {
+        init: function() {
 
-        }
+        },
     });
 
     export default vm;

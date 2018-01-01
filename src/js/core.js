@@ -8,6 +8,8 @@ window.$ = window.jQuery = require('jquery');
 require('tablesaw/dist/tablesaw.jquery');
 require('tablesaw/dist/tablesaw-init');
 window.TableFilter = require('tablefilter');
+TableFilter.prototype.refresh = function() { setTimeout(()=>{ this.destroy(); this.init(); },0) };
+// import TableFilter from 'tablefilter/src/tablefilter';
 require('jquery-ui/ui/widget');
 require('jquery-ui/ui/widgets/button');
 require('jquery-ui/ui/widgets/datepicker');
