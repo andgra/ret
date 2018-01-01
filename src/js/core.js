@@ -7,6 +7,7 @@ window.fs = require("fs");
 window.$ = window.jQuery = require('jquery');
 require('tablesaw/dist/tablesaw.jquery');
 require('tablesaw/dist/tablesaw-init');
+window.TableFilter = require('tablefilter');
 require('jquery-ui/ui/widget');
 require('jquery-ui/ui/widgets/button');
 require('jquery-ui/ui/widgets/datepicker');
@@ -51,7 +52,7 @@ fs.rmRf = function(path) {
 
 
 window.getRequests = function() {
-    var s1 = location.search.substring(1, location.search.length).split('&'),
+    let s1 = location.search.substring(1, location.search.length).split('&'),
         r = {}, s2, i;
     for (i = 0; i < s1.length; i += 1) {
         s2 = s1[i].split('=');

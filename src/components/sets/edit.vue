@@ -1,6 +1,7 @@
 <template>
     <div class="table-container">
-        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table" data-tablesaw-mode="columntoggle" ref="table">
+
+        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table" data-tablesaw-mode="columntoggle" ref="table" id="table">
             <thead>
             <tr data-tablesaw-ignorerow><th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
                 <h4>Таблица сводных данных</h4>
@@ -71,8 +72,8 @@
                 <th colspan="2">Действия</th>
             </tr>
             </thead>
-            <tbody>
-            <tr v-for="(row, index) in rows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage" :data-id="index">
+            <tbody><!-- v-if="index>=(page-1)*perPage && index<page*perPage"-->
+            <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
                 <td>
                     <mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox>
                 </td>
@@ -219,8 +220,8 @@
             </tbody>
             <tfoot>
 
-            <tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric pages">
+            <!--<tr>
+                <td :colspan="selFooter" class="mdl-data-table__cell&#45;&#45;non-numeric pages">
                     <div v-if="maxPage<=7">
                         <span v-for="p in maxPage" @click="page=p" :class="{ active: page==p }">
                             {{p}}
@@ -256,7 +257,7 @@
                         </div>
                     </div>
                 </td>
-            </tr>
+            </tr>-->
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
                     <mdl-button class="mdl-js-ripple-effect" :disabled="edit!==-1" @click.native="addRow(rows.length)">Добавить запись</mdl-button>
@@ -388,6 +389,57 @@
                     return moment(this.createdAt) > moment(filter.startDate, "DD.MM.YYYY");
                 }}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
                     this.rows = rows;
+
+                    setTimeout(()=>{
+                    var filtersConfig = {
+
+                        filters_row_index: 4,
+                        /*base_path: '../../node_modules/tablefilter/dist/tablefilter/',
+                col_1: 'select',
+                col_2: 'select',
+                col_3: 'select',
+                alternate_rows: true,
+                rows_counter: true,
+                btn_reset: true,
+                loader: true,
+                status_bar: true,
+                mark_active_columns: true,
+                highlight_keywords: true,
+                col_types: [
+                    'string', 'string', 'number',
+                    'number', 'number', 'number',
+                    'number', 'number', 'number'
+                ],
+                custom_options: {
+                    cols:[3],
+                    texts: [[
+                        '0 - 25 000',
+                        '100 000 - 1 500 000'
+                    ]],
+                    values: [[
+                        '>0 && <=25000',
+                        '>100000 && <=1500000'
+                    ]],
+                    sorts: [false]
+                },
+                col_widths: [
+                    '150px', '100px', '100px',
+                    '70px', '70px', '70px',
+                    '70px', '60px', '60px'
+                ],
+                extensions:[{ name: 'sort' }]*/
+                        col_0: "none",
+                        col_1: "none",
+                        col_2: "none",
+                        col_4: "select",
+                        col_38: "none",
+                        col_39: "none",
+                    };
+
+                        var tf = new TableFilter(this.$refs.table, filtersConfig,5);
+                        tf.init();
+                        console.log('refRow',tf.refRow)
+                    },0);
                 }, this));
             },
             startDateSelect: function(newVal) {

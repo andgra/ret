@@ -253,3 +253,9 @@ body {
 .textarea-output {
   white-space: pre-line;
 }
+
+.tablesaw-bar {
+  position: fixed;
+  z-index: 1000;
+  right: 0;
+}

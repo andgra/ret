@@ -18,6 +18,7 @@ mix
     .js('src/js/routes.js', 'js/app.js')
     .sass('src/sass/main.scss', 'css/all.min.css')
     .copy('src/index.html', './')
+    .copyDirectory('src/tablefilter', './tablefilter')
     .webpackConfig({
         target: 'node-webkit',
         plugins: [
