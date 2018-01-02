@@ -77,119 +77,83 @@
                 <td>
                     <mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox>
                 </td>
-                <td v-if="edit===-1" @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать">
-                    <i class="fa fa-pencil"></i>
-                </td>
-                <td v-else-if="edit===index" @click="saveRow(index)" class="clickable tooltip" data-tooltip="Сохранить">
-                    <i class="fa fa-floppy-o"></i>
-                </td>
-                <td v-else></td>
-                <td v-if="edit===-1" @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить">
-                    <i class="fa fa-times"></i>
-                </td>
-                <td v-else-if="edit===index" @click="cancelRow(index)" class="clickable tooltip" data-tooltip="Отменить редактирвоание">
-                    <i class="fa fa-undo"></i>
-                </td>
-                <td v-else></td>
+                <td @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить"><i class="fa fa-times"></i></td>
                 <td>
                     {{index+1}}
                     <input name="_id" v-model="row._id" type="hidden"/>
                 </td>
                 <td v-if="sel.obj" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.obj" v-if="edit===index" style="width: 100px;"></mdl-textfield>
-                    <label v-else>{{row.obj}}</label>
+                    <label>{{row.obj}}</label>
                 </td>
                 <td v-if="sel.place" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.place" v-if="edit===index" style="width: 120px;"></mdl-textfield>
-                    <label v-else>{{row.place}}</label>
+                    <label>{{row.place}}</label>
                 </td>
                 <td v-if="sel.ret" class="mdl-data-table__cell--non-numeric">
-                    <mdl-select label="" v-model="row.ret" v-if="edit===index" :options="retArray" :id="'ret'+index" style="width: 100px;"></mdl-select>
-                    <label v-else>{{getName(retArray,row.ret)}}</label>
+                    <label>{{getName(retArray,row.ret)}}</label>
                 </td>
                 <td v-if="sel.pn" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.pn" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.pn}}</label>
+                    <label>{{row.pn}}</label>
                 </td>
                 <td v-if="sel.type.req" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield class="type-req" label=" " v-model="row.type.req" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.type.req}}</label>
+                    <label>{{row.type.req}}</label>
                 </td>
                 <td v-if="sel.type.real" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.type.real" v-if="edit===index" style="width: 100px;"></mdl-textfield>
-                    <label v-else>{{row.type.real}}</label>
+                    <label>{{row.type.real}}</label>
                 </td>
                 <td v-if="sel.serial" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.serial" v-if="edit===index" style="width: 100px;"></mdl-textfield>
-                    <label v-else>{{row.serial}}</label>
+                    <label>{{row.serial}}</label>
                 </td>
                 <td v-if="sel.year">
-                    <mdl-textfield label=" " v-model="row.year" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.year}}</label>
+                    <label>{{row.year}}</label>
                 </td>
                 <td v-if="sel.repair.type" class="mdl-data-table__cell--non-numeric">
-                    <mdl-select label="" v-model="row.repair.type" v-if="edit===index" :options="repairTypeArray" :id="'repair-type'+index" style="width: 60px;"></mdl-select>
-                    <label v-else>{{getName(repairTypeArray, row.repair.type)}}</label>
+                    <label>{{getName(repairTypeArray, row.repair.type)}}</label>
                 </td>
                 <td v-if="sel.repair.year">
-                    <mdl-textfield label=" " v-model="row.repair.year" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.repair.year}}</label>
+                    <label>{{row.repair.year}}</label>
                 </td>
                 <td v-if="sel.condition" class="mdl-data-table__cell--non-numeric">
-                    <mdl-select label="" v-model="row.condition" v-if="edit===index" :options="conditionArray" :id="'condition'+index" style="width: 235px;"></mdl-select>
-                    <label v-else>{{getName(conditionArray, row.condition)}}</label>
+                    <label>{{getName(conditionArray, row.condition)}}</label>
                 </td>
                 <td v-if="sel.resp.rank" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.resp.rank" v-if="edit===index" style="width: 60px;"></mdl-textfield>
-                    <label v-else>{{row.resp.rank}}</label>
+                    <label>{{row.resp.rank}}</label>
                 </td>
                 <td v-if="sel.resp.fio" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.resp.fio" v-if="edit===index" style="width: 120px;"></mdl-textfield>
-                    <label v-else>{{row.resp.fio}}</label>
+                    <label>{{row.resp.fio}}</label>
                 </td>
                 <td v-if="sel.resp.order" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.resp.order" v-if="edit===index" style="width: 150px;"></mdl-textfield>
-                    <label v-else>{{row.resp.order}}</label>
+                    <label>{{row.resp.order}}</label>
                 </td>
                 <td v-if="sel.est.res.kr">
-                    <mdl-textfield label=" " v-model="row.est.res.kr" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.est.res.kr}}</label>
+                    <label>{{row.est.res.kr}}</label>
                 </td>
                 <td v-if="sel.est.res.cancel">
-                    <mdl-textfield label=" " v-model="row.est.res.cancel" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.est.res.cancel}}</label>
+                    <label>{{row.est.res.cancel}}</label>
                 </td>
                 <td v-if="sel.est.life.kr">
-                    <mdl-textfield label=" " v-model="row.est.life.kr" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.est.life.kr}}</label>
+                    <label>{{row.est.life.kr}}</label>
                 </td>
                 <td v-if="sel.est.life.cancel">
-                    <mdl-textfield label=" " v-model="row.est.life.cancel" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.est.life.cancel}}</label>
+                    <label>{{row.est.life.cancel}}</label>
                 </td>
                 <td v-if="sel.elabor.elabor.total">
-                    <mdl-textfield label=" " v-model="row.elabor.elabor.total" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.elabor.total}}</label>
+                    <label>{{row.elabor.elabor.total}}</label>
                 </td>
                 <td v-if="sel.elabor.elabor.before">
-                    <mdl-textfield label=" " v-model="row.elabor.elabor.before" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.elabor.before}}</label>
+                    <label>{{row.elabor.elabor.before}}</label>
                 </td>
                 <td v-if="sel.elabor.elabor.after">
-                    <mdl-textfield label=" " v-model="row.elabor.elabor.after" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.elabor.after}}</label>
+                    <label>{{row.elabor.elabor.after}}</label>
                 </td>
                 <td v-if="sel.elabor.dev.total">
-                    <mdl-textfield label=" " v-model="row.elabor.dev.total" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.dev.total}}</label>
+                    <label>{{row.elabor.dev.total}}</label>
                 </td>
                 <td v-if="sel.elabor.dev.before">
-                    <mdl-textfield label=" " v-model="row.elabor.dev.before" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.dev.before}}</label>
+                    <label>{{row.elabor.dev.before}}</label>
                 </td>
                 <td v-if="sel.elabor.dev.after">
-                    <mdl-textfield label=" " v-model="row.elabor.dev.after" type="number" v-if="edit===index"></mdl-textfield>
-                    <label v-else>{{row.elabor.dev.after}}</label>
+                    <label>{{row.elabor.dev.after}}</label>
                 </td>
                 <td v-if="sel.stock.year.kr.num">{{row.stock.year.kr.num = row.est.life.kr - row.elabor.dev.before | NaN | r2}}</td>
                 <td v-if="sel.stock.year.kr.per">{{row.stock.year.kr.per = row.elabor.dev.before/row.est.life.kr*100 | NaN | r2}}</td>
@@ -244,16 +208,74 @@
                 <mdl-button primary @click.native="removeRows()">Удалить</mdl-button>
             </div>
         </mdl-dialog>
-        <!--<mdl-dialog ref="editModal" :title="editRow._id?'Редактирование записи':'Добавление записи'">
-            <input name="_id" v-model="editRow._id" type="hidden"/>
-            <mdl-textfield label=" " v-model="editRow.resp.rank"></mdl-textfield>
-            <mdl-textfield label=" " v-model="row.obj" v-if="edit===index" style="width: 100px;"></mdl-textfield>
+        <mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
+            <form action="#" class="editing-form">
+                <input name="_id" v-model="editingRow._id" type="hidden"/>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="в/ч" v-model="editingRow.obj"></mdl-textfield>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="дислокация" v-model="editingRow.place"></mdl-textfield>
+                <mdl-select class="mdl-textfield--full-width" label="РЭТ" v-model="editingRow.ret" :options="retArray" id="editingRet"></mdl-select>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="наличие пн" v-model="editingRow.pn"></mdl-textfield>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="тип РЭТ по штату" v-model="editingRow.type.req"></mdl-textfield>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="тип РЭТ в наличии" v-model="editingRow.type.real"></mdl-textfield>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="заводской номер" v-model="editingRow.serial"></mdl-textfield>
+                <mdl-textfield class="mdl-textfield--full-width" floating-label="год изготовления" v-model="editingRow.serial" type="number"></mdl-textfield>
+                <div class="form-group">
+                    <p>вид и год последнего ремонта</p>
+                    <div class="form-indent">
+                        <mdl-select class="mdl-textfield--full-width" label="вид" v-model="editingRow.repair.type" :options="repairTypeArray" id="editingRepairType"></mdl-select>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="год" v-model="editingRow.repair.year" type="number"></mdl-textfield>
+                    </div>
+                </div>
+                <mdl-select class="display-block" label="состояние РЭТ" v-model="editingRow.condition" :options="conditionArray" id="editingCondition"></mdl-select>
+                <div class="form-group">
+                    <p>отв. за эксплуатацию, уход и сбережение</p>
+                    <div class="form-indent">
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="воинское звание" v-model="editingRow.resp.rank"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="ФИО" v-model="editingRow.resp.fio"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="приказ о закреплении" v-model="editingRow.resp.order"></mdl-textfield>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p>установленный ресурс РЭТ</p>
+                    <div class="form-indent">
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="ресурс до КР (час.)" v-model="editingRow.est.res.kr" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="ресурс до списания (час.)" v-model="editingRow.est.res.cancel" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="срок службы до КР (лет)" v-model="editingRow.est.life.kr" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="срок службы до списания (лет)" v-model="editingRow.est.life.cancel" type="number"></mdl-textfield>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p>наработка РЭТ</p>
+                    <div class="form-indent">
+                        <mdl-textfield class="mdl-textfield--full-width" :floating-label="'наработка с начала эксплуатации на '+settings.startDate+' (час.)'" v-model="editingRow.elabor.elabor.total" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="наработка до КР (час.)" v-model="editingRow.elabor.elabor.before" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="наработка после КР (час.)" v-model="editingRow.elabor.elabor.after" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="отработано ВСЕГО (лет)" v-model="editingRow.elabor.dev.total" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="отработано до КР (лет)" v-model="editingRow.elabor.dev.before" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="отработано после КР (лет)" v-model="editingRow.elabor.dev.after" type="number"></mdl-textfield>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p>Запас ресурса образца РЭТ</p>
+                    <div class="form-indent">
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до КР (лет)" :value="editingRow.stock.year.kr.num = editingRow.est.life.kr - editingRow.elabor.dev.before | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до КР (%)" :value="editingRow.stock.year.kr.per = editingRow.elabor.dev.before/editingRow.est.life.kr*100 | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до списания (лет)" :value="editingRow.stock.year.cancel.num = editingRow.est.life.cancel - editingRow.elabor.elabor.total | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до списания (%)" :value="editingRow.stock.year.cancel.per = editingRow.elabor.elabor.total/editingRow.est.life.cancel*100 | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до КР (час)" :value="editingRow.stock.hour.kr.num = editingRow.est.res.kr - editingRow.elabor.elabor.before | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до КР (%)" :value="editingRow.stock.hour.kr.per = editingRow.elabor.elabor.before/editingRow.est.res.kr*100 | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до списания (час)" :value="editingRow.stock.hour.cancel.num = editingRow.est.res.cancel - editingRow.elabor.elabor.total | NaN | r2" type="number"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" readonly floating-label="до списания (%)" :value="editingRow.stock.hour.cancel.per = editingRow.elabor.elabor.total/editingRow.est.life.cancel*100 | NaN | r2" type="number"></mdl-textfield>
+                    </div>
+                </div>
+            </form>
+
 
             <div slot="actions">
-                <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
-                <mdl-button primary @click.native="saveRow()">Добавить</mdl-button>
+                <mdl-button @click.native="$refs.editModal.close">Отменить</mdl-button>
+                <mdl-button primary @click.native="saveRow()">Сохранить</mdl-button>
             </div>
-        </mdl-dialog>-->
+        </mdl-dialog>
         <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 

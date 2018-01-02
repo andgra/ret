@@ -13,6 +13,7 @@ export default function (options) {
                 edit: -1,
                 checkAllChanged: false,
                 savedRow: null,
+                editingRow: JSON.parse(JSON.stringify(options.rowSeed)),
                 toRemove: [],
 
                 tfConf: Object.assign({
@@ -120,6 +121,7 @@ export default function (options) {
                     console.error(e);
                 }
             },
+
             inquireRemove: function (input) {
                 this.toRemove = input;
                 this.$refs.removeModal.open();
@@ -175,9 +177,8 @@ export default function (options) {
                 },0);
             },
             editRow: function (index) {
-                this.edit = index;
-
-                this.savedRow = JSON.parse(JSON.stringify(this.rows[index]));
+                this.editingRow = JSON.parse(JSON.stringify(this.rows[index]));
+                this.$refs.editModal.open();
             },
             cancelRow: function (index) {
                 if (this.savedRow) {

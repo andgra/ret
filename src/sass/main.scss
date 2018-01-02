@@ -71,10 +71,6 @@ body {
       white-space: normal;
     }
   }
-  .mdl-textfield {
-    width: auto;
-    padding: 0;
-  }
 }
 .print-table {
   font-size: 0.8em;
@@ -119,30 +115,6 @@ body {
   }
 }
 
-/*.mdl-data-table--zebra {
-  tbody {
-    tr {
-      &:nth-child(odd) {
-        background: moccasin;
-      }
-      &:nth-child(even) {
-        background: #FFF;
-
-      }
-      &:hover {
-        background-color: paleturquoise;
-      }
-    }
-  }
-}*/
-
-/*.defects {
-  .mdl-textfield {
-    width: auto;
-    padding: 0;
-  }
-}*/
-
 .clickable {
   cursor: pointer;
   .fa {
@@ -177,7 +149,7 @@ body {
   pointer-events: none;
   margin-top: 0;
   opacity: 0;
-  /* 350ms transition vs 120ms since it seems more pleasing here and less abrupt. */
+  // 350ms transition vs 120ms since it seems more pleasing here and less abrupt.
   transition:
           opacity 250ms cubic-bezier(0, 0, 0.2, 1),
           margin 250ms cubic-bezier(0, 0, 0.2, 1);
@@ -185,7 +157,7 @@ body {
 
 .tooltip:hover::after {
   opacity: .9;
-  /* 32 height + 24 required margin = 56 total margin */
+  // 32 height + 24 required margin = 56 total margin
   margin-top: 56px;
 }
 
@@ -207,10 +179,6 @@ body {
 
 .startDate-button {
   padding: 0 5px;
-}
-
-.mdl-textfield__label:after {
-  bottom: 0;
 }
 
 .sortable {
@@ -258,4 +226,30 @@ body {
   position: fixed;
   z-index: 1000;
   right: 0;
+}
+
+.display-block {
+  display: block;
+}
+
+.editing-form {
+  padding-right: 10px;
+  width: 400px;
+  max-height: 550px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.form-group {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  p {
+    font-size: 1.2em;
+    margin-bottom: 0;
+  }
+}
+
+.form-indent {
+  padding-left: 15px;
+  width: calc(100%- 15px);
 }
