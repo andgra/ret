@@ -166,20 +166,8 @@
                 <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric">{{row.createdAt | myDateTime}}</td>
                 <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric">{{row.updatedAt | myDateTime}}</td>
 
-                <td v-if="edit===-1" @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать">
-                    <i class="fa fa-pencil"></i>
-                </td>
-                <td v-else-if="edit===index" @click="saveRow(index)" class="clickable tooltip" data-tooltip="Сохранить">
-                    <i class="fa fa-floppy-o"></i>
-                </td>
-                <td v-else></td>
-                <td v-if="edit===-1" @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить">
-                    <i class="fa fa-times"></i>
-                </td>
-                <td v-else-if="edit===index" @click="cancelRow(index)" class="clickable tooltip" data-tooltip="Отменить редактирвоание">
-                    <i class="fa fa-undo"></i>
-                </td>
-                <td v-else></td>
+                <td @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить"><i class="fa fa-times"></i></td>
             </tr>
             </tbody>
             <tfoot>
@@ -269,13 +257,12 @@
                     </div>
                 </div>
             </form>
-
-
             <div slot="actions">
                 <mdl-button @click.native="$refs.editModal.close">Отменить</mdl-button>
                 <mdl-button primary @click.native="saveRow()">Сохранить</mdl-button>
             </div>
         </mdl-dialog>
+
         <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 
