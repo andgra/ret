@@ -258,12 +258,16 @@ export default function (options) {
             }
             this.watchCollection(['checks'], this.toggleCheck);
             // this.watchCollection(['page'], this.paginating);
-            this.watchCollection(['rows'], ()=> {
-                this.tf.refresh();
+            this.watchCollection(['rows'], (newVal,oldVal)=> {
+                if(this.tf) {
+                    this.tf.refresh();
+                }
             });
             this.watchCollection(['rows.length'], ()=> {
-                this.tf.refresh();
-                setTimeout(()=>this.tf.Mod.paging.setPage('last'),0);
+                if(this.tf) {
+                    this.tf.refresh();
+                    setTimeout(()=>this.tf.Mod.paging.setPage('last'),0);
+                }
             });
             if(options.created) {
                 $.proxy(options.created,this)();

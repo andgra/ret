@@ -18,21 +18,31 @@ Vue.use(VueExtendLayout);
 /*nwin.moveTo(1000, 0);
 nwin.width(800);*/
 
+import SetsEdit from '../components/sets/edit.vue';
+import DefectsEdit from '../components/defects/edit.vue';
+import WorksEdit from '../components/works/edit.vue';
+import DefectsPrint from '../components/defects/print.vue';
+import WorksPrint from '../components/works/print.vue';
+import ResultsPrint from '../components/results/print.vue';
+import OperationsPrint from '../components/operations/print.vue';
+import ResourcesPrint from '../components/resources/print.vue';
+import OverspendPrint from '../components/overspend/print.vue';
+
 // 1. Определение путей
 // Каждый путь должен указывать на компонент
 // "Компонентом" может быть как созданный через `Vue.extend()`
 // полноценный конструктор, так и просто объект с настройками компонента
 // Вложенные пути будут рассмотрены далее.
 const routes = [
-    {path: '/sets/edit', component: require('@/sets/edit'), meta: {layout: 'appLayout'}},
-    {path: '/defects/edit', component: require('@/defects/edit'), meta: {layout: 'appLayout'}},
-    {path: '/works/edit', component: require('@/works/edit'), meta: {layout: 'appLayout'}},
-    {path: '/defects/print', component: require('@/defects/print'), meta: {layout: 'printLayout'}},
-    {path: '/works/print', component: require('@/works/print'), meta: {layout: 'printLayout'}},
-    {path: '/results/print', component: require('@/results/print'), meta: {layout: 'printLayout'}},
-    {path: '/operations/print', component: require('@/operations/print'), meta: {layout: 'printLayout'}},
-    {path: '/resources/print', component: require('@/resources/print'), meta: {layout: 'printLayout'}},
-    {path: '/overspend/print', component: require('@/overspend/print'), meta: {layout: 'printLayout'}},
+    {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
+    {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
+    {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
+    {path: '/defects/print', component: DefectsPrint, meta: {layout: 'printLayout'}},
+    {path: '/works/print', component: WorksPrint, meta: {layout: 'printLayout'}},
+    {path: '/results/print', component: ResultsPrint, meta: {layout: 'printLayout'}},
+    {path: '/operations/print', component: OperationsPrint, meta: {layout: 'printLayout'}},
+    {path: '/resources/print', component: ResourcesPrint, meta: {layout: 'printLayout'}},
+    {path: '/overspend/print', component: OverspendPrint, meta: {layout: 'printLayout'}},
 ];
 
 // 2. Создаём экземпляр роутера с опцией `routes`

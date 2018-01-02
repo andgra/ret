@@ -1,4 +1,4 @@
-@import "../../../node_modules/material-design-lite/src/color-definitions";
+@import "../../node_modules/material-design-lite/src/color-definitions";
 //@import "functions";
 
 /*
@@ -15,5 +15,5 @@ $color-primary-contrast: $palette-yellow-500 !default;
 // Our accent is dark, so use $color-dark-contrast for overlaid text.
 $color-accent-contrast: $palette-yellow-500 !default;*/
 
-$image_path: '../../../node_modules/material-design-lite/src/images' !default;
-$fa-font-path: '../../../node_modules/font-awesome/fonts' !default;
+$image_path: '../../node_modules/material-design-lite/src/images' !default;
+$fa-font-path: '../../node_modules/font-awesome/fonts' !default;

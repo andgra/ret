@@ -2,6 +2,8 @@ window.ngui = require('nw.gui');
 window.nwin = ngui.Window.get();
 nwin.maximize();
 window.fs = require("fs");
+window.path = require("path");
+import '../sass/main.scss';
 
 
 window.$ = window.jQuery = require('jquery');
@@ -81,13 +83,13 @@ window.Vue = require("vue/dist/vue.js");
 const VueMdl = require("vue-mdl");
 Vue.use(VueMdl.default);
 
-const DatePicker = require("../components/common/datepicker.vue");
+import DatePicker from "../components/common/datepicker.vue";
 Vue.component('DatePicker', DatePicker);
 
-const DateTimePicker = require("../components/common/datetimepicker.vue");
+import DateTimePicker from "../components/common/datetimepicker.vue";
 Vue.component('DateTimePicker', DateTimePicker);
 
-const IntervalPicker = require("../components/common/intervalpicker.vue");
+import IntervalPicker from "../components/common/intervalpicker.vue";
 Vue.component('IntervalPicker', IntervalPicker);
 
 

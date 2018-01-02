@@ -9,7 +9,3 @@
         name: 'printLayout' // id of the layout, use "CamelCase" for compound words
     }
 </script>
-
-<style>
-    /* your style */
-</style>
