@@ -2,7 +2,6 @@ window.ngui = require('nw.gui');
 window.nwin = ngui.Window.get();
 nwin.maximize();
 window.fs = require("fs");
-window.path = require("path");
 import '../sass/main.scss';
 
 
