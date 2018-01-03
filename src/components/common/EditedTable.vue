@@ -5,11 +5,20 @@
                 tr(data-tablesaw-ignorerow='')
                     th.mdl-data-table__cell--non-numeric(:colspan='selFooter')
                         h4 Таблица сводных данных
-                tr.center-all(data-tablesaw-ignorerow='')
+                tr.center-all(v-for="(row,j) in grid")
+                    th.mdl-th-padding(v-if="j+1==grid.length")
+                        mdl-checkbox#checkAll(v-model='checkAll', @change.native='toggleCheckAll', :disabled='edit!==-1')
+                    th(v-if="j+1==grid.length", colspan='2') Действия
+                    th(v-if="j+1==grid.length", scope='col') №
+                    th(v-for="(cell,i) in row", :colspan="cell.colspan") {{cell.title}}
+                    th.sortable(v-if="j+1==grid.length", scope='col', data-tablesaw-priority='1', data-sort='createdAt') Создан
+                    th.sortable(v-if="j+1==grid.length", scope='col', data-tablesaw-priority='1', data-sort='updatedAt') Изменен
+                    th(v-if="j+1==grid.length", colspan='2') Действия
+                //tr.center-all(data-tablesaw-ignorerow='')
                     th(:colspan='selFirstFirst')
                     th(:colspan='getSelCnt(sel.stock)', v-if='getSelCnt(sel.stock)') Запас ресурса образца РЭТ
                     th(:colspan='selFirstLast')
-                tr.center-all(data-tablesaw-ignorerow='')
+                //tr.center-all(data-tablesaw-ignorerow='')
                     th(:colspan='selSecondFirst')
                     th(:colspan='getSelCnt(sel.repair)', v-if='getSelCnt(sel.repair)') Вид и год последнего ремонта
                     th(v-if='sel.condition')
@@ -21,7 +30,7 @@
                     th(:colspan='getSelCnt(sel.stock.hour.kr)', v-if='getSelCnt(sel.stock.hour.kr)') Запас ресурса до КР
                     th(:colspan='getSelCnt(sel.stock.hour.cancel)', v-if='getSelCnt(sel.stock.hour.cancel)') Запас ресурса до списания
                     th(:colspan='selFirstLast')
-                tr.center-all.wide-all
+                //tr.center-all.wide-all
                     th.mdl-th-padding
                         mdl-checkbox#checkAll(v-model='checkAll', @change.native='toggleCheckAll', :disabled='edit!==-1')
                     th(colspan='2') Действия
@@ -205,7 +214,7 @@
             div(slot='actions')
                 mdl-button(@click.native='$refs.removeModal.close') Отменить
                 mdl-button(primary='', @click.native='removeRows()') Удалить
-        mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
+        //mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
             form.editing-form(action='#')
                 input(name='_id', v-model='editingRow._id', type='hidden')
                 mdl-textfield.mdl-textfield--full-width(floating-label='в/ч', v-model='editingRow.obj')
@@ -269,15 +278,44 @@
         props: {
             options: {
                 type: Object,
-                default() {
-                    return {};
-                }
-            }
+                default: {}
+            },
+            rows: {
+                type: Array,
+                default: []
+            },
         },
         data: function () {
+            let struct = JSON.parse(JSON.stringify(this.options.struct));
+            let rowSeed = getSeed({children: struct});
+            let selSeed = recValue(rowSeed, 1);
+            rowSeed._id = "";
+            selSeed.createdAt = 1;
+            selSeed.updatedAt = 1;
+            /*struct.unshift({id: "checks", title: "1", type: String, default: ""});
+            struct.unshift({
+                id: "actions", title: "действия", children:
+                    [
+                        {id: "edit", title: "редактировать", type: String, default: ""},
+                        {id: "remove", title: "удалить", type: String, default: ""},
+                    ]
+            });
+            struct.unshift({id: "num", title: "№", type: Number, default: 0});*/
+//            console.log('struct',struct);
+            let grid = getGrid(struct);
+            console.log('grid',grid.slice());
+            for(let i in grid) {
+                if(Number(i)+1<grid.length) {
+                    if(grid[i][0].title==="") {
+                        grid[i][0].colspan += 4;
+                    } else {
+                        grid[i].unshift({title: "",colspan:4})
+                    }
+                    grid[i].push({title: "",colspan:4})
+                }
+            }
+            console.log(grid);
             return Object.assign({
-                rows: [],
-                sel: JSON.parse(JSON.stringify(this.options.selSeed)),
                 perPage: this.options.perPage || 10,
                 page: 1,
                 checks: [],
@@ -285,7 +323,12 @@
                 edit: -1,
                 checkAllChanged: false,
                 savedRow: null,
-                editingRow: JSON.parse(JSON.stringify(this.options.rowSeed)),
+                struct,
+                grid,
+                rowSeed,
+                selSeed,
+                editingRow: JSON.parse(JSON.stringify(rowSeed)),
+                sel: JSON.parse(JSON.stringify(selSeed)),
                 toRemove: [],
 
                 tfConf: Object.assign({
@@ -305,23 +348,36 @@
                 tf: null,
             }, this.options.data || {})
         },
-        computed: Object.assign({
+        computed: {
+            selSecondFirst: function () {
+                return 4 + this.sel.obj + this.sel.place + this.sel.ret + this.sel.pn +
+                    this.sel.type.req + this.sel.type.real + this.sel.serial + this.sel.year;
+            },
+            selFirstFirst: function () {
+                return this.selSecondFirst + this.getSelCnt(this.sel.repair) +
+                    this.sel.condition + this.getSelCnt(this.sel.resp) +
+                    this.getSelCnt(this.sel.est) + this.getSelCnt(this.sel.elabor);
+            },
+            selFirstLast: function () {
+                console.log(2 + this.sel.createdAt + this.sel.updatedAt);
+                return 2 + this.sel.createdAt + this.sel.updatedAt;
+            },
             isClosed: function () {
-                return this.getSelCnt(this.sel) !== this.getSelCnt(this.options.selSeed)
+                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
             },
             maxPage: function () {
                 return Math.ceil(this.rows.length / this.perPage) || 1;
             },
             selFooter: function () {
-                return 4 + this.getSelCnt(this.options.selSeed) + 2;
+                return 4 + this.getSelCnt(this.selSeed) + 2;
             },
             copyRows: function () {
                 return JSON.parse(JSON.stringify(this.rows));
             },
-        }, this.options.computed || {}),
-        methods: Object.assign({
+        },
+        methods: {
             removeClosed: function () {
-                this.sel = JSON.parse(JSON.stringify(this.options.selSeed));
+                this.sel = JSON.parse(JSON.stringify(this.selSeed));
                 return true;
             },
             recValue: function (arr, val) {
@@ -353,9 +409,9 @@
             },
             addRow: function (index) {
                 try {
-                    this.rows.splice(index + 1, 0, JSON.parse(JSON.stringify(this.options.rowSeed)));
+                    this.rows.splice(index + 1, 0, JSON.parse(JSON.stringify(this.rowSeed)));
                     this.edit = index;
-                    setTimeout(()=> this.tf.Mod.paging.setPage('last'), 0);
+                    setTimeout(() => this.tf.Mod.paging.setPage('last'), 0);
 
                 } catch (e) {
                     console.error(e);
@@ -405,23 +461,26 @@
                 this.$refs.removeModal.close();
                 this.$root.$emit('msgSent', {message: 'Удалено'});
 
-                if(this.options.onRemove) {
-                    $.proxy(this.options.onRemove,this)();
+                if (this.options.onRemove) {
+                    $.proxy(this.options.onRemove, this)();
                 }
             },
-            initTf () {
-                setTimeout(()=>{
-                    this.tf = new TableFilter(this.$refs.table, this.tfConf,this.tfConf.filters_row_index);
+            initTf() {
+                setTimeout(() => {
+                    if (this.tf) {
+                        this.tf.destroy();
+                    }
+                    this.tf = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
                     this.tf.init();
                     console.log(this.tf);
-                },0);
+                }, 0);
             },
             editRow: function (index) {
-                if(this.rows[index]) {
+                if (this.rows[index]) {
                     this.editingRow = JSON.parse(JSON.stringify(this.rows[index]));
                     this.editingRow.index = index;
                 } else {
-                    this.editingRow = JSON.parse(JSON.stringify(this.options.rowSeed));
+                    this.editingRow = JSON.parse(JSON.stringify(this.rowSeed));
                 }
                 this.$refs.editModal.open();
             },
@@ -444,8 +503,8 @@
                 if (!item._id) {
                     item._id = undefined;
                     console.log('insert');
-                    if(this.options.insertRow) {
-                        $.proxy(this.options.insertRow,this)(item);
+                    if (this.options.insertRow) {
+                        $.proxy(this.options.insertRow, this)(item);
                     } else {
                         db.insert(Object.assign({table: this.options.table}, item), $.proxy(function (err, newItem) {
                             item._id = newItem._id;
@@ -459,11 +518,14 @@
                     }
                 } else {
                     console.log('update');
-                    if(this.options.updatetRow) {
-                        $.proxy(this.options.updatetRow,this)(item);
+                    if (this.options.updatetRow) {
+                        $.proxy(this.options.updatetRow, this)(item);
                     } else {
-                        db.update({table: this.options.table, _id: item._id}, {$set: item}, $.proxy(function (err, code) {
-                            this.rows.splice(index,1,item);
+                        db.update({
+                            table: this.options.table,
+                            _id: item._id
+                        }, {$set: item}, $.proxy(function (err, code) {
+                            this.rows.splice(index, 1, item);
                             this.$root.$emit('msgSent', {message: 'Сохранено'});
                             this.$refs.editModal.close();
                             if (this.options.onUpdate) {
@@ -472,8 +534,8 @@
                         }, this));
                     }
                 }
-                if(this.options.onSave) {
-                    $.proxy(this.options.onSave,this)();
+                if (this.options.onSave) {
+                    $.proxy(this.options.onSave, this)();
                 }
                 this.edit = -1;
             },
@@ -498,25 +560,25 @@
                 }
             },
             setRows: function () {
-                db.find({table: this.options.table}).sort({createdAt:1}).exec($.proxy(function (err, rows) {
-                    this.rows = rows;
-                    this.initTf();
-                }, this));
+                if (this.options.setRows) {
+                    this.options.setRows.bind(this)();
+                } else {
+                    db.find({table: this.options.table}).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
+                        this.rows = rows;
+                        this.initTf();
+                    }, this));
+                }
             },
             paginating: function () {
                 this.checks = [];
             }
-        }, this.options.methods || {}),
+        },
         created: function () {
-            if(this.options.init) {
-                $.proxy(this.options.init,this)();
-            } else {
-                this.setRows();
-            }
+            this.setRows();
             this.watchCollection(['checks'], this.toggleCheck);
             // this.watchCollection(['page'], this.paginating);
-            this.watchCollection(['copyRows'], (newVal,oldVal)=> {
-                if(this.tf) {
+            this.watchCollection(['copyRows'], (newVal, oldVal) => {
+                if (this.tf) {
                     let curPage = this.tf.Mod.paging.currentPageNb;
                     setTimeout(() => {
                         this.tf.refreshFilters();
@@ -528,7 +590,7 @@
                                 this.tf.Mod.paging.setPage('last');
                                 // debugger;
                             } else {
-                                console.log('cur',curPage);
+                                console.log('cur', curPage);
                                 this.tf.Mod.paging.setPage(curPage);
                             }
                         }, 0);
@@ -536,8 +598,8 @@
                 }
             });
 
-            if(this.options.created) {
-                $.proxy(this.options.created,this)();
+            if (this.options.created) {
+                $.proxy(this.options.created, this)();
             }
         },
         mounted: function () {
@@ -558,8 +620,8 @@
                 }
             }, this));
 
-            $(document).on('change','.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function(e, tablesaw) {
-                $('.tablesaw-toggle-cellhidden').each($.proxy((i,th) => {
+            $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function (e, tablesaw) {
+                $('.tablesaw-toggle-cellhidden').each($.proxy((i, th) => {
                     let model = th.getAttribute('data-sort');
                     eval('this.sel.' + model + ' = 0;');
                 }, this))
@@ -598,7 +660,8 @@
                     };
                 }
                 let t = sort.asc ? 1 : -1;
-                let f = t*-1;
+                let f = t * -1;
+
                 function compare(a, b) {
                     let a1 = getInObj(a, sort.model);
                     let b1 = getInObj(b, sort.model);
@@ -609,13 +672,14 @@
                         a1 = Number(a1);
                         b1 = Number(b1);
                     }
-                    return a1 > b1 ? t : (a1===b1 ? 0 : f);
+                    return a1 > b1 ? t : (a1 === b1 ? 0 : f);
                 }
+
                 this.rows.sort(compare);
             }, this));
 
-            if(this.options.mounted) {
-                $.proxy(this.options.mounted,this)();
+            if (this.options.mounted) {
+                $.proxy(this.options.mounted, this)();
             }
         },
     }
