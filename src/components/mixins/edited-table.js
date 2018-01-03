@@ -77,6 +77,9 @@ export default function (options) {
             selFooter: function () {
                 return 4 + this.getSelCnt(options.selSeed) + 2;
             },
+            copyRows: function () {
+                return JSON.parse(JSON.stringify(this.rows));
+            },
         }, options.computed || {}),
         methods: Object.assign({
             removeClosed: function () {
@@ -114,7 +117,6 @@ export default function (options) {
                 try {
                     this.rows.splice(index + 1, 0, JSON.parse(JSON.stringify(options.rowSeed)));
                     this.edit = index;
-                    this.tf.refresh();
                     setTimeout(()=> this.tf.Mod.paging.setPage('last'), 0);
 
                 } catch (e) {
@@ -163,7 +165,7 @@ export default function (options) {
                 this.rows = rows;
                 this.toRemove = [];
                 this.$refs.removeModal.close();
-                this.$root.$emit('msgSent', {message: 'Удалено'})
+                this.$root.$emit('msgSent', {message: 'Удалено'});
 
                 if(options.onRemove) {
                     $.proxy(options.onRemove,this)();
@@ -177,7 +179,12 @@ export default function (options) {
                 },0);
             },
             editRow: function (index) {
-                this.editingRow = JSON.parse(JSON.stringify(this.rows[index]));
+                if(this.rows[index]) {
+                    this.editingRow = JSON.parse(JSON.stringify(this.rows[index]));
+                    this.editingRow.index = index;
+                } else {
+                    this.editingRow = JSON.parse(JSON.stringify(options.rowSeed));
+                }
                 this.$refs.editModal.open();
             },
             cancelRow: function (index) {
@@ -192,28 +199,40 @@ export default function (options) {
                 this.edit = -1;
                 this.savedRow = null;
             },
-            saveRow: function (index) {
-                let item = this.rows[index];
+            saveRow: function () {
+                let item = this.editingRow;
+                let index = this.editingRow.index;
+                this.editingRow.index = undefined;
                 if (!item._id) {
                     item._id = undefined;
                     console.log('insert');
-                    db.insert(Object.assign({table: options.table}, item), $.proxy(function (err, newItem) {
-                        item._id = newItem._id;
-                        this.$root.$emit('msgSent', {message: 'Сохранено'});
-                        this.tf.refresh();
-                        if(options.onInsert) {
-                            $.proxy(options.onInsert,this)();
-                        }
-                    }, this));
+                    if(options.insertRow) {
+                        $.proxy(options.insertRow,this)(item);
+                    } else {
+                        db.insert(Object.assign({table: options.table}, item), $.proxy(function (err, newItem) {
+                            item._id = newItem._id;
+                            this.rows.push(item);
+                            this.$root.$emit('msgSent', {message: 'Сохранено'});
+                            this.$refs.editModal.close();
+                            if (options.onInsert) {
+                                $.proxy(options.onInsert, this)();
+                            }
+                        }, this));
+                    }
                 } else {
                     console.log('update');
-                    db.update({table: options.table, _id: item._id}, {$set: item}, $.proxy(function (err, code) {
-                        this.$root.$emit('msgSent', {message: 'Сохранено'});
-                        this.tf.refresh();
-                        if(options.onUpdate) {
-                            $.proxy(options.onUpdate,this)();
-                        }
-                    }, this));
+                    if(options.updatetRow) {
+                        $.proxy(options.updatetRow,this)(item);
+                    } else {
+                        db.update({table: options.table, _id: item._id}, {$set: item}, $.proxy(function (err, code) {
+                            this.rows.splice(index,1,item);
+                            this.$root.$emit('msgSent', {message: 'Сохранено'});
+                            this.$refs.editModal.close();
+                            if (options.onUpdate) {
+                                $.proxy(options.onUpdate, this)();
+                            }
+                        }, this));
+                    }
                 }
                 if(options.onSave) {
                     $.proxy(options.onSave,this)();
@@ -258,17 +277,27 @@ export default function (options) {
             }
             this.watchCollection(['checks'], this.toggleCheck);
             // this.watchCollection(['page'], this.paginating);
-            this.watchCollection(['rows'], (newVal,oldVal)=> {
+            this.watchCollection(['copyRows'], (newVal,oldVal)=> {
                 if(this.tf) {
-                    this.tf.refresh();
+                    let curPage = this.tf.Mod.paging.currentPageNb;
+                    setTimeout(() => {
+                        this.tf.refreshFilters();
+                        this.tf.Mod.paging.destroy();
+                        this.tf.Mod.paging.init();
+                        setTimeout(() => {
+                            if (oldVal.length < newVal.length || curPage > this.tf.Mod.paging.nbPages) {
+                                console.log('last');
+                                this.tf.Mod.paging.setPage('last');
+                                // debugger;
+                            } else {
+                                console.log('cur',curPage);
+                                this.tf.Mod.paging.setPage(curPage);
+                            }
+                        }, 0);
+                    }, 0);
                 }
             });
-            this.watchCollection(['rows.length'], ()=> {
-                if(this.tf) {
-                    this.tf.refresh();
-                    setTimeout(()=>this.tf.Mod.paging.setPage('last'),0);
-                }
-            });
+
             if(options.created) {
                 $.proxy(options.created,this)();
             }
