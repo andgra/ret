@@ -108,6 +108,22 @@ window.leavesCnt = (node) => {
 
 
 window.getGrid = (struct) => {
+    function setIds(arr, chain="") {
+        let curArr = JSON.parse(JSON.stringify(arr));
+        let curChain;
+        for (let i in curArr) {
+            curChain = chain;
+            if(curArr[i].id) {
+                curChain+=((curChain===""?"":".")+String(curArr[i].id));
+                curArr[i].id = curChain
+            }
+            if (curArr[i].children) {
+                curArr[i].children = setIds(curArr[i].children,curChain);
+            }
+        }
+        return curArr;
+    }
+
     function normalizeStruct(arr) {
         let curArr = JSON.parse(JSON.stringify(arr));
         let toShift = true;
@@ -131,7 +147,7 @@ window.getGrid = (struct) => {
             }
         }
         return newArr;
-    };
+    }
 
     function getMaxDepth(arr, lvl = 1) {
         let curMax = lvl;
@@ -216,7 +232,10 @@ window.getGrid = (struct) => {
         return newArr;
     }
 
-    let normalized = normalizeStruct(struct);
+    let withIds = setIds(struct)
+    // console.log('withIds', withIds);
+
+    let normalized = normalizeStruct(withIds);
     // console.log('normalized', normalized);
 
     let shifted = shiftStruct(normalized);

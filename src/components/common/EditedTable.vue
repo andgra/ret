@@ -5,12 +5,12 @@
                 tr(data-tablesaw-ignorerow='')
                     th.mdl-data-table__cell--non-numeric(:colspan='selFooter')
                         h4 Таблица сводных данных
-                tr.center-all(v-for="(row,j) in grid")
+                tr.center-all(v-for="(row,j) in grid", :class="{'wide-all':j+1==grid.length}", :data-tablesaw-ignorerow="j+1!=grid.length")
                     th.mdl-th-padding(v-if="j+1==grid.length")
                         mdl-checkbox#checkAll(v-model='checkAll', @change.native='toggleCheckAll', :disabled='edit!==-1')
                     th(v-if="j+1==grid.length", colspan='2') Действия
                     th(v-if="j+1==grid.length", scope='col') №
-                    th(v-for="(cell,i) in row", :colspan="cell.colspan") {{cell.title}}
+                    th(v-for="(cell,i) in row", :colspan="cell.colspan", v-html="cell.title", :scope='j+1==grid.length?"col":false', :data-tablesaw-priority='j+1==grid.length?1:false', :data-sort="j+1==grid.length?cell.id:false", :class="{sortable: j+1==grid.length}")
                     th.sortable(v-if="j+1==grid.length", scope='col', data-tablesaw-priority='1', data-sort='createdAt') Создан
                     th.sortable(v-if="j+1==grid.length", scope='col', data-tablesaw-priority='1', data-sort='updatedAt') Изменен
                     th(v-if="j+1==grid.length", colspan='2') Действия

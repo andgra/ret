@@ -274,16 +274,16 @@
             {id: "obj", title: "в/ч", type: String, default: ""},
             {id: "place", title: "дислокация", type: String, default: ""},
             {id: "ret", title: "РЭТ", type: String, default: ""},
-            {id: "pn", title: "Наличие ПН", type: String, default: ""},
+            {id: "pn", title: "Наличие<br>ПН", type: String, default: ""},
             {
                 id: "type", title: "", children:
                 [
-                    {id: "req", title: "Тип РЭТ по штату", type: String, default: ""},
-                    {id: "real", title: "Тип РЭТ в наличии", type: String, default: ""},
+                    {id: "req", title: "Тип РЭТ<br>по штату", type: String, default: ""},
+                    {id: "real", title: "Тип РЭТ<br>в наличии", type: String, default: ""},
                 ]
             },
-            {id: "serial", title: "Заводской номер", type: String, default: ""},
-            {id: "year", title: "Год изготовления", type: Number, default: 0},
+            {id: "serial", title: "Заводской<br>номер", type: String, default: ""},
+            {id: "year", title: "Год<br>изготовления", type: Number, default: 0},
             {
                 id: "repair", title: "Вид и год последнего ремонта", children:
                 [
@@ -306,15 +306,15 @@
                     {
                         id: "res", title: "", children:
                         [
-                            {id: "kr", title: "ресурс до КР (час.)", type: Number, default: 0},
-                            {id: "cancel", title: "ресурс до списания (час.)", type: Number, default: 0},
+                            {id: "kr", title: "ресурс до<br>КР (час.)", type: Number, default: 0},
+                            {id: "cancel", title: "ресурс до<br>списания (час.)", type: Number, default: 0},
                         ]
                     },
                     {
                         id: "life", title: "", children:
                         [
-                            {id: "kr", title: "срок службы до КР (лет)", type: Number, default: 0},
-                            {id: "cancel", title: "срок службы до списания (лет)", type: Number, default: 0},
+                            {id: "kr", title: "срок службы<br>до КР (лет)", type: Number, default: 0},
+                            {id: "cancel", title: "срок службы<br>до списания (лет)", type: Number, default: 0},
                         ]
                     }
                 ]
@@ -325,17 +325,17 @@
                     {
                         id: "elabor", title: "", children:
                         [
-                            {id: "total", title: "наработка с начала эксплуатации на 01.07.17 (час.)", type: Number, default: 0},
-                            {id: "before", title: "наработка до КР (час.)", type: Number, default: 0},
-                            {id: "after", title: "наработка после КР (час.)", type: Number, default: 0},
+                            {id: "total", title: "наработка с начала<br>эксплуатации на<br>01.07.17 (час.)", type: Number, default: 0},
+                            {id: "before", title: "наработка до<br>КР (час.)", type: Number, default: 0},
+                            {id: "after", title: "наработка после<br>КР (час.)", type: Number, default: 0},
                         ]
                     },
                     {
                         id: "dev", title: "", children:
                         [
-                            {id: "total", title: "отработано ВСЕГО (лет)", type: Number, default: 0},
-                            {id: "before", title: "отработано до КР (лет)", type: Number, default: 0},
-                            {id: "after", title: "отработано после КР (лет)", type: Number, default: 0},
+                            {id: "total", title: "отработано<br>ВСЕГО (лет)", type: Number, default: 0},
+                            {id: "before", title: "отработано<br>до КР (лет)", type: Number, default: 0},
+                            {id: "after", title: "отработано<br>после КР (лет)", type: Number, default: 0},
                         ]
                     }
                 ]
