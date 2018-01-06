@@ -41,12 +41,10 @@ window.isNumeric = function (n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-window.getInObj = function (obj, path) {
+window.getInObj = function (obj, path, clone = false) {
     path = path.split('.');
-    let res = JSON.parse(JSON.stringify(obj));
-    path.forEach((p) => {
-        res = res[p];
-    });
+    let res = clone ? JSON.parse(JSON.stringify(obj)) : obj;
+    path.forEach(p => res = res[p]);
     return res;
 };
 
@@ -106,8 +104,20 @@ window.leavesCnt = (node) => {
     }
 };
 
+function getMaxDepth(arr, lvl = 1) {
+    let curMax = lvl;
+    let max = lvl;
+    for (let i in arr) {
+        if (arr[i].children) {
+            curMax = getMaxDepth(arr[i].children, lvl + 1);
+        }
+        max = max < curMax ? curMax : max;
+    }
+    return max
+}
 
-window.getGrid = (struct) => {
+
+window.getUnited = (struct) => {
     function setIds(arr, chain="") {
         let curArr = JSON.parse(JSON.stringify(arr));
         let curChain;
@@ -149,18 +159,6 @@ window.getGrid = (struct) => {
         return newArr;
     }
 
-    function getMaxDepth(arr, lvl = 1) {
-        let curMax = lvl;
-        let max = lvl;
-        for (let i in arr) {
-            if (arr[i].children) {
-                curMax = getMaxDepth(arr[i].children, lvl + 1);
-            }
-            max = max < curMax ? curMax : max;
-        }
-        return max
-    }
-
     function shiftStruct(arr, maxLvl = getMaxDepth(arr), lvl = 1) {
         let curArr = JSON.parse(JSON.stringify(arr));
         for (let i in curArr) {
@@ -189,9 +187,7 @@ window.getGrid = (struct) => {
         return curArr;
     }
 
-    function unionStruct(arr) {
-        let curArr = JSON.parse(JSON.stringify(arr));
-
+    function unionStruct(shifted) {
         function unite(arr) {
             let newNode = {
                 title: "",
@@ -206,6 +202,8 @@ window.getGrid = (struct) => {
             }
             return newNode
         }
+
+        let curArr = JSON.parse(JSON.stringify(shifted));
 
         let toUnite = [];
         let newArr = [];
@@ -232,22 +230,24 @@ window.getGrid = (struct) => {
         return newArr;
     }
 
+
     let withIds = setIds(struct)
-    // console.log('withIds', withIds);
+// console.log('withIds', withIds);
 
     let normalized = normalizeStruct(withIds);
-    // console.log('normalized', normalized);
+// console.log('normalized', normalized);
 
     let shifted = shiftStruct(normalized);
-    // console.log('shifted',shifted)
+// console.log('shifted',shifted)
 
-    let arr = unionStruct(shifted);
-    // console.log('united',arr)
+    return unionStruct(shifted);
+};
 
 
-    let depth = getMaxDepth(arr);
+window.getGrid = (united) => {
+    let depth = getMaxDepth(united);
     let resArr = [];
-    let curArr = JSON.parse(JSON.stringify(arr));
+    let curArr = JSON.parse(JSON.stringify(united));
     let nextArr = [];
     for (let lvl = 0; lvl < depth; lvl++) {
         resArr[lvl] = [];
@@ -264,7 +264,7 @@ window.getGrid = (struct) => {
         nextArr = [];
     }
     return resArr;
-}
+};
 
 
 // import '../sass/main.scss'
@@ -286,15 +286,12 @@ const VueMdl = require("vue-mdl");
 Vue.use(VueMdl.default);
 
 import DatePicker from "../components/common/datepicker.vue";
-
 Vue.component('DatePicker', DatePicker);
 
 import DateTimePicker from "../components/common/datetimepicker.vue";
-
 Vue.component('DateTimePicker', DateTimePicker);
 
 import IntervalPicker from "../components/common/intervalpicker.vue";
-
 Vue.component('IntervalPicker', IntervalPicker);
 
 
@@ -303,57 +300,88 @@ Number.prototype.round = function (places) {
     return Math.round(this * places) / places;
 }
 
-Vue.filter('NaN', function (value) {
-    return isNaN(value) ? 0 : value;
-});
+window.filters = {
+    NaN(value) {
+        return isNaN(value) ? 0 : value;
+    },
+    per(value) {
+        return isNumeric(value) ? value + '%' : value;
+    },
+    r0(value) {
+        return isNumeric(value) ? value.round(0) : value;
+    },
+    r2(value) {
+        return isNumeric(value) ? value.round(2) : value;
+    },
+    myDate(value) {
+        return value ? moment(value).format('DD.MM.YYYY') : '';
+    },
+    myDateTime(value) {
+        return value ? moment(value).format('DD.MM.YYYY HH:mm') : '';
+    },
+    myInterval(value) {
 
-Vue.filter('per', function (value) {
-    return isNumeric(value) ? value + '%' : value;
-});
-
-Vue.filter('r0', function (value) {
-    return isNumeric(value) ? value.round(0) : value;
-});
-
-Vue.filter('r2', function (value) {
-    return isNumeric(value) ? value.round(2) : value;
-});
-
-Vue.filter('myDate', function (value) {
-    return value ? moment(value).format('DD.MM.YYYY') : '';
-});
-
-Vue.filter('myDateTime', function (value) {
-    return value ? moment(value).format('DD.MM.YYYY HH:mm') : '';
-});
-
-window.strInterval = function (value) {
-
-    let data = {};
-    data.days = Math.floor(Math.floor(value / 60) / 24);
-    data.hours = Math.floor((value) / 60) - data.days * 24;
-    data.minutes = value - (data.hours + data.days * 24) * 60;
-    let result = '';
-    if (data.days && data.days > 0) {
-        result += data.days + ' сут';
-    }
-    if (data.hours && data.hours > 0) {
-        result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
-    }
-    if (data.minutes && data.minutes > 0) {
-        result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
-    }
-    return result;
+        let data = {};
+        data.days = Math.floor(Math.floor(value / 60) / 24);
+        data.hours = Math.floor((value) / 60) - data.days * 24;
+        data.minutes = value - (data.hours + data.days * 24) * 60;
+        let result = '';
+        if (data.days && data.days > 0) {
+            result += data.days + ' сут';
+        }
+        if (data.hours && data.hours > 0) {
+            result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
+        }
+        if (data.minutes && data.minutes > 0) {
+            result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
+        }
+        return result;
+    },
 };
 
-Vue.filter('myInterval', function (value) {
-    return strInterval(value);
-});
+Vue.filter('NaN', filters.NaN );
+Vue.filter('per', filters.per );
+Vue.filter('r0', filters.r0 );
+Vue.filter('r2', filters.r2 );
+Vue.filter('myDate', filters.myDate );
+Vue.filter('myDateTime', filters.myDateTime );
+Vue.filter('myInterval', filters.myInterval);
 
 Vue.mixin({
     methods: {
         watchCollection(arr, cb, options) {
             arr.forEach((val) => this.$watch(val, cb, options))
+        }
+    }
+});
+
+Vue.directive('deep-model', {
+    bind(el, binding, vnode) {
+        console.log(el);
+        let onUpdate = e => {
+            console.log(vnode.context.$data, e.target.value);
+            new Function('obj', 'v', `obj.${binding.value} = v`)(vnode.context.$data, e.target.value);
+        };
+        el.addEventListener('input', onUpdate);
+        el.addEventListener('change', onUpdate);
+        if(el.type==='hidden') {
+            console.log(1);
+            el.addEventListener('change', () => alert(1));
+        }
+    },
+    unbind(el) {
+        el.removeEventListener('input');
+        el.removeEventListener('change');
+    },
+    inserted(el, binding, vnode) {
+        el.value = new Function('obj', `return obj.${binding.value}`)(vnode.context.$data);
+    },
+    update(el, binding, vnode) {
+        el.value = new Function('obj', `return obj.${binding.value}`)(vnode.context.$data);
+        if(el.value) {
+            $(el).closest('.mdl-textfield').addClass('is-dirty');
+        } else {
+            $(el).closest('.mdl-textfield').removeClass('is-dirty');
         }
     }
 });
@@ -491,6 +519,16 @@ window.mergeSort = function (array, comparefn) {
     }
 
     return merge_sort(array, comparefn);
-}
+};
+
+Object.defineProperty(Array.prototype, 'last', {
+    enumerable: false,
+    value: function() { return this[this.length - 1]; }
+});
+
+Object.defineProperty(Array.prototype, 'first', {
+    enumerable: false,
+    value: function() { return this[0]; }
+});
 
 console.log('core loaded');
