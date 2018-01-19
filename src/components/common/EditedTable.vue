@@ -33,7 +33,7 @@
                         input(name='_id', v-model='row._id', type='hidden')
                     td(v-for="(cell,j) in grid.last()", v-if="cell.id",
                     class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}")
-                        label {{getValue(row,cell.id)}}
+                        label(v-html="getValue(row,cell.id)")
                     td.mdl-data-table__cell--non-numeric(v-if='sel.createdAt') {{row.createdAt | myDateTime}}
                     td.mdl-data-table__cell--non-numeric(v-if='sel.updatedAt') {{row.updatedAt | myDateTime}}
                     td.clickable.tooltip(@click='editRow(index)', data-tooltip='Редактировать')
@@ -58,34 +58,12 @@
         mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
             form.editing-form(action='#')
                 input(name='_id', v-model='editingRow._id', type='hidden')
-                input(v-model="test")
-                input(v-model="test")
-                div(v-for="(cell,j) in grid.last()", v-if="cell.id")
-                    //div.mdl-textfield.mdl-js-textfield.mdl-textfield--full-width.mdl-textfield--floating-label(v-if="cell.type!=='select'",)
-                        input.mdl-textfield__input(:type="cell.type", v-deep-model="`editingRow.${cell.id}`", :id="`input-editingRow.${cell.id}`")
-                        label.mdl-textfield__label(v-html="cell.title.replace('<br>', ' ')", :for="`input-editingRow.${cell.id}`")
-                    mdl-textfield.mdl-textfield--full-width(v-if="cell.type!=='select'", :floating-label="cell.title.replace('<br>', ' ')", v-model="deep[`editingRow.${cell.id}`]")
-
-                    mdl-select.mdl-textfield--full-width(:label='cell.title', :id="`select-editingRow.${cell.id}`", v-model='deep[`editingRow.${cell.id}`]', :options='cell.items', v-else)
-                    //div.mdl-textfield--full-width.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label.getmdl-select.getmdl-select__fix-height(v-else)
-                        input.mdl-textfield__input(type="text", value="", class="", :id="`select-${cell.id}`", readonly)
-                        input(type="hidden", v-deep-model="`editingRow.${cell.id}`", :name="`select-${cell.id}`")
-                        i.mdl-icon-toggle__label.material-icons keyboard_arrow_down
-                        label.mdl-textfield__label(:for="`select-${cell.id}`", v-html="cell.title.replace('<br>', ' ')")
-                        ul.mdl-menu.mdl-menu--bottom-left.mdl-js-menu(:for="`select-${cell.id}`")
-                            li.mdl-menu__item(v-for="option in cell.items", :data-val='option.value', :data-selected='getInObj(editingRow,cell.id)===option.value', v-html="option.name")
-                //mdl-select#editingRet.mdl-textfield--full-width(label='РЭТ', v-model='editingRow.ret', :options='retArray')
-                //mdl-textfield.mdl-textfield--full-width(floating-label='наличие пн', v-model='editingRow.pn')
-                //mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ по штату', v-model='editingRow.type.req')
-                //mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ в наличии', v-model='editingRow.type.real')
-                //mdl-textfield.mdl-textfield--full-width(floating-label='заводской номер', v-model='editingRow.serial')
-                //mdl-textfield.mdl-textfield--full-width(floating-label='год изготовления', v-model='editingRow.serial', type='number')
-                .form-group
-                    p вид и год последнего ремонта
-                    .form-indent
-                        mdl-select#editingRepairType.mdl-textfield--full-width(label='вид', v-model='editingRow.repair.type', :options='repairTypeArray')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='год', v-model='editingRow.repair.year', type='number')
-                //mdl-select#editingCondition.display-block(label='состояние РЭТ', v-model='editingRow.condition', :options='conditionArray')
+                div(v-for="(cell,j) in structedGrid", v-if="cell.id", :style="{'padding-left':(cell.level-1)*15+'px', width: 'calc(100% - '+(cell.level-1)*15+'px)'}")
+                    div(v-if="cell.children")
+                        p(v-html="cell.title")
+                    div(v-else)
+                        mdl-textfield.mdl-textfield--full-width(v-if="cell.type!=='select'", :floating-label="cell.title.replace('<br>', ' ')", v-model="deep[`editingRow.${cell.id}`]", :readonly="cell.readonly")
+                        mdl-select.mdl-textfield--full-width(v-else, :label='cell.title', :id="`select-editingRow.${cell.id}`", v-model='deep[`editingRow.${cell.id}`]', :options='cell.items', :readonly="cell.readonly")
             //form.editing-form(action='#')
                 input(name='_id', v-model='editingRow._id', type='hidden')
                 mdl-textfield.mdl-textfield--full-width(floating-label='в/ч', v-model='editingRow.obj')
@@ -157,7 +135,7 @@
             },
         },
         data: function () {
-            let struct = JSON.parse(JSON.stringify(this.options.struct));
+            let struct = this.options.struct;
             let rowSeed = getSeed({children: struct});
             let selSeed = recValue(rowSeed, 1);
             rowSeed._id = "";
@@ -177,7 +155,7 @@
             let united = getUnited(struct);
             // console.log('united',curArr)
             let grid = getGrid(united);
-            console.log('grid',grid.slice());
+//            console.log('grid',grid.slice());
             for(let i in grid) {
                 if(Number(i)+1<grid.length) {
                     if(grid[i][0].title==="") {
@@ -223,8 +201,8 @@
                 }
             }
             tfConf = Object.assign(tfConf, this.options.tfConf || {});
-            console.log(tfConf);
-            console.log(grid);
+//            console.log(tfConf);
+//            console.log(grid);
             return Object.assign({
                 perPage: this.options.perPage || 10,
                 page: 1,
@@ -239,13 +217,13 @@
                 grid,
                 rowSeed,
                 selSeed,
-                editingRow: JSON.parse(JSON.stringify(rowSeed)),
-                sel: JSON.parse(JSON.stringify(selSeed)),
+                editingRow: clone(rowSeed),
+                sel: clone(selSeed),
                 toRemove: [],
                 tfConf,
                 deep: {},
                 test: "",
-                tf: null,
+                tf: null
             }, this.options.data || {})
         },
         computed: {
@@ -259,34 +237,55 @@
                 return 4 + this.getSelCnt(this.selSeed) + 2;
             },
             copyRows: function () {
-                return JSON.parse(JSON.stringify(this.rows));
+                return clone(this.rows);
+            },
+            structedGrid() {
+                let resArr = [];
+                function addRec(arr, level = 1) {
+                    arr.slice().forEach(item => {
+                        let nextLevel = level;
+//                        console.log(item.title, level);
+                        item.level = level;
+                        if(item.title) {
+                            nextLevel += 1;
+                            resArr.push(item);
+                        }
+                        if(item.children) {
+                            addRec(item.children,nextLevel);
+                        }
+                    })
+                }
+                addRec(this.united);
+                return resArr;
             },
         },
         methods: {
-            getValue(row, path) {
+            getValue(row, path,db = false) {
                 let value = getInObj(row,path);
                 let options = this.grid.last().filter(item => {return item.id && item.id===path}).first();
                 if (options) {
                     if (options.type === 'select' && options.items) {
-                        value = this.getName(options.items, row.ret)
+                        value = this.getName(options.items, value)
                     } else if (options.cb) {
                         value = options.cb(value,row);
+                        if(db)
+                            console.log(value,row);
                     }
                 }
                 return value;
             },
-            getInObj(entity,path,clone=false) {
-                return getInObj(entity,path,clone);
+            getInObj(...args) {
+                return getInObj(...args);
             },
             removeClosed: function () {
-                this.sel = JSON.parse(JSON.stringify(this.selSeed));
+                this.sel = clone(this.selSeed);
                 return true;
             },
             recValue: function (arr, val) {
                 return recValue(arr, val);
             },
             getSelCnt: function (arr) {
-                arr = JSON.parse(JSON.stringify(arr));
+                arr = clone(arr);
                 let res = 0;
                 for (let i in arr) {
                     if (isArray(arr[i]) || isObject(arr[i])) {
@@ -311,7 +310,7 @@
             },
             addRow: function (index) {
                 try {
-                    this.rows.splice(index + 1, 0, JSON.parse(JSON.stringify(this.rowSeed)));
+                    this.rows.splice(index + 1, 0, clone(this.rowSeed));
                     this.edit = index;
                     setTimeout(() => this.tf.Mod.paging.setPage('last'), 0);
 
@@ -325,12 +324,12 @@
                 this.$refs.removeModal.open();
             },
             removeRows: function () {
-                let indexes = JSON.parse(JSON.stringify(this.toRemove));
+                let indexes = clone(this.toRemove);
                 indexes.sort(compareNumbers).reverse();
                 let ln = indexes.length;
 
                 // Будем работать с буфером
-                let rows = JSON.parse(JSON.stringify(this.rows));
+                let rows = clone(this.rows);
                 for (let i = 0; i < ln; i++) {
 
                     let index = indexes[i];
@@ -374,20 +373,39 @@
                     }
                     this.tf = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
                     this.tf.init();
-                    console.log(this.tf);
+//                    console.log(this.tf);
                 }, 0);
             },
             editRow: function (index) {
                 let editingRow;
                 if (this.rows[index]) {
-                    this.editingRow = JSON.parse(JSON.stringify(this.rows[index]));
+                    this.editingRow = clone(this.rows[index]);
                     this.editingRow.index = index;
                 } else {
-                    this.editingRow = JSON.parse(JSON.stringify(this.rowSeed));
+                    this.editingRow = clone(this.rowSeed);
+                }
+                for(let key in this.deep) {
+                    this.deep[key] = this.getValue(this.deep)
                 }
                 this.grid.last().forEach(cell => {
-                    Vue.set(this.deep,`editingRow.${cell.id}`,getInObj(this.editingRow,cell.id,true))
+                    let options = this.grid.last().filter(item => {return item.id && item.id===cell.id}).first();
+                    let val = this.getInObj(this.editingRow,cell.id);
+                    if (options && options.cb) {
+                        console.log(options.cb);
+                        val = options.cb(val,this.editingRow);
+                    }
+                    let valLast = cell.id.split('.').last();
+                    console.log(valLast);
+                    Vue.set(this.deep,`editingRow.${cell.id}`,val)
                 });
+                /*for(let key in this.deep) {
+                    let options = this.grid.last().filter(item => {return item.id && item.id===key}).first();
+                    if (options && options.cb) {
+                        value = options.cb(value,row);
+                    }
+                    this.deep[key] = this.getValue(this.deep)
+                }*/
+                console.log(1,this.deep);
                 this.$refs.editModal.open();
             },
             cancelRow: function (index) {
@@ -482,12 +500,14 @@
         created: function () {
             this.setRows();
             this.$watch('deep', (newVal, oldVal) => {
-                console.log('deep',newVal)
+//                console.log('deep',newVal)
                 for(let path in newVal) {
                     new Function('obj', 'v', `obj.${path} = v`)(this, newVal[path]);
                 }
+                console.log(this.editingRow);
 
             }, {deep: true});
+            window.appt = this;
             this.watchCollection(['checks'], this.toggleCheck);
             this.watchCollection(['rows'], ()=> this.$parent.rows=this.rows, {deep: true});
             // this.watchCollection(['page'], this.paginating);
@@ -500,17 +520,18 @@
                         this.tf.Mod.paging.init();
                         setTimeout(() => {
                             if (oldVal.length < newVal.length || curPage > this.tf.Mod.paging.nbPages) {
-                                console.log('last');
+//                                console.log('last');
                                 this.tf.Mod.paging.setPage('last');
                                 // debugger;
                             } else {
-                                console.log('cur', curPage);
+//                                console.log('cur', curPage);
                                 this.tf.Mod.paging.setPage(curPage);
                             }
                         }, 0);
                     }, 0);
                 }
             });
+            console.log(this.struct);
 
             if (this.options.methods) {
                 for(let name in this.options.methods) {
@@ -553,7 +574,7 @@
                 if (!$th.hasClass('sortable')) {
                     return false;
                 }
-                // let rows = JSON.parse(JSON.stringify(this.rows));
+                // let rows = clone(this.rows);
                 let sort;
                 if ($th.hasClass('mdl-data-table__header--sorted-ascending')) {
                     $th.removeClass('mdl-data-table__header--sorted-ascending');

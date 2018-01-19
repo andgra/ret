@@ -41,9 +41,9 @@ window.isNumeric = function (n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-window.getInObj = function (obj, path, clone = false) {
+window.getInObj = function (obj, path, cloneRes = false) {
     path = path.split('.');
-    let res = clone ? JSON.parse(JSON.stringify(obj)) : obj;
+    let res = cloneRes ? clone(obj) : obj;
     path.forEach(p => res = res[p]);
     return res;
 };
@@ -93,7 +93,7 @@ window.getSeed = (node) => {
 
 window.leavesCnt = (node) => {
     if (node.children) {
-        let curArr = JSON.parse(JSON.stringify(node.children));
+        let curArr = clone(node.children);
         let curLeaves = 0;
         for (let i in curArr) {
             curLeaves += leavesCnt(curArr[i]);
@@ -119,7 +119,7 @@ function getMaxDepth(arr, lvl = 1) {
 
 window.getUnited = (struct) => {
     function setIds(arr, chain="") {
-        let curArr = JSON.parse(JSON.stringify(arr));
+        let curArr = clone(arr);
         let curChain;
         for (let i in curArr) {
             curChain = chain;
@@ -135,7 +135,8 @@ window.getUnited = (struct) => {
     }
 
     function normalizeStruct(arr) {
-        let curArr = JSON.parse(JSON.stringify(arr));
+        let curArr = clone(arr);
+        console.log(arr,curArr);
         let toShift = true;
         let newArr = [];
         for (let i in curArr) {
@@ -143,6 +144,7 @@ window.getUnited = (struct) => {
                 if (curArr[i].title !== "") {
                     toShift = false;
                 }
+                console.log(curArr[i],curArr[i].children)
                 curArr[i].children.forEach(node => newArr.push(node))
             } else {
                 toShift = false;
@@ -160,7 +162,7 @@ window.getUnited = (struct) => {
     }
 
     function shiftStruct(arr, maxLvl = getMaxDepth(arr), lvl = 1) {
-        let curArr = JSON.parse(JSON.stringify(arr));
+        let curArr = clone(arr);
         for (let i in curArr) {
             let shifted = false;
             if (curArr[i].children) {
@@ -203,12 +205,12 @@ window.getUnited = (struct) => {
             return newNode
         }
 
-        let curArr = JSON.parse(JSON.stringify(shifted));
+        let curArr = clone(shifted);
 
         let toUnite = [];
         let newArr = [];
         for (let i in curArr) {
-            let cur = JSON.parse(JSON.stringify(curArr[i]));
+            let cur = clone(curArr[i]);
             if (cur.title === "") {
                 toUnite.push(cur);
             } else {
@@ -247,12 +249,12 @@ window.getUnited = (struct) => {
 window.getGrid = (united) => {
     let depth = getMaxDepth(united);
     let resArr = [];
-    let curArr = JSON.parse(JSON.stringify(united));
+    let curArr = clone(united);
     let nextArr = [];
     for (let lvl = 0; lvl < depth; lvl++) {
         resArr[lvl] = [];
         for (let i in curArr) {
-            let cell = JSON.parse(JSON.stringify(curArr[i]));
+            let cell = clone(curArr[i]);
             cell.colspan = leavesCnt(cell);
             delete cell.children;
             resArr[lvl].push(cell)
@@ -260,7 +262,7 @@ window.getGrid = (united) => {
                 curArr[i].children.forEach(node => nextArr.push(node))
             }
         }
-        curArr = JSON.parse(JSON.stringify(nextArr));
+        curArr = clone(nextArr);
         nextArr = [];
     }
     return resArr;
@@ -412,7 +414,7 @@ window.compareNumbers = function (a, b) {
 };
 
 window.recValue = function (arr, value) {
-    arr = JSON.parse(JSON.stringify(arr));
+    arr = clone(arr);
     for (let i in arr) {
         if (isArray(arr[i]) || isObject(arr[i])) {
             arr[i] = recValue(arr[i], value);
@@ -530,5 +532,56 @@ Object.defineProperty(Array.prototype, 'first', {
     enumerable: false,
     value: function() { return this[0]; }
 });
+
+window.clone = (item) => {
+    if (!item) { return item; } // null, undefined values check
+
+    var types = [ Number, String, Boolean ],
+        result;
+
+    // normalizing primitives if someone did new String('aaa'), or new Number('444');
+    types.forEach(function(type) {
+        if (item instanceof type) {
+            result = type( item );
+        }
+    });
+
+    if (typeof result == "undefined") {
+        if (Object.prototype.toString.call( item ) === "[object Array]") {
+            result = [];
+            item.forEach(function(child, index, array) {
+                result[index] = clone( child );
+            });
+        } else if (typeof item == "object") {
+            // testing that this is DOM
+            if (item.nodeType && typeof item.cloneNode == "function") {
+                var result = item.cloneNode( true );
+            } else if (!item.prototype) { // check that this is a literal
+                if (item instanceof Date) {
+                    result = new Date(item);
+                } else {
+                    // it is an object literal
+                    result = {};
+                    for (var i in item) {
+                        result[i] = clone( item[i] );
+                    }
+                }
+            } else {
+                // depending what you would like here,
+                // just keep the reference, or create new object
+                if (false && item.constructor) {
+                    // would not advice to do that, reason? Read below
+                    result = new item.constructor();
+                } else {
+                    result = item;
+                }
+            }
+        } else {
+            result = item;
+        }
+    }
+
+    return result;
+}
 
 console.log('core loaded');
