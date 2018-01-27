@@ -1,6 +1,60 @@
 <template lang="pug">
     div.table-container
         EditedTable(:options="options", :inRows="rows")
+            template(slot="editModal", slot-scope="props")
+                mdl-dialog(ref="editModal", :title="props.editingRow._id?'Редактирование записи':'Добавление записи'")
+                    form.editing-form(action='#')
+                        input(name='_id', v-model='props.editingRow._id', type='hidden')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='в/ч', v-model='props.editingRow.obj')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='дислокация', v-model='props.editingRow.place')
+                        mdl-select#editingRet.mdl-textfield--full-width(label='РЭТ', v-model='props.editingRow.ret', :options='props.getItems("ret")')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='наличие пн', v-model='props.editingRow.pn')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ по штату', v-model='props.editingRow.type.req')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ в наличии', v-model='props.editingRow.type.real')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='заводской номер', v-model='props.editingRow.serial')
+                        mdl-textfield.mdl-textfield--full-width(floating-label='год изготовления', v-model='props.editingRow.serial', type='number')
+                        .form-group
+                            p вид и год последнего ремонта
+                            .form-indent
+                                mdl-select#editingRepairType.mdl-textfield--full-width(label='вид', v-model='props.editingRow.repair.type', :options='props.getItems("repair.type")')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='год', v-model='props.editingRow.repair.year', type='number')
+                        mdl-select#editingCondition.display-block(label='состояние РЭТ', v-model='props.editingRow.condition', :options='props.getItems("condition")')
+                        .form-group
+                            p отв. за эксплуатацию, уход и сбережение
+                            .form-indent
+                                mdl-textfield.mdl-textfield--full-width(floating-label='воинское звание', v-model='props.editingRow.resp.rank')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='ФИО', v-model='props.editingRow.resp.fio')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='приказ о закреплении', v-model='props.editingRow.resp.order')
+                        .form-group
+                            p установленный ресурс РЭТ
+                            .form-indent
+                                mdl-textfield.mdl-textfield--full-width(floating-label='ресурс до КР (час.)', v-model='props.editingRow.est.res.kr', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='ресурс до списания (час.)', v-model='props.editingRow.est.res.cancel', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='срок службы до КР (лет)', v-model='props.editingRow.est.life.kr', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='срок службы до списания (лет)', v-model='props.editingRow.est.life.cancel', type='number')
+                        .form-group
+                            p наработка РЭТ
+                            .form-indent
+                                mdl-textfield.mdl-textfield--full-width(:floating-label="'наработка с начала эксплуатации на '+settings.startDate+' (час.)'", v-model='props.editingRow.elabor.elabor.total', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='наработка до КР (час.)', v-model='props.editingRow.elabor.elabor.before', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='наработка после КР (час.)', v-model='props.editingRow.elabor.elabor.after', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='отработано ВСЕГО (лет)', v-model='props.editingRow.elabor.dev.total', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='отработано до КР (лет)', v-model='props.editingRow.elabor.dev.before', type='number')
+                                mdl-textfield.mdl-textfield--full-width(floating-label='отработано после КР (лет)', v-model='props.editingRow.elabor.dev.after', type='number')
+                        .form-group
+                            p Запас ресурса образца РЭТ
+                            .form-indent
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (лет)', :value='props.getValue(props.editingRow, "stock.year.kr.num")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (%)', :value='props.getValue(props.editingRow, "stock.year.kr.per")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (лет)', :value='props.getValue(props.editingRow, "stock.year.cancel.num")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (%)', :value='props.getValue(props.editingRow, "stock.year.cancel.per")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (час)', :value='props.getValue(props.editingRow, "stock.hour.kr.num")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (%)', :value='props.getValue(props.editingRow, "stock.hour.kr.per")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (час)', :value='props.getValue(props.editingRow, "stock.hour.cancel.num")', type='number')
+                                mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (%)', :value='props.getValue(props.editingRow, "stock.hour.cancel.per")', type='number')
+                    div(slot='actions')
+                        mdl-button(@click.native='$refs.editModal.close') Отменить
+                        mdl-button(primary='', @click.native='props.saveRow()') Сохранить
 </template>
 
 <script>

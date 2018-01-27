@@ -55,7 +55,9 @@
             div(slot='actions')
                 mdl-button(@click.native='$refs.removeModal.close') Отменить
                 mdl-button(primary='', @click.native='removeRows()') Удалить
-        mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
+        slot(name="editModal", :editingRow="editingRow", :saveRow="saveRow", :getItems="getItems", :getValue="getValue")
+
+        //mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
             form.editing-form(action='#')
                 input(name='_id', v-model='editingRow._id', type='hidden')
                 div(v-for="(cell,j) in structedGrid", v-if="cell.id", :style="{'padding-left':(cell.level-1)*15+'px', width: 'calc(100% - '+(cell.level-1)*15+'px)'}")
@@ -221,7 +223,6 @@
                 sel: clone(selSeed),
                 toRemove: [],
                 tfConf,
-                deep: {},
                 test: "",
                 tf: null
             }, this.options.data || {})
@@ -276,6 +277,14 @@
             },
             getInObj(...args) {
                 return getInObj(...args);
+            },
+            getItems(path) {
+                for(let cell of this.grid.last()) {
+                    if(cell.id===path) {
+                        return cell.items;
+                    }
+                }
+                return [];
             },
             removeClosed: function () {
                 this.sel = clone(this.selSeed);
@@ -377,36 +386,13 @@
                 }, 0);
             },
             editRow: function (index) {
-                let editingRow;
                 if (this.rows[index]) {
                     this.editingRow = clone(this.rows[index]);
                     this.editingRow.index = index;
                 } else {
                     this.editingRow = clone(this.rowSeed);
                 }
-                for(let key in this.deep) {
-                    this.deep[key] = this.getValue(this.deep)
-                }
-                this.grid.last().forEach(cell => {
-                    let options = this.grid.last().filter(item => {return item.id && item.id===cell.id}).first();
-                    let val = this.getInObj(this.editingRow,cell.id);
-                    if (options && options.cb) {
-                        console.log(options.cb);
-                        val = options.cb(val,this.editingRow);
-                    }
-                    let valLast = cell.id.split('.').last();
-                    console.log(valLast);
-                    Vue.set(this.deep,`editingRow.${cell.id}`,val)
-                });
-                /*for(let key in this.deep) {
-                    let options = this.grid.last().filter(item => {return item.id && item.id===key}).first();
-                    if (options && options.cb) {
-                        value = options.cb(value,row);
-                    }
-                    this.deep[key] = this.getValue(this.deep)
-                }*/
-                console.log(1,this.deep);
-                this.$refs.editModal.open();
+                this.$parent.$refs.editModal.open();
             },
             cancelRow: function (index) {
                 if (this.savedRow) {
@@ -434,7 +420,7 @@
                             item._id = newItem._id;
                             this.rows.push(item);
                             this.$root.$emit('msgSent', {message: 'Сохранено'});
-                            this.$refs.editModal.close();
+                            this.$parent.$refs.editModal.close();
                             if (this.options.onInsert) {
                                 $.proxy(this.options.onInsert, this)();
                             }
@@ -451,7 +437,7 @@
                         }, {$set: item}, $.proxy(function (err, code) {
                             this.rows.splice(index, 1, item);
                             this.$root.$emit('msgSent', {message: 'Сохранено'});
-                            this.$refs.editModal.close();
+                            this.$parent.$refs.editModal.close();
                             if (this.options.onUpdate) {
                                 $.proxy(this.options.onUpdate, this)();
                             }
@@ -499,14 +485,6 @@
         },
         created: function () {
             this.setRows();
-            this.$watch('deep', (newVal, oldVal) => {
-//                console.log('deep',newVal)
-                for(let path in newVal) {
-                    new Function('obj', 'v', `obj.${path} = v`)(this, newVal[path]);
-                }
-                console.log(this.editingRow);
-
-            }, {deep: true});
             window.appt = this;
             this.watchCollection(['checks'], this.toggleCheck);
             this.watchCollection(['rows'], ()=> this.$parent.rows=this.rows, {deep: true});
