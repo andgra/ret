@@ -63,6 +63,7 @@
                         this.onSelect(newVal);
                     }
                 },
+                dayOfWeekStart: 1,
                 timepicker:this.time,
             });
 
