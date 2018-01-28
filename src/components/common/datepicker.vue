@@ -1,6 +1,9 @@
 <template>
-    <div class="datepicker">
-        <input :id="id" :name="name" :value="value" ref="focusTarget" :type="isButton?'hidden':'text'" class="mdl-textfield__input">
+    <div class="datepicker mdl-textfield mdl-js-textfield mdl-textfield--floating-label" :class="{'is-dirty':getValue()}">
+        <div :class="{'button':isButton,'display-inline-block':inline}">
+            <input :id="id" :name="name" :value="getValue()" ref="focusTarget" :type="isButton?'hidden':'text'" class="mdl-textfield__input">
+            <label class="mdl-textfield__label">{{label}}</label>
+        </div>
     </div>
 </template>
 <script>
@@ -14,21 +17,35 @@
                 type: String,
                 required: false
             },
-            value: {
+            label: {
                 type: String,
+                required: false
+            },
+            value: {
+                type: String | Date,
                 required: false
             },
             onSelect: {
                 type: Function,
                 required: false
             },
+            inline: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
             isButton: {
                 type: Boolean,
                 default: false
             }
         },
-        data () {
+        data() {
             return {
+            }
+        },
+        methods: {
+            getValue() {
+                return this.value ? moment(this.value).format('DD.MM.YYYY') : ''
             }
         },
         created () {
@@ -37,13 +54,15 @@
             componentHandler.upgradeElement(this.$el);
 
             let $datepicker = $(this.$refs.focusTarget);
+            console.log($datepicker);
 
             let $dp = $datepicker.datepicker({
                     inline: true,
                     showOn: this.isButton?'button':'focus',
                     changeYear: true,
                     changeMonth: true,
-                    onSelect: $.proxy(function(newVal) {
+                    onSelect: newVal => {
+                        console.log(newVal);
                         if(this.isButton) {
                             $datepicker.next('button').button("option", "label", newVal);
                         }
@@ -51,7 +70,7 @@
                         if(this.onSelect) {
                             this.onSelect(newVal);
                         }
-                    }, this),
+                    },
                 }
             );
             if(this.isButton) {
@@ -65,8 +84,7 @@
     }
 </script>
 <style lang="scss">
-    .datepicker {
-        display: inline-block;
+    .button {
         input {
             width: 80px;
         }

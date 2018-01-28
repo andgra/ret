@@ -2,7 +2,7 @@
     div.table-container
         table#table.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp.border-all-cells.edited-table(data-tablesaw-mode='columntoggle', ref='table')
             thead
-                tr(data-tablesaw-ignorerow='')
+                tr(data-tablesaw-ignorerow='', v-show="options.title")
                     th.mdl-data-table__cell--non-numeric(:colspan='selFooter')
                         h4 {{options.title}}
                 //- добавочные заголовки
@@ -15,7 +15,7 @@
                     th(colspan='2') Действия
                     th(scope='col') №
                     th.sortable(v-for="(cell,i) in grid[grid.length-1]", :colspan="cell.colspan", v-html="cell.title",
-                    scope='col', data-tablesaw-priority='1', :data-sort="cell.id",
+                    scope='col', data-tablesaw-priority='1', :data-sort="cell.id", :width="cell.width?cell.width:false",
                     :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false")
                     th.sortable(scope='col', data-tablesaw-priority='1', data-sort='createdAt') Создан
                     th.sortable(scope='col', data-tablesaw-priority='1', data-sort='updatedAt') Изменен
@@ -66,55 +66,6 @@
                     div(v-else)
                         mdl-textfield.mdl-textfield--full-width(v-if="cell.type!=='select'", :floating-label="cell.title.replace('<br>', ' ')", v-model="deep[`editingRow.${cell.id}`]", :readonly="cell.readonly")
                         mdl-select.mdl-textfield--full-width(v-else, :label='cell.title', :id="`select-editingRow.${cell.id}`", v-model='deep[`editingRow.${cell.id}`]', :options='cell.items', :readonly="cell.readonly")
-            //form.editing-form(action='#')
-                input(name='_id', v-model='editingRow._id', type='hidden')
-                mdl-textfield.mdl-textfield--full-width(floating-label='в/ч', v-model='editingRow.obj')
-                mdl-textfield.mdl-textfield--full-width(floating-label='дислокация', v-model='editingRow.place')
-                mdl-select#editingRet.mdl-textfield--full-width(label='РЭТ', v-model='editingRow.ret', :options='retArray')
-                mdl-textfield.mdl-textfield--full-width(floating-label='наличие пн', v-model='editingRow.pn')
-                mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ по штату', v-model='editingRow.type.req')
-                mdl-textfield.mdl-textfield--full-width(floating-label='тип РЭТ в наличии', v-model='editingRow.type.real')
-                mdl-textfield.mdl-textfield--full-width(floating-label='заводской номер', v-model='editingRow.serial')
-                mdl-textfield.mdl-textfield--full-width(floating-label='год изготовления', v-model='editingRow.serial', type='number')
-                .form-group
-                    p вид и год последнего ремонта
-                    .form-indent
-                        mdl-select#editingRepairType.mdl-textfield--full-width(label='вид', v-model='editingRow.repair.type', :options='repairTypeArray')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='год', v-model='editingRow.repair.year', type='number')
-                mdl-select#editingCondition.display-block(label='состояние РЭТ', v-model='editingRow.condition', :options='conditionArray')
-                .form-group
-                    p отв. за эксплуатацию, уход и сбережение
-                    .form-indent
-                        mdl-textfield.mdl-textfield--full-width(floating-label='воинское звание', v-model='editingRow.resp.rank')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='ФИО', v-model='editingRow.resp.fio')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='приказ о закреплении', v-model='editingRow.resp.order')
-                .form-group
-                    p установленный ресурс РЭТ
-                    .form-indent
-                        mdl-textfield.mdl-textfield--full-width(floating-label='ресурс до КР (час.)', v-model='editingRow.est.res.kr', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='ресурс до списания (час.)', v-model='editingRow.est.res.cancel', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='срок службы до КР (лет)', v-model='editingRow.est.life.kr', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='срок службы до списания (лет)', v-model='editingRow.est.life.cancel', type='number')
-                .form-group
-                    p наработка РЭТ
-                    .form-indent
-                        mdl-textfield.mdl-textfield--full-width(:floating-label="'наработка с начала эксплуатации на '+settings.startDate+' (час.)'", v-model='editingRow.elabor.elabor.total', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='наработка до КР (час.)', v-model='editingRow.elabor.elabor.before', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='наработка после КР (час.)', v-model='editingRow.elabor.elabor.after', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='отработано ВСЕГО (лет)', v-model='editingRow.elabor.dev.total', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='отработано до КР (лет)', v-model='editingRow.elabor.dev.before', type='number')
-                        mdl-textfield.mdl-textfield--full-width(floating-label='отработано после КР (лет)', v-model='editingRow.elabor.dev.after', type='number')
-                .form-group
-                    p Запас ресурса образца РЭТ
-                    .form-indent
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (лет)', :value='editingRow.stock.year.kr.num = editingRow.est.life.kr - editingRow.elabor.dev.before | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (%)', :value='editingRow.stock.year.kr.per = editingRow.elabor.dev.before/editingRow.est.life.kr*100 | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (лет)', :value='editingRow.stock.year.cancel.num = editingRow.est.life.cancel - editingRow.elabor.elabor.total | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (%)', :value='editingRow.stock.year.cancel.per = editingRow.elabor.elabor.total/editingRow.est.life.cancel*100 | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (час)', :value='editingRow.stock.hour.kr.num = editingRow.est.res.kr - editingRow.elabor.elabor.before | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до КР (%)', :value='editingRow.stock.hour.kr.per = editingRow.elabor.elabor.before/editingRow.est.res.kr*100 | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (час)', :value='editingRow.stock.hour.cancel.num = editingRow.est.res.cancel - editingRow.elabor.elabor.total | NaN | r2', type='number')
-                        mdl-textfield.mdl-textfield--full-width(readonly='', floating-label='до списания (%)', :value='editingRow.stock.hour.cancel.per = editingRow.elabor.elabor.total/editingRow.est.life.cancel*100 | NaN | r2', type='number')
             div(slot='actions')
                 mdl-button(@click.native='$refs.editModal.close') Отменить
                 mdl-button(primary='', @click.native='saveRow()') Сохранить
@@ -261,12 +212,40 @@
             },
         },
         methods: {
+            getInterval: function (d1, d2) {
+                d1 = moment(d1);
+                d2 = moment(d2);
+                return d1.diff(d2, 'minutes');
+            },
+            getIntervalString: function (mins) {
+                let data = {};
+                data.days = Math.floor(Math.floor(mins/60)/24);
+                data.hours = Math.floor((mins)/60) - data.days*24;
+                data.minutes = mins - (data.hours + data.days*24)*60;
+                let result = '';
+                if (data.days && data.days > 0) {
+                    result += data.days + ' сут';
+                }
+                if (data.hours && data.hours > 0) {
+                    result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
+                }
+                if (data.minutes && data.minutes > 0) {
+                    result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
+                }
+                return result;
+            },
             getValue(row, path,db = false) {
                 let value = getInObj(row,path);
                 let options = this.grid.last().filter(item => {return item.id && item.id===path}).first();
                 if (options) {
                     if (options.type === 'select' && options.items) {
                         value = this.getName(options.items, value)
+                    } else if (options.type === 'interval') {
+                        value = this.getIntervalString(value)
+                    } else if (options.type === 'datetime') {
+                        value = moment(value).format('DD.MM.YYYY HH:mm')
+                    } else if (options.type === 'date') {
+                        value = moment(value).format('DD.MM.YYYY')
                     } else if (options.cb) {
                         value = options.cb(value,row);
                         if(db)
@@ -509,7 +488,6 @@
                     }, 0);
                 }
             });
-            console.log(this.struct);
 
             if (this.options.methods) {
                 for(let name in this.options.methods) {
@@ -523,7 +501,7 @@
         },
         mounted: function () {
             let $tCont = $('.table-container');
-            $tCont.find('.mdl-textfield').addClass('is-dirty');
+//            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
             $('body').on('keyup', $.proxy(function (e) {
                 if (this.edit !== -1) {

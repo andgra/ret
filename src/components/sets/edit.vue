@@ -160,7 +160,7 @@
                             {
                                 id: "kr", title: "Запас ресурса до КР", children:
                                 [
-                                    {id: "num", title: "час", type: 'text', cb(value,entity) { Vue.set(entity.stock.hour.kr,'num',filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before))); value = entity.stock.hour.kr.num; console.log(entity.stock.hour.kr); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.num = filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
                                     {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before/entity.est.res.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
                                 ]
                             },

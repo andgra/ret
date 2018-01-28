@@ -1,230 +1,126 @@
 <template>
     <div class="table-container">
-        <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
-            <thead>
-            <tr><th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
-                <h4>Таблица контроля работ представителя промышленности</h4>
-            </th></tr>
-            <tr class="center-all wide-all">
-                <th class="mdl-th-padding">
-                    <mdl-checkbox v-model="checkAll" @change.native="toggleCheckAll" id="checkAll"
-                                  :disabled="edit!==-1"></mdl-checkbox>
-                </th>
-                <th colspan="2">Действия</th>
-                <th>№</th>
-                <th class="sortable" v-if="sel.place" data-sort="place">в/ч,<br>подразделение <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.type" data-sort="type">Тип РЭТ <i class="fa fa-times close-coll"></i>
-                </th>
-                <th class="sortable" v-if="sel.zav" data-sort="zav">зав. № <i class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.arrival" data-sort="arrival" data-type="date">Дата<br>прибытия <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.title" data-sort="title">Наименование работ,<br>обслуживаемая система<br>ВВСТ <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.factory" data-sort="factory">Предприятие<br>промышленности <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.people" data-sort="people" data-type="number">Кол-во<br>чел. <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.senior" data-sort="senior">Старший бригады<br>ФИО, моб. тел. <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.envoy" data-sort="envoy">Представитель от<br>в/ч (подразделения) <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.departure" data-sort="departure" data-type="date">Дата<br>убытия <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.createdAt" data-sort="createdAt">Создан <i
-                        class="fa fa-times close-coll"></i></th>
-                <th class="sortable" v-if="sel.updatedAt" data-sort="updatedAt">Изменен <i
-                        class="fa fa-times close-coll"></i></th>
-                <th colspan="2">Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(row, index) in rows" :key="row.num" v-if="index>=(page-1)*perPage && index<page*perPage"
-                :data-id="index">
-                <td>
-                    <mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox>
-                </td>
-                <td v-if="edit===-1" @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать">
-                    <i class="fa fa-pencil"></i>
-                </td>
-                <td v-else-if="edit===index" @click="saveRow(index)" class="clickable tooltip" data-tooltip="Сохранить">
-                    <i class="fa fa-floppy-o"></i>
-                </td>
-                <td v-else></td>
-                <td v-if="edit===-1" @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить">
-                    <i class="fa fa-times"></i>
-                </td>
-                <td v-else-if="edit===index" @click="cancelRow(index)" class="clickable tooltip"
-                    data-tooltip="Отменить редактирвоание">
-                    <i class="fa fa-undo"></i>
-                </td>
-                <td v-else></td>
-                <td>
-                    {{index + 1}}
-                    <input name="_id" v-model="row._id" type="hidden"/>
-                </td>
-                <td v-if="sel.place" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.place" v-if="edit===index"
-                                   style="width: 100px;"></mdl-textfield>
-                    <label v-else>{{row.place}}</label>
-                </td>
-                <td v-if="sel.type" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.type" v-if="edit===index"
-                                   style="width: 70px;"></mdl-textfield>
-                    <label v-else>{{row.type}}</label>
-                </td>
-                <td v-if="sel.zav" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.zav" v-if="edit===index"
-                                   style="width: 120px;"></mdl-textfield>
-                    <label v-else>{{row.zav}}</label>
-                </td>
-                <td v-if="sel.arrival" class="mdl-data-table__cell--non-numeric">
-                    <DatePicker v-model="row.arrival" v-if="edit===index"></DatePicker>
-                    <label v-else>{{row.arrival}}</label>
-                </td>
-                <td v-if="sel.title" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.title" v-if="edit===index"
-                                   :textarea="true" rows="4" style="width: 200px;"></mdl-textfield>
-                    <label v-else class="textarea-output">{{row.title}}</label>
-                </td>
-                <td v-if="sel.factory" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.factory" v-if="edit===index"
-                                   style="width: 150px;"></mdl-textfield>
-                    <label v-else>{{row.factory}}</label>
-                </td>
-                <td v-if="sel.people">
-                    <mdl-textfield label=" " v-model="row.people" type="number" v-if="edit===index"
-                                   style="width: 50px;"></mdl-textfield>
-                    <label v-else>{{row.people}}</label>
-                </td>
-                <td v-if="sel.senior" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.senior" v-if="edit===index"
-                                   :textarea="true" rows="2" style="width: 150px;"></mdl-textfield>
-                    <label v-else class="textarea-output">{{row.senior}}</label>
-                </td>
-                <td v-if="sel.envoy" class="mdl-data-table__cell--non-numeric">
-                    <mdl-textfield label=" " v-model="row.envoy" v-if="edit===index" style="width: 150px;"></mdl-textfield>
-                    <label v-else>{{row.envoy}}</label>
-                </td>
-                <td v-if="sel.departure" class="mdl-data-table__cell--non-numeric">
-                    <DatePicker v-model="row.departure" v-if="edit===index"></DatePicker>
-                    <label v-else>{{row.departure}}</label>
-                </td>
-                <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric">{{row.createdAt | myDateTime}}</td>
-                <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric">{{row.updatedAt | myDateTime}}</td>
-
-                <td v-if="edit===-1" @click="editRow(index)" class="clickable tooltip" data-tooltip="Редактировать">
-                    <i class="fa fa-pencil"></i>
-                </td>
-                <td v-else-if="edit===index" @click="saveRow(index)" class="clickable tooltip" data-tooltip="Сохранить">
-                    <i class="fa fa-floppy-o"></i>
-                </td>
-                <td v-else></td>
-                <td v-if="edit===-1" @click="inquireRemove([index])" class="clickable tooltip" data-tooltip="Удалить">
-                    <i class="fa fa-times"></i>
-                </td>
-                <td v-else-if="edit===index" @click="cancelRow(index)" class="clickable tooltip"
-                    data-tooltip="Отменить редактирвоание">
-                    <i class="fa fa-undo"></i>
-                </td>
-                <td v-else></td>
-            </tr>
-            </tbody>
-            <tfoot>
-
-            <tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric pages">
-                    <div v-if="maxPage<=7">
-                        <span v-for="p in maxPage" @click="page=p" :class="{ active: page==p }">
-                            {{p}}
-                        </span>
+        <EditedTable :options="options" :inRows="rows">
+            <template slot="editModal" slot-scope="props">
+                <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
+                    <form class="editing-form" action="#">
+                        <input name="_id" v-model="props.editingRow._id" type="hidden"/>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="в/ч" v-model="props.editingRow.obj"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="дислокация" v-model="props.editingRow.place"></mdl-textfield>
+                        <!--<mdl-select class="mdl-textfield&#45;&#45;full-width" id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.getItems('ret')"></mdl-select>-->
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Тип РЭТ" v-model="props.editingRow.type"></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="зав. №" v-model="props.editingRow.zav"></mdl-textfield>
+                        <DateTimePicker class="mdl-textfield--full-width" v-model="props.editingRow.arrival" label="Дата прибытия" :time="false"></DateTimePicker>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Наименование работ, обслуживаемая система ВВСТ" v-model="props.editingRow.title" rows="4" :textarea="true" ></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Предприятие промышленности" v-model="props.editingRow.factory" ></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Кол-во чел." v-model="props.editingRow.people" type="number" ></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Старший бригады - ФИО, моб. тел." v-model="props.editingRow.senior" rows="2" :textarea="true" ></mdl-textfield>
+                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Представитель от в/ч (подразделения)" v-model="props.editingRow.envoy" ></mdl-textfield>
+                        <DateTimePicker class="mdl-textfield--full-width" v-model="props.editingRow.departure" label="Дата убытия" :time="false"></DateTimePicker>
+                    </form>
+                    <div slot="actions">
+                        <mdl-button @click.native="$refs.editModal.close">Отменить</mdl-button>
+                        <mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>
                     </div>
-                    <div v-else>
-                        <div v-if="page<5">
-                            <span v-for="p in (1, page+2)" @click="page=p" :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        <div v-else>
-                            <span @click="page=1" :class="{ active: page==1 }">
-                                {{1}}
-                            </span>
-                        </div>
-                        <div v-if="page>=5 && page<=maxPage-4">
-                            ...
-                            <span v-for="p in maxPage" v-if="p>=3 && p<=maxPage-2 && p>page-3 && p<page+3"
-                                  @click="page=p" :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        ...
-                        <div v-if="page>maxPage-4">
-                            <span v-for="p in maxPage" v-if="p>maxPage-6 && p+3>page" @click="page=p"
-                                  :class="{ active: page==p }">
-                                {{p}}
-                            </span>
-                        </div>
-                        <div v-else>
-                            <span @click="page=maxPage" :class="{ active: page==maxPage }">
-                                {{maxPage}}
-                            </span>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
-                    <mdl-button class="mdl-js-ripple-effect" :disabled="edit!==-1" @click.native="addRow(rows.length)">
-                        Добавить запись
-                    </mdl-button>
-                    <mdl-button class="mdl-js-ripple-effect" :disabled="edit!==-1 || checks.length===0"
-                                @click.native="inquireRemove(checks)">Удалить отмеченные
-                    </mdl-button>
-                    <mdl-button class="mdl-js-ripple-effect" v-if="isClosed" @click.native="removeClosed()">
-                        Показать скрытые
-                    </mdl-button>
-                </td>
-            </tr>
-            </tfoot>
-        </table>
-        <mdl-dialog ref="removeModal" title="Удаление записей">
-
-            <p>Вы действительно хотите удалить {{toRemove.length !== 1 ? 'выбранные записи' : 'выбранную запись'}}?</p>
-            <div slot="actions">
-                <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
-                <mdl-button primary @click.native="removeRows()">Удалить</mdl-button>
-            </div>
-        </mdl-dialog>
-        <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
+                </mdl-dialog>
+            </template>
+        </EditedTable>
     </div>
-
 </template>
 
 <script>
-    import EditedTable from '../mixins/edited-table';
+    import EditedTable from '../common/EditedTable.vue';
 
-    let rowSeed = {
-        _id: "",
-        place: "",
-        type: "",
-        zav: "",
-        arrival: moment().format('DD.MM.YYYY'),
-        title: "",
-        factory: "",
-        people: 0,
-        senior: "",
-        envoy: "",
-        departure: "",
+    let struct =
+        [
+            {id: "obj", title: "в/ч", type: 'text', default: "", tablefilter: {type: "select"}},
+            {id: "place", title: "дислокация", type: 'text', default: ""},
+//            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", tablefilter: {type: "select"}},
+            {id: "type", title: "Тип РЭТ", type: 'text', default: "", tablefilter: {type: "select"}},
+            {id: "zav", title: "зав. №", type: 'text', default: ""},
+            {id: "arrival", title: "Дата прибытия", type: 'date', default: ""},
+            {id: "title", title: "Наименование работ,<br>обслуживаемая система<br>ВВСТ", type: 'text', default: ""},
+            {id: "factory", title: "Предприятие<br>промышленности", type: 'text', default: ""},
+            {id: "people", title: "Кол-во<br>чел.", type: 'number', default: 0},
+            {id: "senior", title: "Старший бригады<br>ФИО, моб. тел.", type: 'text', default: ""},
+            {id: "envoy", title: "Представитель от<br>в/ч (подразделения)", type: 'text', default: ""},
+            {id: "departure", title: "Дата<br>убытия", type: 'date', default: ""},
+        ];
+
+    let options = {
+        struct,
+        table: 'works',
+        title: 'Таблица контроля работ представителя промышленности',
+        data: {
+            perPage: 7,
+        },
+        init: function () {
+
+        },
     };
-    let selSeed = recValue(rowSeed, 1);
-    selSeed.createdAt = 1;
-    selSeed.updatedAt = 1;
 
-    let vm = EditedTable({
-        rowSeed,
-        selSeed,
-        table: 'works'
-    });
+    let vm = {
+        data() {
+            return {
+                options,
+                settings: {},
+                rows: [],
+                statAsu0: 0,
+                statAsu1: 0,
+                statRls0: 0,
+                statRls1: 0,
+            }
+        },
+        components: {EditedTable},
+        computed: {
+            statAsu5: function () {
+                return this.statAsu0 + this.statAsu1;
+            },
+            statRls5: function () {
+                return this.statRls0 + this.statRls1;
+            },
+            stat0: function () {
+                return this.statAsu0 + this.statRls0;
+            },
+            stat1: function () {
+                return this.statAsu1 + this.statRls1;
+            },
+            stat5: function () {
+                return this.stat0 + this.stat1;
+            },
+        },
+        methods: {
+            getInterval(d1, d2) {
+                d1 = moment(d1);
+                d2 = moment(d2);
+                return d1.diff(d2, 'minutes');
+            },
+            updateStat() {
+                this.statAsu0 = this.rows.filter(function (item) {
+                    return item.ret === 'asu' && item.obj === '00000';
+                }).length;
+                this.statAsu1 = this.rows.filter(function (item) {
+                    return item.ret === 'asu' && item.obj === '11111';
+                }).length;
+                this.statRls0 = this.rows.filter(function (item) {
+                    return item.ret === 'rls' && item.obj === '00000';
+                }).length;
+                this.statRls1 = this.rows.filter(function (item) {
+                    return item.ret === 'rls' && item.obj === '11111';
+                }).length;
+            },
+        },
+        created() {
+            this.watchCollection(['rows'], this.updateStat, {deep: true});
+        },
+        mounted() {
+
+            $('#testInp').datetimepicker({
+                format: 'd.m.Y H:i',
+            });
+            console.log($('#testInp'));
+        }
+    };
 
     export default vm;
 </script>

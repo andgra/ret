@@ -29,9 +29,7 @@ TableFilter.prototype.refreshFilters = function () {
 };
 require('jquery-ui/ui/widget');
 require('jquery-ui/ui/widgets/button');
-require('jquery-ui/ui/widgets/datepicker');
 require('jquery-datetimepicker');
-$.datepicker.setDefaults($.datepicker.regional['ru']);
 $.datetimepicker.setLocale('ru');
 
 
@@ -86,7 +84,7 @@ window.getSeed = (node) => {
         }
         return res;
     } else {
-        return node.default || "";
+        return node.default !== undefined ? node.default : "";
     }
 };
 
@@ -136,7 +134,6 @@ window.getUnited = (struct) => {
 
     function normalizeStruct(arr) {
         let curArr = clone(arr);
-        console.log(arr,curArr);
         let toShift = true;
         let newArr = [];
         for (let i in curArr) {
@@ -144,7 +141,6 @@ window.getUnited = (struct) => {
                 if (curArr[i].title !== "") {
                     toShift = false;
                 }
-                console.log(curArr[i],curArr[i].children)
                 curArr[i].children.forEach(node => newArr.push(node))
             } else {
                 toShift = false;
@@ -287,25 +283,19 @@ Vue.config.debug = true;
 const VueMdl = require("vue-mdl");
 Vue.use(VueMdl.default);
 
-import DatePicker from "../components/common/datepicker.vue";
-Vue.component('DatePicker', DatePicker);
-
 import DateTimePicker from "../components/common/datetimepicker.vue";
 Vue.component('DateTimePicker', DateTimePicker);
 
 import IntervalPicker from "../components/common/intervalpicker.vue";
 Vue.component('IntervalPicker', IntervalPicker);
 
-
-Number.prototype.round = function (places) {
+Number.prototype.round = places => {
     places = Math.pow(10, places);
     return Math.round(this * places) / places;
-}
+};
 
 window.filters = {
-    NaN(value) {
-        return isNaN(value) ? 0 : value;
-    },
+    NaN: value => (isNaN(value) ? 0 : value),
     per(value) {
         return isNumeric(value) ? value + '%' : value;
     },
@@ -359,15 +349,12 @@ Vue.mixin({
 
 Vue.directive('deep-model', {
     bind(el, binding, vnode) {
-        console.log(el);
         let onUpdate = e => {
-            console.log(vnode.context.$data, e.target.value);
             new Function('obj', 'v', `obj.${binding.value} = v`)(vnode.context.$data, e.target.value);
         };
         el.addEventListener('input', onUpdate);
         el.addEventListener('change', onUpdate);
         if(el.type==='hidden') {
-            console.log(1);
             el.addEventListener('change', () => alert(1));
         }
     },

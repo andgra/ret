@@ -1,6 +1,9 @@
 <template>
-    <div class="datetimepicker">
-        <input :id="id" :name="name" :value="valueIn" ref="focusTarget" class="mdl-textfield__input">
+    <div class="datetimepicker mdl-textfield mdl-js-textfield mdl-textfield--floating-label" :class="{'is-dirty':getValue()}">
+        <div :class="{'datetimepicker_min-width':inline,'display-inline-block':inline}">
+            <input :id="id" :name="name" :value="getValue()" ref="focusTarget" class="mdl-textfield__input">
+            <label class="mdl-textfield__label">{{label}}</label>
+        </div>
     </div>
 </template>
 <script>
@@ -14,20 +17,39 @@
                 type: String,
                 required: false
             },
+            label: {
+                type: String,
+                required: false
+            },
             value: {
                 type: String | Date,
-                required: false,
+                required: false
             },
             onSelect: {
                 type: Function,
                 required: false
             },
+            inline: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            time: {
+                type: Boolean,
+                required: false,
+                default: true
+            },
         },
         data() {
             return {
-                valueIn: this.value?moment(this.value).format('DD.MM.YYYY HH:mm'):''
             }
         },
+        methods: {
+            getValue() {
+                return this.value ? moment(this.value).format(`DD.MM.YYYY${this.time?' HH:mm':''}`) : ''
+            }
+        },
+        computed: {},
         created() {
         },
         mounted() {
@@ -35,21 +57,20 @@
 
             $(this.$refs.focusTarget).datetimepicker({
                 format: 'd.m.Y H:i',
-                onChangeDateTime: $.proxy(function (newVal) {
-                    console.log(newVal);
-                    this.$emit('input', newVal)
+                onChangeDateTime: newVal => {
+                    this.$emit('input', newVal);
                     if (this.onSelect) {
                         this.onSelect(newVal);
                     }
-                }, this),
+                },
+                timepicker:this.time,
             });
 
         }
     }
 </script>
 <style lang="scss">
-    .datetimepicker {
-        display: inline-block;
+    .datetimepicker_min-width {
         input {
             width: 140px;
         }

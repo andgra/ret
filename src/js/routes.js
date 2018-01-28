@@ -1,11 +1,7 @@
 import './core.js';
 
-
-console.log(nwin);
-
 window.VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
-
 
 import {VueExtendLayout, layout} from 'vue-extend-layout';
 
