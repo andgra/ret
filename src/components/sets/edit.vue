@@ -60,6 +60,8 @@
 <script>
     //    import EditedTable from '../mixins/edited-table';
     import EditedTable from '../common/EditedTable.vue';
+    import set from 'models/set';
+    import settings from 'models/settings';
 
     let struct =
         [
@@ -191,61 +193,39 @@
             conditionArray: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}],
         },
         methods: {
-            startDateSelect: function (newVal) {
-                if (this.settings.startDate) {
-                    db.update({
-                        table: 'settings',
-                        key: 'startDate'
-                    }, {$set: {value: newVal}}, $.proxy(function (err, item) {
-                        this.$root.$emit('msgSent', {message: 'Дата изменена'})
-                    }, this));
-                } else {
-                    db.insert({
-                        table: 'settings',
-                        key: 'startDate',
-                      value: newVal
-                    }, $.proxy(function (err, item) {
-                        this.$root.$emit('msgSent', {message: 'Дата изменена'})
-                        this.settings.startDate = newVal;
-                    }, this));
-                }
+            async startDateSelect(newVal) {
+                await (settings.startDate = newVal);
+                this.$root.$emit('msgSent', {message: 'Дата изменена'});
+                this.settings.startDate = newVal;
 
                 // filter
                 this.setRows({startDate: newVal})
             },
         },
         computed: {},
-        mounted: function () {
-            db.find({table: 'settings'}).exec($.proxy(function (err, rows) {
-                let $startDate = $('#startDate');
-                for (let i = 0; i < rows.length; i++) {
-                    let row = rows[i];
-                    if (row.key === 'startDate') {
-                        if ($startDate.next('button').button("option", "label")) {
-                            $startDate.val(row.value);
-                            $startDate.next('button').button("option", "label", row.value);
-                        }
-                        this.settings.startDate = row.value;
-                    }
-                }
-                this.setRows({startDate: this.settings.startDate})
-            }, this));
+        async mounted() {
+            let startDate = setting.startDate;
+            let $startDate = $('#startDate');
+            if ($startDate.next('button').button("option", "label")) {
+                $startDate.val(startDate);
+                $startDate.next('button').button("option", "label", startDate);
+            }
+            this.settings.startDate = startDate;
+            this.setRows({startDate: this.settings.startDate});
         },
         init: function () {
 
         },
-        setRows: function (filter) {
-            db.find({
-                table: 'sets', $where: function () {
-                    if (!filter || !filter.startDate)
-                        return true;
-                    return moment(this.createdAt) > moment(filter.startDate, "DD.MM.YYYY");
-                }
-            }).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
-                this.rows = rows;
-                this.initTf();
-            }, this));
+        async setRows(filter) {
+            this.rows = await set.getItems(filter);
+            this.initTf();
         },
+        async saveRow(item) {
+            return await set.updateOrCreate(item);
+        },
+        async removeRow(id) {
+            await set.delete(id);
+        }
     };
 
     let vm = {

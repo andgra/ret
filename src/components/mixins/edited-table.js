@@ -305,7 +305,7 @@ export default function (options) {
         mounted: function () {
             let $tCont = $('.table-container');
 
-            $('body').on('keyup', $.proxy(function (e) {
+            /*$('body').on('keyup', $.proxy(function (e) {
                 if (this.edit !== -1) {
                     if (e.keyCode === 13 && (e.target.type !== 'textarea' || e.ctrlKey || e.altKey)) {
                         this.saveRow(this.edit);
@@ -318,7 +318,7 @@ export default function (options) {
                         return false;
                     }
                 }
-            }, this));
+            }, this));*/
 
             $(document).on('change','.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function(e, tablesaw) {
                 $('.tablesaw-toggle-cellhidden').each($.proxy((i,th) => {

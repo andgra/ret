@@ -30,6 +30,7 @@
 
 <script>
     import EditedTable from '../common/EditedTable.vue';
+    import work from 'models/work';
 
     let struct =
         [
@@ -54,9 +55,16 @@
         data: {
             perPage: 7,
         },
-        init: function () {
-
+        async setRows(filter) {
+            this.rows = await work.getItems(filter);
+            this.initTf();
         },
+        async saveRow(item) {
+            return await work.updateOrCreate(item);
+        },
+        async removeRow(id) {
+            await work.delete(id);
+        }
     };
 
     let vm = {

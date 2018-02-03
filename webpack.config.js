@@ -2,11 +2,20 @@ let webpack = require('webpack');
 let path = require('path');
 let ExtractTextPlugin = require('extract-text-webpack-plugin');
 let CopyWebpackPlugin = require('copy-webpack-plugin');
-var WebpackNotifierPlugin = require('webpack-notifier');
+let WebpackNotifierPlugin = require('webpack-notifier');
 
 const extractSass = new ExtractTextPlugin({
     filename: "css/main.css",
 });
+
+
+const babelLoader = {
+    loader: 'babel-loader',
+    options: {
+        presets: ['es2015'],
+        plugins: ["syntax-async-functions", "transform-object-rest-spread", "transform-regenerator"]
+    }
+};
 
 module.exports = {
     // context: path.join(__dirname, 'app'),
@@ -30,6 +39,9 @@ module.exports = {
         extensions: ['.js', '.vue', '.json'],
         alias: {
             '@': path.resolve(__dirname, 'src/components/'),
+            'js': path.resolve(__dirname, 'src/js'),
+            'src': path.resolve(__dirname, 'src'),
+            'models': path.resolve(__dirname, 'src/js/models'),
         }
     },
     target: 'node-webkit',
@@ -51,20 +63,14 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['es2015'],
-                        plugins: ["transform-object-rest-spread"]
-                    }
-                }
+                use: babelLoader
             },
             {
                 test: /\.vue/,
                 loader: 'vue-loader',
                 options: {
                     loaders: {
-                        js: 'babel-loader?presets[]=es2015' // Pass parameters as options
+                        js: babelLoader // Pass parameters as options
                     },
                     postLoaders: {
                         html: 'babel-loader',

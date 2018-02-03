@@ -1,80 +1,89 @@
-<template lang="pug">
-    div.table-container
-        table#table.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp.border-all-cells.edited-table(data-tablesaw-mode='columntoggle', ref='table')
-            thead
-                tr(data-tablesaw-ignorerow='', v-show="options.title")
-                    th.mdl-data-table__cell--non-numeric(:colspan='selFooter')
-                        h4 {{options.title}}
-                //- добавочные заголовки
-                tr.center-all(v-for="(row,j) in grid", v-if="j<grid.length-1", data-tablesaw-ignorerow="")
-                    th(v-for="(cell,i) in row", :colspan="cell.colspan", v-html="cell.title")
-                //- контрольные заголовки
-                tr.center-all.wide-all
-                    th.mdl-th-padding
-                        mdl-checkbox#checkAll(v-model='checkAll', @change.native='toggleCheckAll', :disabled='edit!==-1')
-                    th(colspan='2') Действия
-                    th(scope='col') №
-                    th.sortable(v-for="(cell,i) in grid[grid.length-1]", :colspan="cell.colspan", v-html="cell.title",
-                    scope='col', data-tablesaw-priority='1', :data-sort="cell.id", :width="cell.width?cell.width:false",
-                    :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false")
-                    th.sortable(scope='col', data-tablesaw-priority='1', data-sort='createdAt') Создан
-                    th.sortable(scope='col', data-tablesaw-priority='1', data-sort='updatedAt') Изменен
-                    th(colspan='2') Действия
-            tbody
-                tr(v-for='(row, index) in rows', :key='row.num', :data-id='index')
-                    td
-                        mdl-checkbox(v-model='checks', :val='index', :disabled='edit!==-1')
-                    td.clickable.tooltip(@click='editRow(index)', data-tooltip='Редактировать')
-                        i.fa.fa-pencil
-                    td.clickable.tooltip(@click='inquireRemove([index])', data-tooltip='Удалить')
-                        i.fa.fa-times
-                    td
-                        | {{index+1}}
-                        input(name='_id', v-model='row._id', type='hidden')
-                    td(v-for="(cell,j) in grid.last()", v-if="cell.id",
-                    class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}")
-                        label(v-html="getValue(row,cell.id)")
-                    td.mdl-data-table__cell--non-numeric(v-if='sel.createdAt') {{row.createdAt | myDateTime}}
-                    td.mdl-data-table__cell--non-numeric(v-if='sel.updatedAt') {{row.updatedAt | myDateTime}}
-                    td.clickable.tooltip(@click='editRow(index)', data-tooltip='Редактировать')
-                        i.fa.fa-pencil
-                    td.clickable.tooltip(@click='inquireRemove([index])', data-tooltip='Удалить')
-                        i.fa.fa-times
-            tfoot
-                tr
-                    td.mdl-data-table__cell--non-numeric(:colspan='selFooter')
-                        #paging
-                tr
-                    td.mdl-data-table__cell--non-numeric(:colspan='selFooter')
-                        mdl-button.mdl-js-ripple-effect(:disabled='edit!==-1', @click.native='editRow(rows.index)') Добавить запись
-                        mdl-button.mdl-js-ripple-effect(:disabled='edit!==-1 || checks.length===0', @click.native='inquireRemove(checks)') Удалить отмеченные
-                        mdl-button.mdl-js-ripple-effect(v-if='isClosed', @click.native='removeClosed()') Показать скрытые
-        mdl-dialog(ref='removeModal', title='Удаление записей')
-            p
-                | Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?
-            div(slot='actions')
-                mdl-button(@click.native='$refs.removeModal.close') Отменить
-                mdl-button(primary='', @click.native='removeRows()') Удалить
-        slot(name="editModal", :editingRow="editingRow", :saveRow="saveRow", :getItems="getItems", :getValue="getValue")
-
-        //mdl-dialog(ref='editModal', :title="editingRow._id?'Редактирование записи':'Добавление записи'")
-            form.editing-form(action='#')
-                input(name='_id', v-model='editingRow._id', type='hidden')
-                div(v-for="(cell,j) in structedGrid", v-if="cell.id", :style="{'padding-left':(cell.level-1)*15+'px', width: 'calc(100% - '+(cell.level-1)*15+'px)'}")
-                    div(v-if="cell.children")
-                        p(v-html="cell.title")
-                    div(v-else)
-                        mdl-textfield.mdl-textfield--full-width(v-if="cell.type!=='select'", :floating-label="cell.title.replace('<br>', ' ')", v-model="deep[`editingRow.${cell.id}`]", :readonly="cell.readonly")
-                        mdl-select.mdl-textfield--full-width(v-else, :label='cell.title', :id="`select-editingRow.${cell.id}`", v-model='deep[`editingRow.${cell.id}`]', :options='cell.items', :readonly="cell.readonly")
-            div(slot='actions')
-                mdl-button(@click.native='$refs.editModal.close') Отменить
-                mdl-button(primary='', @click.native='saveRow()') Сохранить
-        mdl-snackbar.mdl-snackbar_padding(display-on='msgSent')
+<template>
+    <div class="table-container">
+        <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
+            <thead>
+            <tr data-tablesaw-ignorerow="" v-show="options.title">
+                <th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                    <h4>{{options.title}}</h4>
+                </th>
+            </tr>
+            <tr v-for="(row,j) in grid" v-if="j&lt;grid.length-1" data-tablesaw-ignorerow="" class="center-all">
+                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-html="cell.title"></th>
+            </tr>
+            <tr class="center-all wide-all">
+                <th class="mdl-th-padding"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit!==-1"></mdl-checkbox></th>
+                <th colspan="2">Действия</th>
+                <th scope="col">№</th>
+                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
+                <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
+                <th colspan="2">Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
+                <td><mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox></td>
+                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip"><i class="fa fa-times"></i></td>
+                <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                    <label>{{getValue(row,cell.id)}}</label>
+                </td>
+                <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric">{{row.createdAt | myDateTime}}</td>
+                <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric">{{row.updatedAt | myDateTime}}</td>
+                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip"><i class="fa fa-times"></i></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                    <div id="paging"></div>
+                </td>
+            </tr>
+            <tr>
+                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                    <mdl-button :disabled="edit!==-1" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
+                    <mdl-button :disabled="edit!==-1 || checks.length===0" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
+                    <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+        <mdl-dialog ref="removeModal" title="Удаление записей">
+            <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
+            <div slot="actions">
+                <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
+                <mdl-button primary="" @click.native="removeRows()">Удалить</mdl-button>
+            </div>
+        </mdl-dialog>
+        <slot name="editModal" :editingRow="editingRow" :saveRow="saveRow" :getItems="getItems" :getValue="getValue"></slot>
+        <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
+            <form action="#" class="editing-form">
+                <input name="_id" v-model="editingRow._id" type="hidden"/>
+                <div v-for="(cell,j) in structedGrid" v-if="cell.id" :style="{'padding-left':(cell.level-1)*15+'px', width: 'calc(100% - '+(cell.level-1)*15+'px)'}">
+                    <div v-if="cell.children">
+                        <p v-html="cell.title"></p>
+                    </div>
+                    <div v-else="v-else">
+                        <mdl-textfield v-if="cell.type!=='select'" :floating-label="cell.title.replace('&lt;br&gt;', ' ')" v-model="deep[`editingRow.${cell.id}`]" :readonly="cell.readonly" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>
+                        <mdl-select v-else="v-else" :label="cell.title" :id="`select-editingRow.${cell.id}`" v-model="deep[`editingRow.${cell.id}`]" :options="cell.items" :readonly="cell.readonly" class="mdl-textfield&#45;&#45;full-width"></mdl-select>
+                    </div>
+                </div>
+            </form>
+            <div slot="actions">
+                <mdl-button @click.native="$refs.editModal.close">Отменить</mdl-button>
+                <mdl-button primary="" @click.native="saveRow()">Сохранить</mdl-button>
+            </div>
+        </mdl-dialog>-->
+        <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
+    </div>
 
 
 </template>
 <script>
     let Vue = require("vue/dist/vue.js");
+    import {db} from 'js/db';
 
     export default {
         props: {
@@ -234,7 +243,7 @@
                 }
                 return result;
             },
-            getValue(row, path,db = false) {
+            getValue(row, path) {
                 let value = getInObj(row,path);
                 let options = this.grid.last().filter(item => {return item.id && item.id===path}).first();
                 if (options) {
@@ -243,13 +252,11 @@
                     } else if (options.type === 'interval') {
                         value = this.getIntervalString(value)
                     } else if (options.type === 'datetime') {
-                        value = moment(value).format('DD.MM.YYYY HH:mm')
+                        value = moment(value).isValid()?moment(value).format('DD.MM.YYYY HH:mm'):'';
                     } else if (options.type === 'date') {
-                        value = moment(value).format('DD.MM.YYYY')
+                        value = moment(value).isValid()?moment(value).format('DD.MM.YYYY'):'';
                     } else if (options.cb) {
                         value = options.cb(value,row);
-                        if(db)
-                            console.log(value,row);
                     }
                 }
                 return value;
@@ -299,7 +306,6 @@
             addRow: function (index) {
                 try {
                     this.rows.splice(index + 1, 0, clone(this.rowSeed));
-                    this.edit = index;
                     setTimeout(() => this.tf.Mod.paging.setPage('last'), 0);
 
                 } catch (e) {
@@ -324,7 +330,7 @@
                     // Удаляем из базы
                     let id = this.rows[index]._id;
                     if (id) {
-                        db.remove({table: this.options.table, _id: id});
+                        this.options.removeRow(id);
                     }
 
                     // Удаляем чб, если был отмечен
@@ -373,7 +379,7 @@
                 }
                 this.$parent.$refs.editModal.open();
             },
-            cancelRow: function (index) {
+            /*cancelRow: function (index) {
                 if (this.savedRow) {
                     Vue.set(this.rows, index, this.savedRow);
                 } else {
@@ -384,49 +390,61 @@
                 }
                 this.edit = -1;
                 this.savedRow = null;
-            },
+            },*/
             saveRow: function () {
                 let item = this.editingRow;
-                let index = this.editingRow.index;
-                this.editingRow.index = undefined;
-                if (!item._id) {
-                    item._id = undefined;
-                    console.log('insert');
-                    if (this.options.insertRow) {
-                        $.proxy(this.options.insertRow, this)(item);
-                    } else {
-                        db.insert(Object.assign({table: this.options.table}, item), $.proxy(function (err, newItem) {
+                let index = item.index;
+                delete item.index;
+                if(this.options.saveRow) {
+                    this.options.saveRow(item).then(({insert,newItem}) => {
+                        if(insert) {
                             item._id = newItem._id;
                             this.rows.push(item);
-                            this.$root.$emit('msgSent', {message: 'Сохранено'});
-                            this.$parent.$refs.editModal.close();
-                            if (this.options.onInsert) {
-                                $.proxy(this.options.onInsert, this)();
-                            }
-                        }, this));
-                    }
-                } else {
-                    console.log('update');
-                    if (this.options.updatetRow) {
-                        $.proxy(this.options.updatetRow, this)(item);
-                    } else {
-                        db.update({
-                            table: this.options.table,
-                            _id: item._id
-                        }, {$set: item}, $.proxy(function (err, code) {
+                        } else {
                             this.rows.splice(index, 1, item);
-                            this.$root.$emit('msgSent', {message: 'Сохранено'});
-                            this.$parent.$refs.editModal.close();
-                            if (this.options.onUpdate) {
-                                $.proxy(this.options.onUpdate, this)();
-                            }
-                        }, this));
+                        }
+                        this.$root.$emit('msgSent', {message: 'Сохранено'});
+                        this.$parent.$refs.editModal.close();
+                    });
+                } else {
+                    if (!item._id) {
+                        item._id = undefined;
+                        console.log('insert');
+                        if (this.options.insertRow) {
+                            $.proxy(this.options.insertRow, this)(item);
+                        } else {
+                            db.insert(Object.assign({table: this.options.table}, item), $.proxy(function (err, newItem) {
+                                item._id = newItem._id;
+                                this.rows.push(item);
+                                this.$root.$emit('msgSent', {message: 'Сохранено'});
+                                this.$parent.$refs.editModal.close();
+                                if (this.options.onInsert) {
+                                    $.proxy(this.options.onInsert, this)();
+                                }
+                            }, this));
+                        }
+                    } else {
+                        console.log('update');
+                        if (this.options.updatetRow) {
+                            $.proxy(this.options.updatetRow, this)(item);
+                        } else {
+                            db.update({
+                                table: this.options.table,
+                                _id: item._id
+                            }, {$set: item}, $.proxy(function (err, code) {
+                                this.rows.splice(index, 1, item);
+                                this.$root.$emit('msgSent', {message: 'Сохранено'});
+                                this.$parent.$refs.editModal.close();
+                                if (this.options.onUpdate) {
+                                    $.proxy(this.options.onUpdate, this)();
+                                }
+                            }, this));
+                        }
+                    }
+                    if (this.options.onSave) {
+                        $.proxy(this.options.onSave, this)();
                     }
                 }
-                if (this.options.onSave) {
-                    $.proxy(this.options.onSave, this)();
-                }
-                this.edit = -1;
             },
             toggleCheck: function () {
                 // Кликнули по чб в строках
@@ -450,7 +468,7 @@
             },
             setRows: function () {
                 if (this.options.setRows) {
-                    this.options.setRows.bind(this)();
+                    this.options.setRows.call(this);
                 } else {
                     db.find({table: this.options.table}).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
                         this.rows = rows;
@@ -503,7 +521,7 @@
             let $tCont = $('.table-container');
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
-            $('body').on('keyup', $.proxy(function (e) {
+            /*$('body').on('keyup', $.proxy(function (e) {
                 if (this.edit !== -1) {
                     if (e.keyCode === 13 && (e.target.type !== 'textarea' || e.ctrlKey || e.altKey)) {
                         this.saveRow(this.edit);
@@ -516,7 +534,7 @@
                         return false;
                     }
                 }
-            }, this));
+            }, this));*/
 
             $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function (e, tablesaw) {
                 $('.tablesaw-toggle-cellhidden').each($.proxy((i, th) => {

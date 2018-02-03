@@ -1,3 +1,4 @@
+require('babel-polyfill');
 import './core.js';
 
 window.VueRouter = require("vue-router").default;
@@ -17,6 +18,8 @@ nwin.width(800);*/
 import SetsEdit from '../components/sets/edit.vue';
 import DefectsEdit from '../components/defects/edit.vue';
 import WorksEdit from '../components/works/edit.vue';
+import SettingsEdit from '../components/settings/edit.vue';
+import SettingsPrint from '../components/settings/print.vue';
 import DefectsPrint from '../components/defects/print.vue';
 import WorksPrint from '../components/works/print.vue';
 import ResultsPrint from '../components/results/print.vue';
@@ -33,6 +36,8 @@ const routes = [
     {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
     {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
     {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
+    {path: '/settings/edit', component: SettingsEdit, meta: {layout: 'appLayout'}},
+    {path: '/settings/print', component: SettingsPrint, meta: {layout: 'appLayout'}},
     {path: '/defects/print', component: DefectsPrint, meta: {layout: 'printLayout'}},
     {path: '/works/print', component: WorksPrint, meta: {layout: 'printLayout'}},
     {path: '/results/print', component: ResultsPrint, meta: {layout: 'printLayout'}},

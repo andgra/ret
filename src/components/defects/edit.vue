@@ -64,6 +64,7 @@
 
 <script>
     import EditedTable from '../common/EditedTable.vue';
+    import defect from 'models/defect';
 
     let struct =
         [
@@ -85,9 +86,16 @@
         data: {
             perPage: 7,
         },
-        init: function () {
-
+        async setRows(filter) {
+            this.rows = await defect.getItems(filter);
+            this.initTf();
         },
+        async saveRow(item) {
+            return await defect.updateOrCreate(item);
+        },
+        async removeRow(id) {
+            await defect.delete(id);
+        }
     };
 
     let vm = {

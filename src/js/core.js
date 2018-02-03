@@ -273,9 +273,12 @@ const asset = function (path) {
 const asset_src = function (path) {
     return window.__dirname + '/src/' + path;
 };
-const Datastore = require('nedb');
+
+
+import {db} from './db';
+window.db = db;
+
 window.moment = require('moment');
-window.db = new Datastore({filename: window.__dirname + '/database/db.json', timestampData: true, autoload: true});
 const Mdl = require("material-design-lite");
 window.Vue = require("vue/dist/vue.js");
 Vue.config.debug = true;
