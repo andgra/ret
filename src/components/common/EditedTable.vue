@@ -11,31 +11,35 @@
                 <th v-for="(cell,i) in row" :colspan="cell.colspan" v-html="cell.title"></th>
             </tr>
             <tr class="center-all wide-all">
-                <th class="mdl-th-padding"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit!==-1"></mdl-checkbox></th>
-                <th colspan="2">Действия</th>
-                <th scope="col">№</th>
+                <th class="mdl-th-padding"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
+                <th colspan="2" class="text-center" width="85px">Действия</th>
+                <th scope="col" class="text-center" width="50px">№</th>
                 <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
                 <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
-                <th colspan="2">Действия</th>
+                <th colspan="2" class="text-center" width="85px">Действия</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
-                <td><mdl-checkbox v-model="checks" :val="index" :disabled="edit!==-1"></mdl-checkbox></td>
-                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip"><i class="fa fa-pencil"></i></td>
-                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip"><i class="fa fa-times"></i></td>
+                <td><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
+                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip text-center"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip text-center"><i class="fa fa-times"></i></td>
                 <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
                 <td v-for="(cell,j) in grid.last()" v-if="cell.id" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
                     <label>{{getValue(row,cell.id)}}</label>
                 </td>
                 <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric">{{row.createdAt | myDateTime}}</td>
                 <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric">{{row.updatedAt | myDateTime}}</td>
-                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip"><i class="fa fa-pencil"></i></td>
-                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip"><i class="fa fa-times"></i></td>
+                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip text-center"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip text-center"><i class="fa fa-times"></i></td>
             </tr>
             </tbody>
             <tfoot>
+            <tr class="hidden">
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id"></td>
+                <td v-for="j in 8"></td>
+            </tr>
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
                     <div id="paging"></div>
@@ -43,8 +47,8 @@
             </tr>
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
-                    <mdl-button :disabled="edit!==-1" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
-                    <mdl-button :disabled="edit!==-1 || checks.length===0" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
+                    <mdl-button :disabled="edit" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
+                    <mdl-button :disabled="edit || checks.length===0" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
                     <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
                 </td>
             </tr>
@@ -57,7 +61,7 @@
                 <mdl-button primary="" @click.native="removeRows()">Удалить</mdl-button>
             </div>
         </mdl-dialog>
-        <slot name="editModal" :editingRow="editingRow" :saveRow="saveRow" :getItems="getItems" :getValue="getValue"></slot>
+        <slot name="editModal" :editingRow="editingRow" :saveRow="saveRow" :closeEdit="closeEdit" :getItems="getItems" :dicts="dicts" :getValue="getValue"></slot>
         <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
             <form action="#" class="editing-form">
                 <input name="_id" v-model="editingRow._id" type="hidden"/>
@@ -83,7 +87,6 @@
 </template>
 <script>
     let Vue = require("vue/dist/vue.js");
-    import {db} from 'js/db';
 
     export default {
         props: {
@@ -117,7 +120,22 @@
             let united = getUnited(struct);
             // console.log('united',curArr)
             let grid = getGrid(united);
+
 //            console.log('grid',grid.slice());
+            let dicts = {};
+
+            for(let cell of clone(grid.last())) {
+                if(cell.type==='select') {
+                    let path = cell.id.split('.');
+                    let res = dicts;
+                    for (let i in path) {
+                        let p = path[i];
+                        res[p] = !res[p] ? (i==path.length-1 ? [] : {}) : res[p];
+                        res = res[p];
+                    }
+                }
+            }
+
             for(let i in grid) {
                 if(Number(i)+1<grid.length) {
                     if(grid[i][0].title==="") {
@@ -171,7 +189,7 @@
                 checks: [],
                 rows: this.options.inRows || [],
                 checkAll: false,
-                edit: -1,
+                edit: false,
                 checkAllChanged: false,
                 savedRow: null,
                 struct,
@@ -184,6 +202,7 @@
                 toRemove: [],
                 tfConf,
                 test: "",
+                dicts,
                 tf: null
             }, this.options.data || {})
         },
@@ -247,9 +266,7 @@
                 let value = getInObj(row,path);
                 let options = this.grid.last().filter(item => {return item.id && item.id===path}).first();
                 if (options) {
-                    if (options.type === 'select' && options.items) {
-                        value = this.getName(options.items, value)
-                    } else if (options.type === 'interval') {
+                    if (options.type === 'interval') {
                         value = this.getIntervalString(value)
                     } else if (options.type === 'datetime') {
                         value = moment(value).isValid()?moment(value).format('DD.MM.YYYY HH:mm'):'';
@@ -265,12 +282,26 @@
                 return getInObj(...args);
             },
             getItems(path) {
-                for(let cell of this.grid.last()) {
-                    if(cell.id===path) {
-                        return cell.items;
-                    }
+//                if(this.test!=="") {
+//                    for (let cell of this.grid.last()) {
+//                        if (cell.id === path) {
+//                            return clone(cell.items).map(item => {
+//                                item.value += (new Date()).getSeconds();
+//                                item.name += (new Date()).getSeconds();
+//                                return item;
+//                            });
+//                        }
+//                    }
+//                }
+//                this.test = "123";
+                let items = getInObj(this.dicts,path);
+                if(items) {
+                    return items.map(item => (item.value));
                 }
-                return [];
+                return null;
+            },
+            changeItems() {
+
             },
             removeClosed: function () {
                 this.sel = clone(this.selSeed);
@@ -330,7 +361,11 @@
                     // Удаляем из базы
                     let id = this.rows[index]._id;
                     if (id) {
-                        this.options.removeRow(id);
+                        if(this.options.saveRow) {
+                            this.options.removeRow(id);
+                        } else {
+                            throw new Error('saveRow не определено');
+                        }
                     }
 
                     // Удаляем чб, если был отмечен
@@ -361,14 +396,15 @@
                 }
             },
             initTf() {
-                setTimeout(() => {
-                    if (this.tf) {
-                        this.tf.destroy();
-                    }
-                    this.tf = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
-                    this.tf.init();
-//                    console.log(this.tf);
-                }, 0);
+                if(this.rows.length) {
+                    setTimeout(() => {
+                        if (this.tf) {
+                            this.tf.destroy();
+                        }
+                        this.tf = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
+                        this.tf.init();
+                    }, 0);
+                }
             },
             editRow: function (index) {
                 if (this.rows[index]) {
@@ -377,73 +413,38 @@
                 } else {
                     this.editingRow = clone(this.rowSeed);
                 }
+                this.edit = true;
                 this.$parent.$refs.editModal.open();
+
+                setTimeout(()=> {
+                    let el = $(this.$parent.$refs.editModal.$el).find('input:not([type="hidden"])')[0];
+                    if(el) $(el).focus()
+                },50);
             },
-            /*cancelRow: function (index) {
-                if (this.savedRow) {
-                    Vue.set(this.rows, index, this.savedRow);
-                } else {
-                    this.rows.splice(index, 1);
-                }
-                if (this.page > this.maxPage) {
-                    this.page = this.maxPage;
-                }
-                this.edit = -1;
-                this.savedRow = null;
-            },*/
+            closeEdit: function () {
+                this.$parent.$refs.editModal.close();
+                this.edit = false;
+                this.editingRow = clone(this.rowSeed);
+            },
             saveRow: function () {
                 let item = this.editingRow;
                 let index = item.index;
                 delete item.index;
                 if(this.options.saveRow) {
-                    this.options.saveRow(item).then(({insert,newItem}) => {
+                    this.options.saveRow(item).then(({insert,doc}) => {
                         if(insert) {
-                            item._id = newItem._id;
-                            this.rows.push(item);
+                            this.rows.push(doc);
+                            if(this.rows.length===1) {
+                                this.initTf();
+                            }
                         } else {
-                            this.rows.splice(index, 1, item);
+                            this.rows.splice(index, 1, doc);
                         }
                         this.$root.$emit('msgSent', {message: 'Сохранено'});
-                        this.$parent.$refs.editModal.close();
+                        this.closeEdit();
                     });
                 } else {
-                    if (!item._id) {
-                        item._id = undefined;
-                        console.log('insert');
-                        if (this.options.insertRow) {
-                            $.proxy(this.options.insertRow, this)(item);
-                        } else {
-                            db.insert(Object.assign({table: this.options.table}, item), $.proxy(function (err, newItem) {
-                                item._id = newItem._id;
-                                this.rows.push(item);
-                                this.$root.$emit('msgSent', {message: 'Сохранено'});
-                                this.$parent.$refs.editModal.close();
-                                if (this.options.onInsert) {
-                                    $.proxy(this.options.onInsert, this)();
-                                }
-                            }, this));
-                        }
-                    } else {
-                        console.log('update');
-                        if (this.options.updatetRow) {
-                            $.proxy(this.options.updatetRow, this)(item);
-                        } else {
-                            db.update({
-                                table: this.options.table,
-                                _id: item._id
-                            }, {$set: item}, $.proxy(function (err, code) {
-                                this.rows.splice(index, 1, item);
-                                this.$root.$emit('msgSent', {message: 'Сохранено'});
-                                this.$parent.$refs.editModal.close();
-                                if (this.options.onUpdate) {
-                                    $.proxy(this.options.onUpdate, this)();
-                                }
-                            }, this));
-                        }
-                    }
-                    if (this.options.onSave) {
-                        $.proxy(this.options.onSave, this)();
-                    }
+                    throw new Error('saveRow не определено');
                 }
             },
             toggleCheck: function () {
@@ -470,10 +471,11 @@
                 if (this.options.setRows) {
                     this.options.setRows.call(this);
                 } else {
-                    db.find({table: this.options.table}).sort({createdAt: 1}).exec($.proxy(function (err, rows) {
-                        this.rows = rows;
-                        this.initTf();
-                    }, this));
+                    throw new Error('setRow не определено');
+                }
+
+                if(this.options.setDicts) {
+                    this.options.setDicts.call(this);
                 }
             },
             paginating: function () {
@@ -521,20 +523,21 @@
             let $tCont = $('.table-container');
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
-            /*$('body').on('keyup', $.proxy(function (e) {
-                if (this.edit !== -1) {
-                    if (e.keyCode === 13 && (e.target.type !== 'textarea' || e.ctrlKey || e.altKey)) {
-                        this.saveRow(this.edit);
+            $(document).on('keyup', e => {
+                if (this.edit) {
+                    if (e.keyCode === 13 && ((e.target.type !== 'textarea' && !$(e.target).hasClass('ui-autocomplete-input'))
+                            || e.ctrlKey || e.altKey)) {
+                        this.saveRow();
                         $('.ui-datepicker').hide();
                         return false;
                     }
                     if (e.keyCode === 27) {
-                        this.cancelRow(this.edit);
+                        this.closeEdit();
                         $('.ui-datepicker').hide();
                         return false;
                     }
                 }
-            }, this));*/
+            });
 
             $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function (e, tablesaw) {
                 $('.tablesaw-toggle-cellhidden').each($.proxy((i, th) => {

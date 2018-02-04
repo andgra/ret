@@ -12,17 +12,36 @@
                     <!-- используйте компонент router-link для создания ссылок -->
                     <!-- входной параметр `to` определяет путь для перехода -->
                     <!-- `<router-link>` по умолчанию преобразуется в тег `<a>` -->
-                    <button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
+                    <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/settings">Настройки</router-link>
+                    <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/print">Печать</router-link>
+                    <!--<button id="settings-menu" class="mdl-button mdl-js-button mdl-button--white">
+                        Настройки
+                    </button>
+                    <ul class="mdl-menu mdl-menu&#45;&#45;bottom-right mdl-js-menu mdl-js-ripple-effect" for="settings-menu">
+                        <router-link tag="li" to="/settings" class="mdl-menu__item">Настройки</router-link>
+                        <router-link tag="li" to="/settings/print" class="mdl-menu__item">Настройки печати</router-link>
+                    </ul>-->
+                    <button id="dictionaries-menu" class="mdl-button mdl-js-button mdl-button--white">
+                        Справочники
+                    </button>
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="dictionaries-menu">
+                        <router-link tag="li" to="/dictionary/condition" class="mdl-menu__item">Состояния РЭТ</router-link>
+                        <router-link tag="li" to="/dictionary/obj" class="mdl-menu__item">Военные части</router-link>
+                        <router-link tag="li" to="/dictionary/ret" class="mdl-menu__item">Категории РЭТ</router-link>
+                        <router-link tag="li" to="/dictionary/type" class="mdl-menu__item">Типы РЭТ</router-link>
+                        <router-link tag="li" to="/dictionary/repair" class="mdl-menu__item">Типы ремонта</router-link>
+                    </ul>
+                    <!--<button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
                         Печать
                     </button>
-                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
+                    <ul class="mdl-menu mdl-menu&#45;&#45;bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
                         <li class="mdl-menu__item" onclick="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
                         <li class="mdl-menu__item" onclick="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
                         <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Итоги эксплуатации</li>
                         <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
                         <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
                         <li class="mdl-menu__item" onclick="openPdf('/overspend/print')">Перерасход</li>
-                    </ul>
+                    </ul>-->
 
                     <button id="tables-menu" class="mdl-button mdl-js-button mdl-button--white">
                         Таблицы

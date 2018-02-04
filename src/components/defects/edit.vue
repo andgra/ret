@@ -39,12 +39,12 @@
         <EditedTable :options="options" :inRows="rows">
             <template slot="editModal" slot-scope="props">
                 <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
-                    <form class="editing-form" action="#">
+                    <form class="editing-form" action="#" onsubmit="return false;">
                         <input name="_id" v-model="props.editingRow._id" type="hidden"/>
-                        <mdl-textfield class="mdl-textfield--full-width" floating-label="в/ч" v-model="props.editingRow.obj"></mdl-textfield>
+                        <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield class="mdl-textfield--full-width" floating-label="дислокация" v-model="props.editingRow.place"></mdl-textfield>
-                        <mdl-select class="mdl-textfield--full-width" id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.getItems('ret')"></mdl-select>
-                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Тип РЭТ" v-model="props.editingRow.type"></mdl-textfield>
+                        <mdl-select class="mdl-textfield--full-width" id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret"></mdl-select>
+                        <mdl-autocomplete id="editingTypeReq" label="тип РЭТ" v-model="props.editingRow.type" :options="props.dicts.type" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield class="mdl-textfield--full-width" floating-label="зав. №" v-model="props.editingRow.zav"></mdl-textfield>
                         <DateTimePicker class="mdl-textfield--full-width" v-model="props.editingRow.failure" label="Дата и время отказа"></DateTimePicker>
                         <mdl-textfield class="mdl-textfield--full-width" floating-label="Неисправная система" v-model="props.editingRow.faulty"></mdl-textfield>
@@ -53,7 +53,7 @@
                         <IntervalPicker class="mdl-textfield--full-width" v-model="props.editingRow.zip" :outControl="true" :edit="true" label="Время доставки ЗИП"></IntervalPicker>
                     </form>
                     <div slot="actions">
-                        <mdl-button @click.native="$refs.editModal.close">Отменить</mdl-button>
+                        <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
                         <mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>
                     </div>
                 </mdl-dialog>
@@ -65,13 +65,14 @@
 <script>
     import EditedTable from '../common/EditedTable.vue';
     import defect from 'models/defect';
+    import dictionary from 'models/dictionary';
 
     let struct =
         [
-            {id: "obj", title: "в/ч", type: 'text', default: "", tablefilter: {type: "select"}},
+            {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "place", title: "дислокация", type: 'text', default: ""},
             {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", tablefilter: {type: "select"}},
-            {id: "type", title: "Тип РЭТ", type: 'text', default: "", tablefilter: {type: "select"}},
+            {id: "type", title: "Тип РЭТ", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "zav", title: "зав. №", type: 'text', default: ""},
             {id: "failure", title: "дата и время<br>отказа", type: 'datetime', default: ""},
             {id: "faulty", title: "неисправная<br>система", type: 'text', default: ""},
@@ -86,12 +87,22 @@
         data: {
             perPage: 7,
         },
+        async setDicts() {
+            let dicts = await Promise.all([
+                dictionary.getDict('obj'),
+                dictionary.getDict('ret'),
+                dictionary.getDict('type'),
+            ]);
+            this.dicts.obj =  dicts[0];
+            this.dicts.ret =  dicts[1];
+            this.dicts.type =  dicts[2];
+        },
         async setRows(filter) {
             this.rows = await defect.getItems(filter);
             this.initTf();
         },
         async saveRow(item) {
-            return await defect.updateOrCreate(item);
+            return await defect.updateOrCreate({_id:item._id}, item);
         },
         async removeRow(id) {
             await defect.delete(id);

@@ -1,0 +1,93 @@
+.edited-table {
+  th {
+    font-weight: bold;
+    //background-color: lightcyan;
+    color: black;
+    //border: 1px solid black !important;
+    padding: 0 14px;
+    height: 3.5em;
+  }
+  tbody {
+    td {
+      white-space: normal;
+    }
+  }
+}
+
+.compressed-table {
+  td, th {
+    line-height: 1.1em;
+    padding: 4px;
+  }
+}
+
+.mdl-th-padding {
+  padding: 0 18px 12px 24px !important;
+}
+
+.mdl-data-table td, .mdl-data-table th {
+  padding: 5px;
+}
+
+.table-container {
+  & > h4 {
+    padding-left: 20px;
+  }
+}
+
+.sortable {
+  cursor: pointer;
+  position: relative !important;
+}
+
+.close-coll {
+  font-size: 1.4em;
+  color: #747474;
+  position: absolute;
+  top: 0;
+  left: 0;
+  &:hover {
+    font-size: 1.5em;
+    color: #742b2b;
+  }
+}
+
+.textarea-output {
+  white-space: pre-line;
+}
+
+.tablesaw-bar {
+  position: fixed;
+  z-index: 1000;
+  right: 0;
+}
+
+.editing-form {
+  padding-right: 10px;
+  width: 400px;
+  max-height: 550px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.form-group {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  p {
+    font-size: 1.2em;
+    margin-bottom: 0;
+  }
+}
+
+.form-indent {
+  padding-left: 15px;
+  width: calc(100% - 15px);
+}
+
+.mdl-data-table  {
+  td, th {
+    &:last-of-type {
+      padding-right: .7em;
+    }
+  }
+}

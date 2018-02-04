@@ -12,7 +12,7 @@ const extractSass = new ExtractTextPlugin({
 const babelLoader = {
     loader: 'babel-loader',
     options: {
-        presets: ['es2015'],
+        presets: [[ "es2015", { modules: false } ]],
         plugins: ["syntax-async-functions", "transform-object-rest-spread", "transform-regenerator"]
     }
 };
@@ -21,7 +21,7 @@ module.exports = {
     // context: path.join(__dirname, 'app'),
     devtool: 'eval',
     entry: [
-        './src/js/routes.js'
+        './src/routes.js'
     ],
     output: {
         filename: 'js/app.js',
@@ -30,7 +30,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             {from: './src/index.html'},
-            {from: './src/tablefilter', to: './tablefilter'},
+            {from: './node_modules/tablefilter/dist/tablefilter', to: './tablefilter'},
         ]),
         extractSass,
         new WebpackNotifierPlugin({title: 'Webpack',alwaysNotify: true})
@@ -38,10 +38,11 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.vue', '.json'],
         alias: {
+            '/': path.resolve(__dirname, ''),
             '@': path.resolve(__dirname, 'src/components/'),
-            'js': path.resolve(__dirname, 'src/js'),
+            'core': path.resolve(__dirname, 'src/core'),
             'src': path.resolve(__dirname, 'src'),
-            'models': path.resolve(__dirname, 'src/js/models'),
+            'models': path.resolve(__dirname, 'src/models'),
         }
     },
     target: 'node-webkit',
@@ -59,6 +60,12 @@ module.exports = {
                     // use style-loader in development
                     fallback: "style-loader"
                 })
+            },
+            {
+                test: /\.css$/,
+                use: {
+                    loader: 'css-loader',
+                }
             },
             {
                 test: /\.js$/,
