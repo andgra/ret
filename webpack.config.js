@@ -77,11 +77,12 @@ module.exports = {
                 loader: 'vue-loader',
                 options: {
                     loaders: {
-                        js: babelLoader // Pass parameters as options
+                        js: babelLoader, // Pass parameters as options,
+                        scss: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=false', // <style lang="scss">
+                        css: 'vue-style-loader!css-loader?indentedSyntax' // <style>
                     },
                     postLoaders: {
                         html: 'babel-loader',
-                        css: 'sass-loader'
                     },
                     excludedPreLoaders: /(eslint-loader)/
                 }

@@ -54,52 +54,48 @@
             }
         },
         data() {
-            return {
-            }
+            return {}
         },
 
         methods: {
             fireInputEvent: function () {
                 let val = this.$refs.focusTarget.value;
-                if(!this.strict || this.optionsObject.includes(val)) {
+                if (!this.strict || this.optionsObject.includes(val)) {
                     this.$emit('input', this.$refs.focusTarget.value)
                 }
             },
             fireChangeEvent: function () {
                 let val = this.$refs.focusTarget.value;
-                if(!this.strict || this.optionsObject.includes(val)) {
+                if (!this.strict || this.optionsObject.includes(val)) {
                     this.$emit('input', this.$refs.focusTarget.value)
                 } else {
                     this.$refs.focusTarget.value = this.value;
                 }
             },
-            focus () {
+            focus() {
                 this.$refs.focusTarget.focus()
                 return this
             },
-            select () {
+            select() {
                 this.$refs.focusTarget.select()
                 return this
             },
-            blur () {
+            blur() {
                 this.$refs.focusTarget.blur()
                 return this
             },
             initAutocomplete() {
-                if(this.optionsObject.length) {
+                if (this.optionsObject.length) {
                     let $el = $(this.$refs.focusTarget);
                     if ($el.autocomplete("instance")) {
-                        console.log('destroy');
                         $el.autocomplete("destroy");
                     }
                     $el.autocomplete({
                         source: this.optionsObject,
                         select: (event, ui) => {
-                            setTimeout(()=>this.fireChangeEvent(), 0);
-                            console.log(event, ui);
+                            setTimeout(() => this.fireChangeEvent(), 0);
                         }
                     });
-                    console.log($el.autocomplete( "instance" ))
                 }
             }
         },
@@ -109,7 +105,7 @@
                 return '' + this.value
             },
             optionsObject() {
-                if(this.options && this.options.length !== undefined) {
+                if (this.options && this.options.length !== undefined) {
                     return this.options.map(item => ( item.value ));
                 }
                 return [];
@@ -120,10 +116,6 @@
             this.initAutocomplete();
         },
         watch: {
-//            value: function () {
-//                this.setName();
-//                setTimeout(() => this.emitSelect(), 0);
-//            },
             options: function () {
                 this.initAutocomplete();
             }
