@@ -11,7 +11,7 @@
                 <th v-for="(cell,i) in row" :colspan="cell.colspan" v-html="cell.title"></th>
             </tr>
             <tr class="center-all wide-all">
-                <th class="mdl-th-padding"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
+                <th class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
                 <th colspan="2" class="text-center" width="85px">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
                 <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
@@ -22,7 +22,7 @@
             </thead>
             <tbody>
             <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
-                <td><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
+                <td class="text-center"><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
                 <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip text-center"><i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip text-center"><i class="fa fa-times"></i></td>
                 <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
@@ -458,7 +458,7 @@
 
                 this.checkAll = this.checks.length === checkNum;
             },
-            toggleCheckAll: function () {
+            toggleCheckAll() {
                 // Кликнули по общему чб
                 this.checks = [];
                 if (this.checkAll) {
@@ -467,9 +467,13 @@
                     }
                 }
             },
-            setRows: function () {
+            setRows() {
                 if (this.options.setRows) {
-                    this.options.setRows.call(this);
+                    this.options.setRows.call(this).then(() => {
+                        for(let i in this.rows) {
+                            Vue.set(this.rows, i, this.repairRow(this.rows[i]));
+                        }
+                    });
                 } else {
                     throw new Error('setRow не определено');
                 }
@@ -478,8 +482,26 @@
                     this.options.setDicts.call(this);
                 }
             },
-            paginating: function () {
+            paginating() {
                 this.checks = [];
+            },
+            repairRow(row, level = 0) {
+                for(let cell of clone(this.grid.last())) {
+                    let path = cell.id.split('.');
+                    let res = row;
+                    for(let i in path) {
+                        let p = path[i];
+                        if(res[p] === undefined) {
+                            if(i == path.length-1) {
+                                res[p] = cell.default;
+                            } else {
+                                res[p] = {};
+                            }
+                        }
+                        res = res[p];
+                    }
+                }
+                return row;
             }
         },
         created: function () {
@@ -487,7 +509,7 @@
             window.appt = this;
             this.watchCollection(['checks'], this.toggleCheck);
             this.watchCollection(['rows'], ()=> this.$parent.rows=this.rows, {deep: true});
-            // this.watchCollection(['page'], this.paginating);
+             this.watchCollection(['tf.Mod.paging.currentPageNb'], this.paginating);
             this.watchCollection(['copyRows'], (newVal, oldVal) => {
                 if (this.tf) {
                     let curPage = this.tf.Mod.paging.currentPageNb;
@@ -603,3 +625,9 @@
         },
     }
 </script>
+
+<style>
+    .edited-table {
+        width: 100%;
+    }
+</style>

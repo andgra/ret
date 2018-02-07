@@ -30,7 +30,7 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             {from: './src/index.html'},
-            {from: './node_modules/tablefilter/dist/tablefilter', to: './tablefilter'},
+            {from: './src/components/tablefilter', to: './tablefilter'},
         ]),
         extractSass,
         new WebpackNotifierPlugin({title: 'Webpack',alwaysNotify: true})
