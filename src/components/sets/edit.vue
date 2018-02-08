@@ -9,7 +9,7 @@
                         <mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield--full-width"></mdl-select>
                         <mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
-                        <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
+                        <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield floating-label="тип РЭТ в наличии" v-model="props.editingRow.type.real" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-textfield floating-label="заводской номер" v-model="props.editingRow.serial" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-textfield floating-label="год изготовления" v-model="props.editingRow.serial" type="number" class="mdl-textfield--full-width"></mdl-textfield>
@@ -233,6 +233,19 @@
         init: function () {
 
         },
+        async created() {
+            // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
+            this.$watch('editingRow.type.req',(newVal) => {
+                if(this.dicts && this.dicts.type && this.dicts.type.req && this.dicts.type.req.length) {
+                    let found = this.dicts.type.req.find(item => ( item.name == newVal ));
+                    if(!found)
+                        return;
+                    let newEst = clone(found.est);
+                    if(newEst && isObject(newEst))
+                        this.editingRow.est = newEst;
+                }
+            });
+        },
         async setDicts() {
             let dicts = await Promise.all([
                 dictionary.getDict('obj'),
@@ -247,8 +260,12 @@
             this.dicts.repair.type =  dicts[3];
             this.dicts.condition =  dicts[4];
         },
-        async setRows(filter) {
-            this.rows = await set.getItems(filter);
+        async setRows() {
+            // установка фильтра таблицы и заголовка 1-го столбца наработки РЭТ
+            let startDate = (await settings.startDate).value;
+            let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
+            cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/,`$1${startDate}$2`);
+            this.rows = await set.getItems({startDate});
             this.initTf();
         },
         async saveRow(item) {

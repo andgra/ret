@@ -538,7 +538,7 @@
             }
 
             if (this.options.created) {
-                $.proxy(this.options.created, this)();
+                this.options.created.call(this);
             }
         },
         mounted: function () {

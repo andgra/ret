@@ -1,9 +1,6 @@
 import { model, dictionaryTable } from 'core/model';
 
-let dict1 = {_id: "AsDGf123FD32g32", dict: 'condition', name: "работает", value:"работает"};
-let dict2 = {_id: "AsDGf123FD32g32", dict: 'condition', name: "не работает", value:"не работает"};
-
-class settings extends model{
+class settings extends model {
     constructor() {
         super();
         this.table = dictionaryTable;
