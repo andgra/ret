@@ -1,5 +1,5 @@
 <template>
-    <div class="table-container">
+    <div class="edited-table-container">
         <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
             <thead>
             <tr data-tablesaw-ignorerow="" v-show="options.title">
@@ -7,38 +7,42 @@
                     <h4>{{options.title}}</h4>
                 </th>
             </tr>
-            <tr v-for="(row,j) in grid" v-if="j&lt;grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-html="cell.title"></th>
+            <tr v-for="(row,j) in grid" v-if="j<grid.length-1" data-tablesaw-ignorerow="" class="center-all">
+                <th v-for="(cell,i) in row" :colspan="cell.colspan">{{cell.title}}</th>
             </tr>
             <tr class="center-all wide-all">
-                <th class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
-                <th colspan="2" class="text-center" width="85px">Действия</th>
+                <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
+                <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
                 <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
-                <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
-                <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
-                <th colspan="2" class="text-center" width="85px">Действия</th>
+                <template v-if="controlDates">
+                    <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
+                    <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
+                </template>
+                <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
-                <td class="text-center"><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
-                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip text-center"><i class="fa fa-pencil"></i></td>
-                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip text-center"><i class="fa fa-times"></i></td>
+                <td v-if="controlRemove" class="text-center" width="67px"><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
+                <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px"><i class="fa fa-times"></i></td>
                 <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
                 <td v-for="(cell,j) in grid.last()" v-if="cell.id" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
                     <label>{{getValue(row,cell.id)}}</label>
                 </td>
-                <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric">{{row.createdAt | myDateTime}}</td>
-                <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric">{{row.updatedAt | myDateTime}}</td>
-                <td @click="editRow(index)" data-tooltip="Редактировать" class="clickable tooltip text-center"><i class="fa fa-pencil"></i></td>
-                <td @click="inquireRemove([index])" data-tooltip="Удалить" class="clickable tooltip text-center"><i class="fa fa-times"></i></td>
+                <template v-if="controlDates">
+                    <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
+                    <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
+                </template>
+                <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px"><i class="fa fa-pencil"></i></td>
+                <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px"><i class="fa fa-times"></i></td>
             </tr>
             </tbody>
             <tfoot>
             <tr class="hidden">
                 <td v-for="(cell,j) in grid.last()" v-if="cell.id"></td>
-                <td v-for="j in 8"></td>
+                <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
             </tr>
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
@@ -47,21 +51,21 @@
             </tr>
             <tr>
                 <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
-                    <mdl-button :disabled="edit" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
-                    <mdl-button :disabled="edit || checks.length===0" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
+                    <mdl-button :disabled="edit" v-if="controlAdd" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
+                    <mdl-button :disabled="edit || checks.length===0" v-if="controlRemove" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
                     <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
                 </td>
             </tr>
             </tfoot>
         </table>
-        <mdl-dialog ref="removeModal" title="Удаление записей">
+        <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
             <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
             <div slot="actions">
                 <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
                 <mdl-button primary="" @click.native="removeRows()">Удалить</mdl-button>
             </div>
         </mdl-dialog>
-        <slot name="editModal" :editingRow="editingRow" :saveRow="saveRow" :closeEdit="closeEdit" :getItems="getItems" :dicts="dicts" :getValue="getValue"></slot>
+        <slot name="editModal" :editingRow="editingRow" v-id="controlEdit || controlAdd" :saveRow="saveRow" :closeEdit="closeEdit" :getItems="getItems" :dicts="dicts" :getValue="getValue"></slot>
         <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
             <form action="#" class="editing-form">
                 <input name="_id" v-model="editingRow._id" type="hidden"/>
@@ -135,56 +139,9 @@
                     }
                 }
             }
-
-            for(let i in grid) {
-                if(Number(i)+1<grid.length) {
-                    if(grid[i][0].title==="") {
-                        grid[i][0].colspan += 4;
-                    } else {
-                        grid[i].unshift({title: "",colspan:4})
-                    }
-
-                    if(grid[i].last().title==="") {
-                        grid[i].last().colspan += 4;
-                    } else {
-                        grid[i].push({title: "",colspan:4})
-                    }
-                }
-            }
-
-            let tfConf = {
-                col_0: "none",
-                col_1: "none",
-                col_2: "none",
-                filters_row_index: grid.length+1,
-                paging: {
-                    length: 5,
-                    toolbar_position: 'left',
-                    page_text: 'стр',
-                    of_text: ' из ',
-                    target_id: 'paging'
-                },
-                clear_filter_text: " ",
-                locale: "ru",
-                refresh_filters: true,
-            };
-            tfConf["col_"+(Number(grid.last().length)+6)] = "none";
-            tfConf["col_"+(Number(grid.last().length)+7)] = "none";
-
-            for(let i in grid.last()) {
-                let cell = grid.last()[i];
-                let tablefilter = cell.tablefilter;
-                if(tablefilter) {
-                    if(tablefilter.type) {
-                        tfConf["col_"+(Number(i)+4)] = tablefilter.type;
-                    }
-                }
-            }
-            tfConf = Object.assign(tfConf, this.options.tfConf || {});
 //            console.log(tfConf);
 //            console.log(grid);
             return Object.assign({
-                perPage: this.options.perPage || 10,
                 page: 1,
                 checks: [],
                 rows: this.options.inRows || [],
@@ -200,26 +157,35 @@
                 editingRow: clone(rowSeed),
                 sel: clone(selSeed),
                 toRemove: [],
-                tfConf,
+                tfConf: {},
                 test: "",
                 dicts,
                 tf: null
             }, this.options.data || {})
         },
         computed: {
+            controlRemove() {
+                return this.options.remove === undefined || this.options.remove ? 1 : 0;
+            },
+            controlDates() {
+                return this.options.dates === undefined || this.options.dates ? 1 : 0;
+            },
+            controlAdd() {
+                return this.options.add === undefined || this.options.add ? 1 : 0;
+            },
+            controlEdit() {
+                return this.options.edit === undefined || this.options.edit ? 1 : 0;
+            },
             isClosed: function () {
                 return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
             },
-            maxPage: function () {
-                return Math.ceil(this.rows.length / this.perPage) || 1;
-            },
             selFooter: function () {
-                return 4 + this.getSelCnt(this.selSeed) + 2;
+                return (this.controlEdit*2) + (this.controlRemove*3 - 1) + this.getSelCnt(this.selSeed) + (this.controlDates*2);
             },
             copyRows: function () {
                 return clone(this.rows);
             },
-            structedGrid() {
+            /*structedGrid() {
                 let resArr = [];
                 function addRec(arr, level = 1) {
                     arr.slice().forEach(item => {
@@ -237,7 +203,7 @@
                 }
                 addRec(this.united);
                 return resArr;
-            },
+            },*/
         },
         methods: {
             getInterval: function (d1, d2) {
@@ -274,6 +240,10 @@
                         value = moment(value).isValid()?moment(value).format('DD.MM.YYYY'):'';
                     } else if (options.cb) {
                         value = options.cb(value,row);
+                    }
+
+                    if(options.format) {
+                        value = options.format(value);
                     }
                 }
                 return value;
@@ -401,6 +371,8 @@
                         if (this.tf) {
                             this.tf.destroy();
                         }
+                        let $thead = $(this.$refs.table).find('thead');
+                        this.tfConf.paging.length = this.options.perPage || Math.round((nwin.height - ($thead.height()+$thead.offset().top))/65);
                         this.tf = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
                         this.tf.init();
                     }, 0);
@@ -502,9 +474,65 @@
                     }
                 }
                 return row;
+            },
+            initTfConf() {
+                let heading = this.controlEdit+this.controlRemove*2+1;
+                let trailing = this.controlDates*2+this.controlEdit+this.controlRemove;
+                console.log(heading,trailing);
+                for(let i in this.grid) {
+                    if(Number(i)+1<this.grid.length) {
+                        if(this.grid[i][0].title==="") {
+                            this.grid[i][0].colspan += heading;
+                        } else {
+                            this.grid[i].unshift({title: "",colspan:heading})
+                        }
+
+                        if(this.grid[i].last().title==="") {
+                            this.grid[i].last().colspan += trailing;
+                        } else {
+                            this.grid[i].push({title: "",colspan:trailing})
+                        }
+                    }
+                }
+
+                let tfConf = {
+                    filters_row_index: this.grid.length+1,
+                    paging: {
+                        toolbar_position: 'left',
+                        page_text: 'стр',
+                        of_text: ' из ',
+                        target_id: 'paging'
+                    },
+                    clear_filter_text: " ",
+                    locale: "ru",
+                    refresh_filters: true,
+                };
+                console.log(this.controlRemove);
+                if(this.controlEdit) {
+                    tfConf["col_"+(this.controlRemove)] = "none";
+                    tfConf["col_"+(Number(this.grid.last().length)+(this.controlRemove*2+2+this.controlDates*2))] = "none";
+                }
+                if(this.controlRemove) {
+                    tfConf["col_0"] = "none";
+                    tfConf["col_"+(this.controlEdit+1)] = "none";
+                    tfConf["col_"+(Number(this.grid.last().length)+(this.controlEdit*2+3+this.controlDates*2))] = "none";
+                }
+
+                for(let i in this.grid.last()) {
+                    let cell = this.grid.last()[i];
+                    let tablefilter = cell.tablefilter;
+                    if(tablefilter) {
+                        if(tablefilter.type) {
+                            tfConf["col_"+(Number(i)+heading)] = tablefilter.type;
+                        }
+                    }
+                }
+                this.tfConf = Object.assign(tfConf, this.options.tfConf || {});
             }
         },
         created: function () {
+            this.initTfConf();
+
             this.setRows();
             window.appt = this;
             this.watchCollection(['checks'], this.toggleCheck);

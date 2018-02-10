@@ -30,9 +30,6 @@
     let options = {
         struct,
         title: 'Военные части',
-        data: {
-            perPage: 7,
-        },
         async setRows() {
             this.rows = (await dictionary.getDict('obj'));
             this.initTf();

@@ -84,9 +84,6 @@
     let options = {
         struct,
         table: 'defects',
-        data: {
-            perPage: 7,
-        },
         async setDicts() {
             let dicts = await Promise.all([
                 dictionary.getDict('obj'),

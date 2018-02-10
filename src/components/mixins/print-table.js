@@ -38,45 +38,20 @@ export default function (options) {
                 }
                 return items[0].name;
             },
-            setRows: function () {
-                db
-                    .find(Object.assign({table: options.table}, options.setWhere || {}))
-                    .sort(Object.assign({createdAt: 1}, options.setSort || {}))
-                    .exec($.proxy(function (err, rows) {
-                        this.rows = rows;
-                        if(options.onSetRows) {
-                            options.onSetRows(this);
-                        }
-                        let dir = ngui.__dirname+'/print';
-                        if (!fs.existsSync(dir)){
-                            fs.mkdirSync(dir);
-                        }
-                        let pdf_path = dir+'/'+options.pdf_name+'.pdf';
-                        nwin.print({
-                            headerFooterEnabled: false,
-                            landscape: true,
-                            pdf_path
-                        });
-                        ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
-                            fs.rmRf(dir);
-                        });
-                        nwin.close();
-                    }, this));
-            },
         }, options.methods || {}),
         created: function () {
             if(options.init) {
-                options.init(this);
+                options.init().call(this);
             } else {
                 this.setRows();
             }
             if(options.created) {
-                options.created(this);
+                options.created().call(this);
             }
         },
         mounted: function () {
             if(options.mounted) {
-                options.mounted(this);
+                options.mounted().call(this);
             }
         },
     }

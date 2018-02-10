@@ -30,9 +30,6 @@
     let options = {
         struct,
         title: 'Состояния РЭТ',
-        data: {
-            perPage: 7,
-        },
         async setRows() {
             this.rows = (await dictionary.getDict('condition'));
             this.initTf();

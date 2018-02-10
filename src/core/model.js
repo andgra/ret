@@ -21,9 +21,12 @@ class model {
             this.table.insert(item, (err, item) =>  !err ? resolve(item) : reject(err));
         });
     }
-    delete(id) {
+    delete(attributes) {
+        if(!isObject(attributes)) {
+            attributes = { _id: attributes};
+        }
         return new Promise((resolve, reject) => {
-            this.table.remove({ _id: id }, (err, item) =>  !err ? resolve(item) : reject(err));
+            this.table.remove(attributes, (err, item) =>  !err ? resolve(item) : reject(err));
         });
     }
     firstOrNew(attributes, item) {
@@ -58,6 +61,7 @@ const db = loadTable('db');
 const setTable = loadTable('sets');
 const workTable = loadTable('works');
 const defectTable = loadTable('defects');
+const overrunTable = loadTable('overrun');
 const settingsTable = loadTable('settings');
 const dictionaryTable = loadTable('dictionaries');
-export {db,setTable,workTable,defectTable,settingsTable,dictionaryTable};
+export {db,setTable,workTable,defectTable,overrunTable,settingsTable,dictionaryTable};

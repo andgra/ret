@@ -1,70 +1,51 @@
 <template>
     <div class="settings-container box">
+        <h4>Настройки программы</h4>
+        <form id="settings-form" action="#" onsubmit="return false;">
+            <DateTimePicker label="фильтр даты для таблицы сводных данных" v-model="settings.startDate" :time="false"></DateTimePicker>
 
+            <div class="form-group">
+                <p>Итоги эксплатуации</p>
+                <div class="form-indent">
+                    <mdl-textfield floating-label="год" v-model="settings.resultsYear" type="number"></mdl-textfield>
+                    <!--<DateTimePicker label="начало периода" v-model="settings.resultsStartDate" :time="false"></DateTimePicker>-->
+                    <!--<DateTimePicker label="конец периода" v-model="settings.resultsEndDate" :time="false"></DateTimePicker>-->
+                </div>
+            </div>
+
+            <div class="actions">
+                <mdl-button primary="" raised="" @click.native="saveSettings()">Сохранить</mdl-button>
+            </div>
+        </form>
+        <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 </template>
 
 <script>
-    export default {/*
+    import settings from 'models/settings';
+    export default {
         data() {
             return {
-                options,
-                settings: {},
-                rows: [],
-                statAsu0: 0,
-                statAsu1: 0,
-                statRls0: 0,
-                statRls1: 0,
+                settings: {
+                    startDate: '',
+                    resultsStartDate: '',
+                    resultsEndDate: '',
+                    resultsYear: moment().format('YYYY')
+                },
             }
         },
-        components: {EditedTable},
-        computed: {
-            statAsu5: function () {
-                return this.statAsu0 + this.statAsu1;
-            },
-            statRls5: function () {
-                return this.statRls0 + this.statRls1;
-            },
-            stat0: function () {
-                return this.statAsu0 + this.statRls0;
-            },
-            stat1: function () {
-                return this.statAsu1 + this.statRls1;
-            },
-            stat5: function () {
-                return this.stat0 + this.stat1;
-            },
-        },
         methods: {
-            getInterval(d1, d2) {
-                d1 = moment(d1);
-                d2 = moment(d2);
-                return d1.diff(d2, 'minutes');
-            },
-            updateStat() {
-                this.statAsu0 = this.rows.filter(function (item) {
-                    return item.ret === 'asu' && item.obj === '00000';
-                }).length;
-                this.statAsu1 = this.rows.filter(function (item) {
-                    return item.ret === 'asu' && item.obj === '11111';
-                }).length;
-                this.statRls0 = this.rows.filter(function (item) {
-                    return item.ret === 'rls' && item.obj === '00000';
-                }).length;
-                this.statRls1 = this.rows.filter(function (item) {
-                    return item.ret === 'rls' && item.obj === '11111';
-                }).length;
-            },
+            async saveSettings() {
+                await settings.saveAll(this.settings);
+                this.$root.$emit('msgSent', {message: 'Сохранено'});
+                return false;
+            }
         },
-        created() {
-            this.watchCollection(['rows'], this.updateStat, {deep: true});
+        async created() {
+            this.settings = await settings.all();
+//            this.$watch('settings',this.saveSetting);
         },
         mounted() {
-
-            $('#testInp').datetimepicker({
-                format: 'd.m.Y H:i',
-            });
-            console.log($('#testInp'));
-        }*/
+        }
     };
 </script>

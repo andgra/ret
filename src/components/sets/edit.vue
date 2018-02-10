@@ -10,7 +10,7 @@
                         <mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield--full-width"></mdl-select>
                         <mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-textfield floating-label="тип РЭТ в наличии" v-model="props.editingRow.type.real" class="mdl-textfield--full-width"></mdl-textfield>
+                        <mdl-autocomplete id="editingTypeReal" label="тип РЭТ в наличии" v-model.lazy="props.editingRow.type.real" :options="props.dicts.type.real" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield floating-label="заводской номер" v-model="props.editingRow.serial" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-textfield floating-label="год изготовления" v-model="props.editingRow.serial" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                         <div class="form-group">
@@ -98,7 +98,7 @@
             {
                 id: "repair", title: "Вид и год последнего ремонта", children:
                 [
-                    {id: "type", title: "Вид", type: 'select', items: [{name: 'КР', value: 'kr'}, {name: 'РТС', value: 'rts'}], default: "rk", tablefilter: {type: "select"}},
+                    {id: "type", title: "Вид", type: 'select', default: "КР", tablefilter: {type: "select"}},
                     {id: "year", title: "Год", type: 'number', default: 0, tablesaw: {type: "number"}},
                 ]
             },
@@ -161,14 +161,14 @@
                                 id: "kr", title: "Запас ресурса до КР", children:
                                 [
                                     {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.kr.num = filters.r2(filters.NaN(entity.est.life.kr - entity.elabor.dev.before)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.kr.per = filters.r2(filters.NaN(entity.elabor.dev.before/entity.est.life.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.kr.per = filters.r2(filters.NaN(entity.elabor.dev.before/entity.est.life.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             },
                             {
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
                                     {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.elabor.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             }
                         ]
@@ -180,14 +180,14 @@
                                 id: "kr", title: "Запас ресурса до КР", children:
                                 [
                                     {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.num = filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before/entity.est.res.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before/entity.est.res.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             },
                             {
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
                                     {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.num = filters.r2(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             }
                         ]
@@ -202,34 +202,7 @@
         struct,
         table: 'sets',
         title: 'Таблица сводных данных',
-        data: {
-            perPage: 7,
-            settings: {},
-            retArray: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}],
-            repairTypeArray: [{name: 'КР', value: 'kr'}, {name: 'РТС', value: 'rts'}],
-            conditionArray: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}],
-        },
-        methods: {
-            async startDateSelect(newVal) {
-                await (settings.startDate = newVal);
-                this.$root.$emit('msgSent', {message: 'Дата изменена'});
-                this.settings.startDate = newVal;
-
-                // filter
-                this.setRows({startDate: newVal})
-            },
-        },
         computed: {},
-        async mounted() {
-            let startDate = setting.startDate;
-            let $startDate = $('#startDate');
-            if ($startDate.next('button').button("option", "label")) {
-                $startDate.val(startDate);
-                $startDate.next('button').button("option", "label", startDate);
-            }
-            this.settings.startDate = startDate;
-            this.setRows({startDate: this.settings.startDate});
-        },
         init: function () {
 
         },
@@ -241,8 +214,10 @@
                     if(!found)
                         return;
                     let newEst = clone(found.est);
-                    if(newEst && isObject(newEst))
+                    if(newEst && isObject(newEst)) {
                         this.editingRow.est = newEst;
+                        this.$root.$emit('msgSent', {message: 'Ресурс РЭТ подставлен'});
+                    }
                 }
             });
         },
@@ -257,15 +232,18 @@
             this.dicts.obj =  dicts[0];
             this.dicts.ret =  dicts[1];
             this.dicts.type.req =  dicts[2];
+            this.dicts.type.real =  dicts[2];
             this.dicts.repair.type =  dicts[3];
             this.dicts.condition =  dicts[4];
         },
         async setRows() {
             // установка фильтра таблицы и заголовка 1-го столбца наработки РЭТ
-            let startDate = (await settings.startDate).value;
+            let startDate = moment((await settings.startDate).value).format('DD.MM.YYYY');
             let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
             cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/,`$1${startDate}$2`);
+            // получение записей таблицы
             this.rows = await set.getItems({startDate});
+            // инициализация tablefilter
             this.initTf();
         },
         async saveRow(item) {

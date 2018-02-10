@@ -13,7 +13,18 @@
                     <!-- входной параметр `to` определяет путь для перехода -->
                     <!-- `<router-link>` по умолчанию преобразуется в тег `<a>` -->
                     <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/settings">Настройки</router-link>
-                    <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/print">Печать</router-link>
+                    <button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
+                        Печать
+                    </button>
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
+                        <li class="mdl-menu__item" onclick="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/results/print')">Итоги эксплуатации</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/overspend/print')">Перерасход</li>
+                    </ul>
+                    <!--<router-link tag="button" class="mdl-button mdl-js-button mdl-button&#45;&#45;white" to="/print">Печать</router-link>-->
                     <!--<button id="settings-menu" class="mdl-button mdl-js-button mdl-button--white">
                         Настройки
                     </button>
@@ -31,17 +42,6 @@
                         <router-link tag="li" to="/dictionary/type" class="mdl-menu__item">Типы РЭТ</router-link>
                         <router-link tag="li" to="/dictionary/repair" class="mdl-menu__item">Типы ремонта</router-link>
                     </ul>
-                    <!--<button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
-                        Печать
-                    </button>
-                    <ul class="mdl-menu mdl-menu&#45;&#45;bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
-                        <li class="mdl-menu__item" onclick="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Итоги эксплуатации</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/overspend/print')">Перерасход</li>
-                    </ul>-->
 
                     <button id="tables-menu" class="mdl-button mdl-js-button mdl-button--white">
                         Таблицы
@@ -50,6 +50,7 @@
                         <router-link tag="li" to="/sets/edit" class="mdl-menu__item">Таблица сводных данных</router-link>
                         <router-link tag="li" to="/defects/edit" class="mdl-menu__item">Справка по состоянию РЭТ</router-link>
                         <router-link tag="li" to="/works/edit" class="mdl-menu__item">Таблица контроля работ представителей промышленности</router-link>
+                        <router-link tag="li" to="/overrun/edit" class="mdl-menu__item">Перерасход РЭТ</router-link>
                     </ul>
                 </nav>
             </div>

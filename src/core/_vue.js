@@ -18,7 +18,7 @@ Vue.component('mdl-autocomplete', MdlAutocomplete);
 import IntervalPicker from "@/common/intervalpicker.vue";
 Vue.component('IntervalPicker', IntervalPicker);
 
-Number.prototype.round = places => {
+Number.prototype.round = function(places) {
     places = Math.pow(10, places);
     return Math.round(this * places) / places;
 };

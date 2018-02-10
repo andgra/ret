@@ -21,6 +21,24 @@ class settings extends model{
             })
         });
     }
+    async saveAll(obj) {
+        for(let key in obj) {
+            this.updateOrCreate({key},{key, value: obj[key]});
+        }
+    }
+    async all() {
+        return new Promise((resolve, reject) => {
+            this.table.find({}).exec((err, items) => {
+                if(!err) {
+                    let res = {};
+                    for(let setting of items) {
+                        res[setting.key] = setting.value;
+                    }
+                    resolve(res);
+                } else reject(err);
+            });
+        });
+    }
 }
 
 export {settings};

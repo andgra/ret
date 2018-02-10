@@ -30,9 +30,6 @@
     let options = {
         struct,
         title: 'Категории РЭТ',
-        data: {
-            perPage: 7,
-        },
         async setRows() {
             this.rows = (await dictionary.getDict('ret'));
             this.initTf();

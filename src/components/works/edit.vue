@@ -51,11 +51,7 @@
 
     let options = {
         struct,
-        table: 'works',
         title: 'Таблица контроля работ представителя промышленности',
-        data: {
-            perPage: 7,
-        },
         async setDicts() {
             let dicts = await Promise.all([
                 dictionary.getDict('obj'),

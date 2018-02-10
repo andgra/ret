@@ -26,12 +26,14 @@ import DictRepair from '@/dictionaries/repair.vue';
 import SetsEdit from '@/sets/edit.vue';
 import DefectsEdit from '@/defects/edit.vue';
 import WorksEdit from '@/works/edit.vue';
+import OverrunEdit from '@/overrun/edit.vue';
+
 import DefectsPrint from '@/defects/print.vue';
 import WorksPrint from '@/works/print.vue';
 import ResultsPrint from '@/results/print.vue';
 import OperationsPrint from '@/operations/print.vue';
 import ResourcesPrint from '@/resources/print.vue';
-import OverspendPrint from '@/overspend/print.vue';
+import OverrunPrint from '@/overrun/print.vue';
 
 // 1. Определение путей
 // Каждый путь должен указывать на компонент
@@ -49,12 +51,13 @@ const routes = [
     {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
     {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
     {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
+    {path: '/overrun/edit', component: OverrunEdit, meta: {layout: 'appLayout'}},
     {path: '/defects/print', component: DefectsPrint, meta: {layout: 'printLayout'}},
     {path: '/works/print', component: WorksPrint, meta: {layout: 'printLayout'}},
     {path: '/results/print', component: ResultsPrint, meta: {layout: 'printLayout'}},
     {path: '/operations/print', component: OperationsPrint, meta: {layout: 'printLayout'}},
     {path: '/resources/print', component: ResourcesPrint, meta: {layout: 'printLayout'}},
-    {path: '/overspend/print', component: OverspendPrint, meta: {layout: 'printLayout'}},
+    {path: '/overrun/print', component: OverrunPrint, meta: {layout: 'printLayout'}},
 ];
 
 // 2. Создаём экземпляр роутера с опцией `routes`

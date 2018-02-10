@@ -213,7 +213,7 @@ select[multiple="multiple"].ezSelectEditor {
     margin: 0;
     padding: 0 0 0 .2em;
     width: 100%;
-    height: 35px;
+    height: 2em;
     vertical-align: middle;
     border-radius: 2px;
     box-sizing: border-box;
@@ -742,7 +742,7 @@ table.TF th:last-child {
 
 table.TF td {
     margin: 0;
-    padding: .5em .7em;
+    padding: 0.1em .7em;
     border-bottom: 1px solid #c6c6c6
 }
 

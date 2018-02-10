@@ -8,6 +8,15 @@ class defect extends model{
     getItems() {
         return this.all();
     }
+    getResults() {
+        return new Promise((resolve, reject) => {
+            this.table.find({
+                $where: function () {
+                    return this.recovery!==null && this.recovery!==undefined && this.recovery!=="";
+                }
+            }).exec((err, rows) => !err ? resolve(rows) : reject(err));
+        });
+    }
 }
 
 export {defect};

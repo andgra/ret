@@ -1,3 +1,9 @@
+.table-container {
+  h4 {
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+}
 .edited-table {
   th {
     font-weight: bold;
@@ -5,11 +11,12 @@
     color: black;
     //border: 1px solid black !important;
     padding: 0 14px;
-    height: 3.5em;
+    height: 2em !important;
   }
   tbody {
     td {
       white-space: normal;
+      height: 2em !important;
     }
   }
 }
@@ -26,7 +33,14 @@
 }
 
 .mdl-data-table td, .mdl-data-table th {
-  padding: 5px;
+  padding: 0.1em .7em !important;
+}
+.mdl-data-table td {
+  height: auto;
+}
+
+.mdl-data-table tbody tr {
+  height: auto;
 }
 
 .table-container {

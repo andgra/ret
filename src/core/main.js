@@ -1,7 +1,7 @@
 window.ngui = require('nw.gui');
 window.nwin = ngui.Window.get();
 nwin.maximize();
-nwin.showDevTools();
+// nwin.showDevTools();
 window.fs = require("fs");
 import '../sass/main.scss';
 
@@ -52,7 +52,7 @@ window.getInObj = function (obj, path, cloneRes = false) {
 };
 
 window.openPdf = function (name) {
-    ngui.Window.open('index.html?route=' + name, {show: false});
+    ngui.Window.open('public/index.html?route=' + name, {show: false});
 };
 
 fs.rmRf = function (path) {

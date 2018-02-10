@@ -58,9 +58,6 @@
     let options = {
         struct,
         title: 'Типы РЭТ',
-        data: {
-            perPage: 7,
-        },
         async setRows() {
             this.rows = (await dictionary.getDict('type'));
             this.initTf();

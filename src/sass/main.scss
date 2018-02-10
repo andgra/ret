@@ -156,10 +156,12 @@ body {
 .box {
   padding: 25px;
   background: #fff;
-  float: left;
-  width: 100%;
-  margin-left: -10px;
+  width: 80%;
+  margin: 20px auto;
   border-radius: 3px;
-  margin-bottom: 30px;
   border: 1px solid #d5d5d5;
+}
+
+.mdl-textfield__input[readonly] {
+  background-color: #eaeaea;
 }

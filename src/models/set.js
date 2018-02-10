@@ -7,7 +7,7 @@ class set extends model{
     }
     getItems(filter) {
         return new Promise((resolve, reject) => {
-            setTable.find({
+            this.table.find({
                 $where: function () {
                     if (!filter || !filter.startDate)
                         return true;

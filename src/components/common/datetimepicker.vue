@@ -56,7 +56,7 @@
             componentHandler.upgradeElement(this.$el);
 
             $(this.$refs.focusTarget).datetimepicker({
-                format: 'd.m.Y H:i',
+                format: 'd.m.Y'+(this.time?' H:i':''),
                 onChangeDateTime: newVal => {
                     this.$emit('input', newVal);
                     if (this.onSelect) {
