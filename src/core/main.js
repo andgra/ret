@@ -481,7 +481,24 @@ window.clone = (item) => {
     }
 
     return result;
-}
+};
+
+window.printContent = (name) => {
+    let dir = ngui.__dirname+'/print';
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+    let pdf_path = `${dir}/${name}.pdf`;
+    nwin.print({
+        headerFooterEnabled: false,
+        landscape: true,
+        pdf_path
+    });
+    ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
+        fs.rmRf(dir);
+    });
+    // nwin.close();
+};
 
 
 import 'core/_vue';

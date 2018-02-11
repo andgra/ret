@@ -168,11 +168,11 @@ select[multiple="multiple"].ezSelectEditor {
 
 .fltrow {
     height: 1em;
-    background-color: white;
+    background-color: silver;
 }
 
 .fltrow td {
-    border-bottom: 1px solid black !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     border-top: 1px solid #f4f4f4;
     border-left: 1px solid #ccc;
     border-right: 1px solid #f4f4f4;

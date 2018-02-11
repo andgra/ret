@@ -41,12 +41,12 @@
             {id: "type", title: "Тип РЭТ", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "zav", title: "зав. №", type: 'text', default: ""},
             {id: "arrival", title: "Дата прибытия", type: 'date', default: ""},
-            {id: "title", title: "Наименование работ,<br>обслуживаемая система<br>ВВСТ", type: 'text', default: ""},
-            {id: "factory", title: "Предприятие<br>промышленности", type: 'text', default: ""},
-            {id: "people", title: "Кол-во<br>чел.", type: 'number', default: 0},
-            {id: "senior", title: "Старший бригады<br>ФИО, моб. тел.", type: 'text', default: ""},
-            {id: "envoy", title: "Представитель от<br>в/ч (подразделения)", type: 'text', default: ""},
-            {id: "departure", title: "Дата<br>убытия", type: 'date', default: ""},
+            {id: "title", title: "Наименование работ, <br>обслуживаемая система <br>ВВСТ", type: 'text', default: ""},
+            {id: "factory", title: "Предприятие <br>промышленности", type: 'text', default: ""},
+            {id: "people", title: "Кол-во <br>чел.", type: 'number', default: 0},
+            {id: "senior", title: "Старший бригады <br>ФИО, моб. тел.", type: 'text', default: ""},
+            {id: "envoy", title: "Представитель от <br>в/ч (подразделения)", type: 'text', default: ""},
+            {id: "departure", title: "Дата <br>убытия", type: 'date', default: ""},
         ];
 
     let options = {

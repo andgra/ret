@@ -5,9 +5,15 @@ class settings extends model {
         super();
         this.table = dictionaryTable;
     }
-    getDict(name) {
+    getDict(name,options) {
         return new Promise((resolve, reject) => {
-            this.table.find({dict: name}).sort({createdAt: 1 }).exec((err, items) =>  !err ? resolve(items) : reject(err));
+            let query = this.table.find({dict: name});
+            if(options && options.sort) {
+                query = query.sort(options.sort);
+            } else {
+                query = query.sort({createdAt: 1 });
+            }
+            query.exec((err, items) =>  !err ? resolve(items) : reject(err));
         });
     }
     saveToDict(name, attributes, item) {

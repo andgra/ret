@@ -12,7 +12,7 @@
                         <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-autocomplete id="editingTypeReal" label="тип РЭТ в наличии" v-model.lazy="props.editingRow.type.real" :options="props.dicts.type.real" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield floating-label="заводской номер" v-model="props.editingRow.serial" class="mdl-textfield--full-width"></mdl-textfield>
-                        <mdl-textfield floating-label="год изготовления" v-model="props.editingRow.serial" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                        <mdl-textfield floating-label="год изготовления" v-model="props.editingRow.year" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                         <div class="form-group">
                             <p>вид и год последнего ремонта</p>
                             <div class="form-indent">
@@ -85,16 +85,16 @@
             {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "place", title: "дислокация", type: 'text', default: ""},
             {id: "ret", title: "РЭТ", type: 'select', default: "РЛС", tablefilter: {type: "select"}},
-            {id: "pn", title: "Наличие<br>ПН", type: 'text', default: "", tablefilter: {type: "select"}},
+            {id: "pn", title: "Наличие <br>ПН", type: 'text', default: "", tablefilter: {type: "select"}},
             {
                 id: "type", title: "", children:
                 [
-                    {id: "req", title: "Тип РЭТ<br>по штату", type: 'select', default: "", tablefilter: {type: "select"}},
-                    {id: "real", title: "Тип РЭТ<br>в наличии", type: 'text', default: "", tablefilter: {type: "select"}},
+                    {id: "req", title: "Тип РЭТ <br>по штату", type: 'select', default: "", tablefilter: {type: "select"}},
+                    {id: "real", title: "Тип РЭТ <br>в наличии", type: 'text', default: "", tablefilter: {type: "select"}},
                 ]
             },
-            {id: "serial", title: "Заводской<br>номер", type: 'text', default: ""},
-            {id: "year", title: "Год<br>изготовления", type: 'number', default: 0, tablesaw: {type: "number"}},
+            {id: "serial", title: "Заводской <br>номер", type: 'text', default: ""},
+            {id: "year", title: "Год <br>изготовления", type: 'number', default: 0, tablesaw: {type: "number"}},
             {
                 id: "repair", title: "Вид и год последнего ремонта", children:
                 [
@@ -117,15 +117,15 @@
                     {
                         id: "res", title: "", children:
                         [
-                            {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "kr", title: "ресурс до <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "cancel", title: "ресурс до <br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
                         ]
                     },
                     {
                         id: "life", title: "", children:
                         [
-                            {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "kr", title: "срок службы <br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "cancel", title: "срок службы <br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
                         ]
                     }
                 ]
@@ -136,17 +136,17 @@
                     {
                         id: "elabor", title: "", children:
                         [
-                            {id: "total", title: "наработка с начала<br>эксплуатации на<br>01.07.17 (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "before", title: "наработка до<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "after", title: "наработка после<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "total", title: "наработка с начала <br>эксплуатации на <br>01.07.17 (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "before", title: "наработка до <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "after", title: "наработка после <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
                         ]
                     },
                     {
                         id: "dev", title: "", children:
                         [
-                            {id: "total", title: "отработано<br>ВСЕГО (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "before", title: "отработано<br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "after", title: "отработано<br>после КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "total", title: "отработано <br>ВСЕГО (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "before", title: "отработано <br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {id: "after", title: "отработано <br>после КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
                         ]
                     }
                 ]
@@ -209,7 +209,8 @@
         async created() {
             // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
             this.$watch('editingRow.type.req',(newVal) => {
-                if(this.dicts && this.dicts.type && this.dicts.type.req && this.dicts.type.req.length) {
+                if(this.dicts && this.dicts.type && this.dicts.type.req && this.dicts.type.req.length
+                    && !this.editingRow.est.res.kr && !this.editingRow.est.res.cancel && !this.editingRow.est.life.kr && !this.editingRow.est.life.cancel) {
                     let found = this.dicts.type.req.find(item => ( item.name == newVal ));
                     if(!found)
                         return;

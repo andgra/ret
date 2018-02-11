@@ -35,10 +35,10 @@ window.filters = {
         return isNumeric(value) ? value.round(2) : value;
     },
     myDate(value) {
-        return value ? moment(value).format('DD.MM.YYYY') : '';
+        return moment(value).isValid() ? moment(value).format('DD.MM.YYYY') : '';
     },
     myDateTime(value) {
-        return value ? moment(value).format('DD.MM.YYYY HH:mm') : '';
+        return moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
     },
     myInterval(value) {
         let data = {};

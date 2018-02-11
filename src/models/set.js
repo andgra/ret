@@ -16,6 +16,15 @@ class set extends model{
             }).sort({createdAt: 1}).exec((err, rows) => !err ? resolve(rows) : reject(err));
         });
     }
+    getOperations() {
+        return new Promise((resolve, reject) => {
+            this.table.find({
+                $where: function () {
+                    return this.year!==null && this.year!==undefined && this.year!=="" && this.year!==0;
+                }
+            }).exec((err, rows) => !err ? resolve(rows) : reject(err));
+        });
+    }
 }
 
 export {set};

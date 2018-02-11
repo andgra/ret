@@ -478,7 +478,6 @@
             initTfConf() {
                 let heading = this.controlEdit+this.controlRemove*2+1;
                 let trailing = this.controlDates*2+this.controlEdit+this.controlRemove;
-                console.log(heading,trailing);
                 for(let i in this.grid) {
                     if(Number(i)+1<this.grid.length) {
                         if(this.grid[i][0].title==="") {
@@ -507,7 +506,6 @@
                     locale: "ru",
                     refresh_filters: true,
                 };
-                console.log(this.controlRemove);
                 if(this.controlEdit) {
                     tfConf["col_"+(this.controlRemove)] = "none";
                     tfConf["col_"+(Number(this.grid.last().length)+(this.controlRemove*2+2+this.controlDates*2))] = "none";

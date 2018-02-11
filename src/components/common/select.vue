@@ -42,6 +42,7 @@
                                 value: option
                             }
                         } else {
+                            if(option.name === undefined) option.name = option.value;
                             return option
                         }
                     })
@@ -73,6 +74,7 @@
                 setTimeout(() => this.emitSelect(), 0);
             },
             options: function () {
+                console.log(this.options)
                 componentHandler.upgradeElements(this.$el);
                 this.setName();
                 setTimeout(() => this.emitSelect(), 0);

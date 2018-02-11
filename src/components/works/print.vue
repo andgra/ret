@@ -20,7 +20,7 @@
                 <td>{{index + 1}}</td>
                 <td>{{row.place}}</td>
                 <td>{{row.type}}<br>{{row.zav}}</td>
-                <td>{{row.arrival}}</td>
+                <td>{{row.arrival | myDate}}</td>
                 <td class="textarea-output">{{row.title}}</td>
                 <td>{{row.factory}}</td>
                 <td>{{row.people}}</td>
@@ -34,36 +34,32 @@
 </template>
 
 <script>
-    import PrintTable from '../mixins/print-table';
+    import work from 'models/work';
+    import dictionary from 'models/dictionary';
 
-    let rowSeed = {
-        _id: "",
-        place: "",
-        type: "",
-        zav: "",
-        arrival: moment().format('DD.MM.YYYY'),
-        title: "",
-        factory: "",
-        people: 0,
-        senior: "",
-        envoy: "",
-        departure: "",
-    };
-    let selSeed = recValue(rowSeed, 1);
-    selSeed.createdAt = 1;
-    selSeed.updatedAt = 1;
 
-    let vm = PrintTable({
-        rowSeed,
-        selSeed,
-        table: 'works',
+    export default {
         pdf_name: 'works',
-        setWhere: {
-            $where: function() {
-                return !this.departure || this.departure==="";
+        data() {
+            return {
+                rows: [],
             }
-        }
-    });
+        },
+        methods: {
+            async setRows() {
+                let awaited = await Promise.all([
+                    work.getPrint(),
+                ]);
+                let rows = awaited[0];
+                console.log(rows);
+                this.rows = rows;
 
-    export default vm;
+
+                printContent('works');
+            }
+        },
+        created() {
+            this.setRows();
+        }
+    };
 </script>
