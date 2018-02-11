@@ -6,7 +6,7 @@
 
             <tr class="center-all">
                 <th></th>
-                <th>в/ч 55555</th>
+                <th>всего</th>
                 <th>в/ч 00000 (Речинск)</th>
                 <th>в/ч 11111 (Заречинск)</th>
             </tr>
@@ -48,7 +48,7 @@
                 <td class="center-text">{{index + 1}}</td>
                 <td>{{row.obj}}</td>
                 <td>{{row.place}}</td>
-                <td>{{getName(retArray,row.ret)}}</td>
+                <td>{{row.ret}}</td>
                 <td class="center-text">{{row.type}}<br>{{row.zav}}</td>
                 <td class="center-text">{{row.failure | myDateTime}}</td>
                 <td class="center-text">{{row.faulty}}</td>
@@ -61,38 +61,20 @@
 
 
 <script>
-    import PrintTable from '../mixins/print-table';
+    import defect from 'models/defect';
+    import dictionary from 'models/dictionary';
 
 
-    let rowSeed = {
-        _id: "",
-        obj: "",
-        place: "",
-        ret: "",
-        type: "",
-        zav: "",
-        failure: moment(),
-        faulty: "",
-        measures: "",
-        recovery: "",
-        zip: 0,
-    };
-    let selSeed = recValue(rowSeed, 1);
-    selSeed.createdAt = 1;
-    selSeed.updatedAt = 1;
-
-    let vm = PrintTable({
-        rowSeed,
-        selSeed,
-        table: 'ret',
-        pdf_name: 'ret',
-        data: {
-            retArray: [{name: 'РЛС', value: 'rls'},{name: 'АСУ', value: 'asu'}],
-            statAsu0: 0,
-            statAsu1: 0,
-            statRls0: 0,
-            statRls1: 0,
-
+    export default {
+        pdf_name: 'defects',
+        data() {
+            return {
+                rows: [],
+                statAsu0: 0,
+                statAsu1: 0,
+                statRls0: 0,
+                statRls1: 0,
+            }
         },
         computed: {
             statAsu5: function() {
@@ -112,27 +94,48 @@
             },
         },
         methods: {
-        },
-        onSetRows (self) {
-            self.statAsu0 = self.rows.filter(function (item) {
-                return item.ret === 'asu' && item.obj === '00000';
-            }).length;
-            self.statAsu1 = self.rows.filter(function (item) {
-                return item.ret === 'asu' && item.obj === '11111';
-            }).length;
-            self.statRls0 = self.rows.filter(function (item) {
-                return item.ret === 'rls' && item.obj === '00000';
-            }).length;
-            self.statRls1 = self.rows.filter(function (item) {
-                return item.ret === 'rls' && item.obj === '11111';
-            }).length;
-        },
-        setWhere: {
-            $where: function() {
-                return !this.recovery || this.recovery==="";
-            }
-        }
-    });
+            async setRows() {
+                let awaited = await Promise.all([
+                    defect.getPrint(),
+                ]);
+                let rows = awaited[0];
+                console.log(rows);
 
-    export default vm;
+
+                this.statAsu0 = rows.filter(function (item) {
+                    return item.ret === 'АСУ' && item.obj === '00000';
+                }).length;
+                this.statAsu1 = rows.filter(function (item) {
+                    return item.ret === 'АСУ' && item.obj === '11111';
+                }).length;
+                this.statRls0 = rows.filter(function (item) {
+                    return item.ret === 'РЛС' && item.obj === '00000';
+                }).length;
+                this.statRls1 = rows.filter(function (item) {
+                    return item.ret === 'РЛС' && item.obj === '11111';
+                }).length;
+                this.rows = rows;
+
+
+
+                let dir = ngui.__dirname+'/print';
+                if (!fs.existsSync(dir)){
+                    fs.mkdirSync(dir);
+                }
+                let pdf_path = dir+'/defects.pdf';
+                nwin.print({
+                    headerFooterEnabled: false,
+                    landscape: true,
+                    pdf_path
+                });
+                ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
+                    fs.rmRf(dir);
+                });
+                nwin.close();
+            }
+        },
+        created() {
+            this.setRows();
+        }
+    };
 </script>

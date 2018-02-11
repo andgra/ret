@@ -43,15 +43,18 @@ import OverrunPrint from '@/overrun/print.vue';
 const routes = [
     {path: '/settings', component: Settings, meta: {layout: 'appLayout'}},
     {path: '/print', component: Print, meta: {layout: 'appLayout'}},
+
     {path: '/dictionary/condition', component: DictCondition, meta: {layout: 'appLayout'}},
     {path: '/dictionary/obj', component: DictObj, meta: {layout: 'appLayout'}},
     {path: '/dictionary/ret', component: DictRet, meta: {layout: 'appLayout'}},
     {path: '/dictionary/type', component: DictType, meta: {layout: 'appLayout'}},
     {path: '/dictionary/repair', component: DictRepair, meta: {layout: 'appLayout'}},
+
     {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
     {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
     {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
     {path: '/overrun/edit', component: OverrunEdit, meta: {layout: 'appLayout'}},
+
     {path: '/defects/print', component: DefectsPrint, meta: {layout: 'printLayout'}},
     {path: '/works/print', component: WorksPrint, meta: {layout: 'printLayout'}},
     {path: '/results/print', component: ResultsPrint, meta: {layout: 'printLayout'}},

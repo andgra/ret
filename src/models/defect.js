@@ -17,6 +17,15 @@ class defect extends model{
             }).exec((err, rows) => !err ? resolve(rows) : reject(err));
         });
     }
+    getPrint() {
+        return new Promise((resolve, reject) => {
+            this.table.find({
+                $where: function () {
+                    return !this.recovery || this.recovery==="";
+                }
+            }).exec((err, rows) => !err ? resolve(rows) : reject(err));
+        });
+    }
 }
 
 export {defect};

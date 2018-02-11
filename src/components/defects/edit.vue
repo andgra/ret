@@ -12,7 +12,7 @@
 
             <tr class="center-all">
                 <th class="mdl-data-table__cell--non-numeric"></th>
-                <th class="mdl-data-table__cell--non-numeric">в/ч 55555</th>
+                <th class="mdl-data-table__cell--non-numeric">всего</th>
                 <th class="mdl-data-table__cell--non-numeric">в/ч 00000 (Речинск)</th>
                 <th class="mdl-data-table__cell--non-numeric">в/ч 11111 (Заречинск)</th>
             </tr>
@@ -144,16 +144,16 @@
             },
             updateStat() {
                 this.statAsu0 = this.rows.filter(function (item) {
-                    return item.ret === 'asu' && item.obj === '00000';
+                    return item.ret === 'АСУ' && item.obj === '00000';
                 }).length;
                 this.statAsu1 = this.rows.filter(function (item) {
-                    return item.ret === 'asu' && item.obj === '11111';
+                    return item.ret === 'АСУ' && item.obj === '11111';
                 }).length;
                 this.statRls0 = this.rows.filter(function (item) {
-                    return item.ret === 'rls' && item.obj === '00000';
+                    return item.ret === 'РЛС' && item.obj === '00000';
                 }).length;
                 this.statRls1 = this.rows.filter(function (item) {
-                    return item.ret === 'rls' && item.obj === '11111';
+                    return item.ret === 'РЛС' && item.obj === '11111';
                 }).length;
             },
         },
