@@ -52,9 +52,11 @@
             let lists = await Promise.all([
                 set.getItems(),
                 overrun.getItems(),
+                dictionary.getDict('type', {'sort': {'value': 1}})
             ]);
             this.dicts.sets = lists[0];
             let dbRows = lists[1];
+            let typesDict = lists[2];
             let types = {
                 all: [],
                 req: {},
@@ -80,6 +82,9 @@
                     if(types.active[set.type.real])types.active[set.type.real]++;
                     else types.active[set.type.real]=1;
                 }
+            }
+            for(let type of typesDict) {
+                types.all.push(type.value);
             }
             types.all = [...new Set(types.all)];
             let rows = [];

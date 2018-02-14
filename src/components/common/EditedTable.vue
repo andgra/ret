@@ -3,18 +3,18 @@
         <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
             <thead>
             <tr data-tablesaw-ignorerow="" v-show="options.title">
-                <th :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                <th :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
                     <h4>{{options.title}}</h4>
                 </th>
             </tr>
             <tr v-for="(row,j) in grid" v-if="j<grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                <th v-for="(cell,i) in row" :colspan="cell.colspan">{{cell.title}}</th>
+                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-if="cell.colspan">{{cell.title}}</th>
             </tr>
             <tr class="center-all wide-all">
                 <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
                 <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
-                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-if="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <template v-if="controlDates">
                     <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
                     <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
@@ -28,12 +28,12 @@
                 <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px"><i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px"><i class="fa fa-times"></i></td>
                 <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
                     <label>{{getValue(row,cell.id)}}</label>
                 </td>
                 <template v-if="controlDates">
-                    <td v-if="sel.createdAt" class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
-                    <td v-if="sel.updatedAt" class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
+                    <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
+                    <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
                 </template>
                 <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px"><i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px"><i class="fa fa-times"></i></td>
@@ -41,16 +41,16 @@
             </tbody>
             <tfoot>
             <tr class="hidden">
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id"></td>
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan"></td>
                 <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
             </tr>
             <tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                <td :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
                     <div id="paging"></div>
                 </td>
             </tr>
             <tr>
-                <td :colspan="selFooter" class="mdl-data-table__cell--non-numeric">
+                <td :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
                     <mdl-button :disabled="edit" v-if="controlAdd" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
                     <mdl-button :disabled="edit || checks.length===0" v-if="controlRemove" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
                     <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
@@ -106,10 +106,7 @@
         data: function () {
             let struct = this.options.struct;
             let rowSeed = getSeed({children: struct});
-            let selSeed = recValue(rowSeed, 1);
             rowSeed._id = "";
-            selSeed.createdAt = 1;
-            selSeed.updatedAt = 1;
 
             /*struct.unshift({id: "checks", title: "1", type: String, default: ""});
             struct.unshift({
@@ -153,9 +150,7 @@
                 united,
                 grid,
                 rowSeed,
-                selSeed,
                 editingRow: clone(rowSeed),
-                sel: clone(selSeed),
                 toRemove: [],
                 tfConf: {},
                 test: "",
@@ -177,10 +172,11 @@
                 return this.options.edit === undefined || this.options.edit ? 1 : 0;
             },
             isClosed: function () {
-                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
+//                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
+                return false;
             },
-            selFooter: function () {
-                return (this.controlEdit*2) + (this.controlRemove*3 - 1) + this.getSelCnt(this.selSeed) + (this.controlDates*2);
+            colspanFooter: function () {
+                return (this.controlEdit*2) + (this.controlRemove*3) + this.getColspan(this.grid.last()) + (this.controlDates*2) + 1;
             },
             copyRows: function () {
                 return clone(this.rows);
@@ -252,18 +248,6 @@
                 return getInObj(...args);
             },
             getItems(path) {
-//                if(this.test!=="") {
-//                    for (let cell of this.grid.last()) {
-//                        if (cell.id === path) {
-//                            return clone(cell.items).map(item => {
-//                                item.value += (new Date()).getSeconds();
-//                                item.name += (new Date()).getSeconds();
-//                                return item;
-//                            });
-//                        }
-//                    }
-//                }
-//                this.test = "123";
                 let items = getInObj(this.dicts,path);
                 if(items) {
                     return items.map(item => (item.value));
@@ -274,11 +258,18 @@
 
             },
             removeClosed: function () {
-                this.sel = clone(this.selSeed);
+//                this.sel = clone(this.selSeed);
                 return true;
             },
             recValue: function (arr, val) {
                 return recValue(arr, val);
+            },
+            getColspan: function (arr) {
+                let res = 0;
+                for (let cell of arr) {
+                    res += cell.colspan;
+                }
+                return res;
             },
             getSelCnt: function (arr) {
                 arr = clone(arr);
@@ -480,6 +471,9 @@
                 let trailing = this.controlDates*2+this.controlEdit+this.controlRemove;
                 for(let i in this.grid) {
                     if(Number(i)+1<this.grid.length) {
+                        for(let cell of this.grid[i]) {
+                            cell.orig = cell.colspan;
+                        }
                         if(this.grid[i][0].title==="") {
                             this.grid[i][0].colspan += heading;
                         } else {
@@ -490,6 +484,10 @@
                             this.grid[i].last().colspan += trailing;
                         } else {
                             this.grid[i].push({title: "",colspan:trailing})
+                        }
+                    } else {
+                        for(let j in this.grid[i]) {
+                            this.grid[i][j].num = Number(JSON.parse(JSON.stringify(j)));
                         }
                     }
                 }
@@ -587,14 +585,35 @@
                 }
             });
 
-            $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', $.proxy(function (e, tablesaw) {
-                $('.tablesaw-toggle-cellhidden').each($.proxy((i, th) => {
-                    let model = th.getAttribute('data-sort');
-                    eval('this.sel.' + model + ' = 0;');
-                }, this))
-            }, this));
+            $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
+                let th = $(e.target).data("tablesaw-header");
+                let id = $(th).data('sort');
+                let change = e.target.checked ? 1 : -1;
+                let targetCell = this.grid.last().find(item => ( item.id == id ));
+                targetCell.colspan += change;
+                let tfRow = $('.'+this.tf.fltsRowCssClass)[0];
+                if(tfRow) {
+                    let heading = this.controlEdit+this.controlRemove*2+1;
+                    let tfCell = tfRow.children[heading+Number(targetCell.num)];
+                    tfCell.style.display = e.target.checked ? '' : 'none';
+                    console.log();
+                }
+                for (let i in this.grid) {
+                    if (Number(i) + 1 < this.grid.length) {
+                        let cnt = 0;
+                        for (let cell of this.grid[i]) {
+                            cnt += cell.orig;
+                            if(targetCell.num<cnt) {
+                                cell.colspan += change;
+                                console.log(cell, cnt, targetCell);
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
 
-            $tCont.on('click', '.sortable', $.proxy(function (e) {
+            $tCont.on('click', '.sortable', e => {
                 let $th = $(e.target);
                 if (!$th.hasClass('sortable')) {
                     return false;
@@ -643,10 +662,10 @@
                 }
 
                 this.rows.sort(compare);
-            }, this));
+            });
 
             if (this.options.mounted) {
-                $.proxy(this.options.mounted, this)();
+                this.options.mounted.call(this);
             }
         },
     }
