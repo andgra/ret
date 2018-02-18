@@ -32,7 +32,6 @@
         title: 'Типы ремонта',
         async setRows() {
             this.rows = (await dictionary.getDict('repair'));
-            this.initTf();
         },
         async saveRow(item) {
             return await dictionary.saveToDict('repair', {_id: item._id}, item);

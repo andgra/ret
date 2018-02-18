@@ -106,8 +106,6 @@
                 });
             }
             this.rows = rows;
-            console.log(types,rows);
-            this.initTf();
         },
         async saveRow(item) {
             return await overrun.updateOrCreate({type:item.type}, item);

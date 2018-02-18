@@ -32,7 +32,6 @@
         title: 'Военные части',
         async setRows() {
             this.rows = (await dictionary.getDict('obj'));
-            this.initTf();
         },
         async saveRow(item) {
             return await dictionary.saveToDict('obj', {_id: item._id}, item);

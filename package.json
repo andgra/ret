@@ -1,5 +1,5 @@
 {
-  "name": "acc",
+  "name": "RET",
   "version": "1.0.0",
   "description": "",
   "main": "public/index.html",
@@ -59,13 +59,18 @@
     "webpack-notifier": "^1.5.0"
   },
   "build": {
+    "strippedProperties": [ "scripts", "devDependencies", "build", "dependencies" ],
     "excludes": [
       "src/**/*",
       "node_modules/**/*",
       "package-lock.json",
       "webpack.*",
-      "gulpfile.js"
+      "gulpfile.js",
+      "icon.*"
     ],
+    "win": {
+      "icon": "icon.ico"
+    },
     "nwVersion": "0.14.7"
   }
 }

@@ -32,7 +32,6 @@
         title: 'Состояния РЭТ',
         async setRows() {
             this.rows = (await dictionary.getDict('condition'));
-            this.initTf();
         },
         async saveRow(item) {
             return await dictionary.saveToDict('condition', {_id: item._id}, item);

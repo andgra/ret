@@ -64,7 +64,6 @@
         },
         async setRows(filter) {
             this.rows = await work.getItems(filter);
-            this.initTf();
         },
         async saveRow(item) {
             return await work.updateOrCreate({_id:item._id}, item);

@@ -95,7 +95,6 @@
             this.$parent.objDict = this.dicts.obj = awaited[2];
             this.dicts.type =  awaited[3];
             this.$parent.updateStats();
-            this.initTf();
         },
         async saveRow(item) {
             return await defect.updateOrCreate({_id:item._id}, item);

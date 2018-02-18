@@ -32,7 +32,6 @@
         title: 'Категории РЭТ',
         async setRows() {
             this.rows = (await dictionary.getDict('ret'));
-            this.initTf();
         },
         async saveRow(item) {
             return await dictionary.saveToDict('ret', {_id: item._id}, item);

@@ -60,7 +60,6 @@
         title: 'Типы РЭТ',
         async setRows() {
             this.rows = (await dictionary.getDict('type'));
-            this.initTf();
         },
         async saveRow(item) {
             return await dictionary.saveToDict('type', {_id: item._id}, item);

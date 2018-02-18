@@ -16,8 +16,8 @@
                 <th scope="col" class="text-center" width="50px">№</th>
                 <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <template v-if="controlDates">
-                    <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
-                    <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
+                    <th class="sortable">Создан</th>
+                    <th class="sortable">Изменен</th>
                 </template>
                 <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
             </tr>
@@ -444,8 +444,9 @@
                             Vue.set(this.rows, i, this.repairRow(this.rows[i]));
                         }
                         Tablesaw.init();
-                        this.initGrid();
+                        // инициализация tablefilter
                         this.initTfConf();
+                        this.initTf();
                     });
                 } else {
                     throw new Error('setRow не определено');
@@ -594,6 +595,7 @@
             }
         },
         mounted: function () {
+            this.initGrid();
             let $tCont = $('.table-container');
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
@@ -601,13 +603,15 @@
                 let th = $(e.target).data("tablesaw-header");
                 let id = $(th).data('sort');
                 let change = e.target.checked ? 1 : -1;
-                console.log(th,id,change,clone(this.grid.last()));
                 let targetCell = this.grid.last().find(item => ( item.id == id ));
+                console.log(th,id,change,targetCell,clone(this.grid.last()));
                 targetCell.colspan += change;
-                let tfRow = $('.'+this.tf.fltsRowCssClass)[0];
-                if(tfRow) {
-                    this.initTfConf();
-                    this.initTf();
+                if(this.tf) {
+                    let tfRow = $('.' + this.tf.fltsRowCssClass)[0];
+                    if (tfRow) {
+                        this.initTfConf();
+                        this.initTf();
+                    }
                 }
                 for (let i in this.grid) {
                     if (Number(i) + 1 < this.grid.length) {

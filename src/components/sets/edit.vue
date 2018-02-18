@@ -89,8 +89,20 @@
             {
                 id: "type", title: "", children:
                 [
-                    {id: "req", title: "Тип РЭТ <br>по штату", type: 'select', default: "", tablefilter: {type: "select"}},
-                    {id: "real", title: "Тип РЭТ <br>в наличии", type: 'text', default: "", tablefilter: {type: "select"}},
+                    {
+                        id: "req",
+                        title: "Тип РЭТ <br>по штату",
+                        type: 'select',
+                        default: "",
+                        tablefilter: {type: "select"}
+                    },
+                    {
+                        id: "real",
+                        title: "Тип РЭТ <br>в наличии",
+                        type: 'text',
+                        default: "",
+                        tablefilter: {type: "select"}
+                    },
                 ]
             },
             {id: "serial", title: "Заводской <br>номер", type: 'text', default: ""},
@@ -102,7 +114,14 @@
                     {id: "year", title: "Год", type: 'number', default: 0, tablesaw: {type: "number"}},
                 ]
             },
-            {id: "condition", title: "Состояние РЭТ", type: 'select', items: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}], default: "in_prod", tablefilter: {type: "select"}},
+            {
+                id: "condition",
+                title: "Состояние РЭТ",
+                type: 'select',
+                items: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}],
+                default: "in_prod",
+                tablefilter: {type: "select"}
+            },
             {
                 id: "resp", title: "Отв. за эксплуатацию, уход и сбережение", children:
                 [
@@ -117,15 +136,39 @@
                     {
                         id: "res", title: "", children:
                         [
-                            {id: "kr", title: "ресурс до <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "ресурс до <br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {
+                                id: "kr",
+                                title: "ресурс до <br>КР (час.)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "cancel",
+                                title: "ресурс до <br>списания (час.)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
                         ]
                     },
                     {
                         id: "life", title: "", children:
                         [
-                            {id: "kr", title: "срок службы <br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "срок службы <br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {
+                                id: "kr",
+                                title: "срок службы <br>до КР (лет)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "cancel",
+                                title: "срок службы <br>до списания (лет)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
                         ]
                     }
                 ]
@@ -136,17 +179,53 @@
                     {
                         id: "elabor", title: "", children:
                         [
-                            {id: "total", title: "наработка с начала <br>эксплуатации на <br>01.07.17 (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "before", title: "наработка до <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "after", title: "наработка после <br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {
+                                id: "total",
+                                title: "наработка с начала <br>эксплуатации на <br>01.07.17 (час.)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "before",
+                                title: "наработка до <br>КР (час.)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "after",
+                                title: "наработка после <br>КР (час.)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
                         ]
                     },
                     {
                         id: "dev", title: "", children:
                         [
-                            {id: "total", title: "отработано <br>ВСЕГО (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "before", title: "отработано <br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "after", title: "отработано <br>после КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                            {
+                                id: "total",
+                                title: "отработано <br>ВСЕГО (лет)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "before",
+                                title: "отработано <br>до КР (лет)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
+                            {
+                                id: "after",
+                                title: "отработано <br>после КР (лет)",
+                                type: 'number',
+                                default: 0,
+                                tablesaw: {type: "number"}
+                            },
                         ]
                     }
                 ]
@@ -160,15 +239,35 @@
                             {
                                 id: "kr", title: "Запас ресурса до КР", children:
                                 [
-                                    {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.kr.num = filters.r2(filters.NaN(entity.est.life.kr - entity.elabor.dev.before)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.kr.per = filters.r2(filters.NaN(entity.elabor.dev.before/entity.est.life.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {
+                                        id: "num", title: "лет", type: 'text', cb(value, entity) {
+                                        value = entity.stock.year.kr.num = filters.r2(filters.NaN(entity.est.life.kr - entity.elabor.dev.before));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                    },
+                                    {
+                                        id: "per", title: "%", type: 'text', cb(value, entity) {
+                                        value = entity.stock.year.kr.per = filters.r2(filters.NaN(entity.elabor.dev.before / entity.est.life.kr * 100));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                    },
                                 ]
                             },
                             {
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
-                                    {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.dev.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {
+                                        id: "num", title: "лет", type: 'text', cb(value, entity) {
+                                        value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                    },
+                                    {
+                                        id: "per", title: "%", type: 'text', cb(value, entity) {
+                                        value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.dev.total / entity.est.life.cancel * 100));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                    },
                                 ]
                             }
                         ]
@@ -179,15 +278,35 @@
                             {
                                 id: "kr", title: "Запас ресурса до КР", children:
                                 [
-                                    {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.num = filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before/entity.est.res.kr*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {
+                                        id: "num", title: "час", type: 'text', cb(value, entity) {
+                                        value = entity.stock.hour.kr.num = filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                    },
+                                    {
+                                        id: "per", title: "%", type: 'text', cb(value, entity) {
+                                        value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before / entity.est.res.kr * 100));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                    },
                                 ]
                             },
                             {
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
-                                    {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.num = filters.r2(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.res.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {
+                                        id: "num", title: "час", type: 'text', cb(value, entity) {
+                                        value = entity.stock.hour.cancel.num = filters.r2(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                    },
+                                    {
+                                        id: "per", title: "%", type: 'text', cb(value, entity) {
+                                        value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total / entity.est.res.cancel * 100));
+                                        return value
+                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                    },
                                 ]
                             }
                         ]
@@ -195,7 +314,6 @@
                 ]
             },
         ];
-
 
 
     let options = {
@@ -208,14 +326,14 @@
         },
         async created() {
             // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
-            this.$watch('editingRow.type.req',(newVal) => {
-                if(this.dicts && this.dicts.type && this.dicts.type.req && this.dicts.type.req.length
+            this.$watch('editingRow.type.req', (newVal) => {
+                if (this.dicts && this.dicts.type && this.dicts.type.req && this.dicts.type.req.length
                     && !this.editingRow.est.res.kr && !this.editingRow.est.res.cancel && !this.editingRow.est.life.kr && !this.editingRow.est.life.cancel) {
                     let found = this.dicts.type.req.find(item => ( item.name == newVal ));
-                    if(!found)
+                    if (!found)
                         return;
                     let newEst = clone(found.est);
-                    if(newEst && isObject(newEst)) {
+                    if (newEst && isObject(newEst)) {
                         this.editingRow.est = newEst;
                         this.$root.$emit('msgSent', {message: 'Ресурс РЭТ подставлен'});
                     }
@@ -230,25 +348,28 @@
                 dictionary.getDict('repair'),
                 dictionary.getDict('condition'),
             ]);
-            this.dicts.obj =  dicts[0];
-            this.dicts.ret =  dicts[1];
-            this.dicts.type.req =  dicts[2];
-            this.dicts.type.real =  dicts[2];
-            this.dicts.repair.type =  dicts[3];
-            this.dicts.condition =  dicts[4];
+            this.dicts.obj = dicts[0];
+            this.dicts.ret = dicts[1];
+            this.dicts.type.req = dicts[2];
+            this.dicts.type.real = dicts[2];
+            this.dicts.repair.type = dicts[3];
+            this.dicts.condition = dicts[4];
         },
         async setRows() {
+            let filter = {};
             // установка фильтра таблицы и заголовка 1-го столбца наработки РЭТ
-            let startDate = moment((await settings.startDate).value).format('DD.MM.YYYY');
-            let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
-            cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/,`$1${startDate}$2`);
+            let startDateDb = (await settings.startDate);
+            if (startDateDb) {
+                let startDate = moment(startDateDb.value).format('DD.MM.YYYY');
+                let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
+                cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/, `$1${startDate}$2`);
+                filter = {startDate};
+            }
             // получение записей таблицы
-            this.rows = await set.getItems({startDate});
-            // инициализация tablefilter
-            this.initTf();
+            this.rows = await set.getItems(filter);
         },
         async saveRow(item) {
-            return await set.updateOrCreate({_id:item._id}, item);
+            return await set.updateOrCreate({_id: item._id}, item);
         },
         async removeRow(id) {
             await set.delete(id);
