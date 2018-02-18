@@ -1,7 +1,7 @@
 <template>
     <div class="table-container wide">
         <h4>Справка по состоянию РЭТ</h4>
-        <table class="border-all-cells print-table margin-bot">
+        <table class="border-all-cells print-table margin-bot compressed-table">
             <tbody>
 
             <tr class="center-all">
@@ -29,7 +29,7 @@
             </template>
             </tbody>
         </table>
-        <table class="border-all-cells print-table">
+        <table class="border-all-cells print-table compressed-table">
             <thead>
             <tr class="center-all wide-all">
                 <th style="width: 20px">№<br>п/п</th>
@@ -129,7 +129,7 @@
                 this.rows = rows;
 
 
-                printContent(this.pdf_name);
+                printContent(this.pdf_name, true);
             }
         },
         created() {

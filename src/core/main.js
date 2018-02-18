@@ -8,7 +8,7 @@ import '../sass/main.scss';
 
 window.$ = window.jQuery = require('jquery');
 require('tablesaw/dist/tablesaw.jquery');
-require('tablesaw/dist/tablesaw-init');
+// require('tablesaw/dist/tablesaw-init');
 window.TableFilter = require('tablefilter');
 TableFilter.prototype.refresh = function () {
     this.destroy();
@@ -483,7 +483,7 @@ window.clone = (item) => {
     return result;
 };
 
-window.printContent = (name) => {
+window.printContent = (name, landscape = false) => {
     let dir = ngui.__dirname+'/print';
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
@@ -491,7 +491,7 @@ window.printContent = (name) => {
     let pdf_path = `${dir}/${name}.pdf`;
     nwin.print({
         headerFooterEnabled: false,
-        landscape: true,
+        landscape: landscape,
         pdf_path
     });
     ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {

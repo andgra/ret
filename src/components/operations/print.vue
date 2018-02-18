@@ -152,7 +152,7 @@
                 this.rows = res;
 
 
-                printContent(this.pdf_name);
+                printContent(this.pdf_name, true);
             }
         },
         created() {

@@ -1,7 +1,7 @@
 <template>
     <div class="table-container wide">
         <h4>Таблица контроля работ представителя промышленности</h4>
-        <table class="border-all-cells print-table">
+        <table class="border-all-cells print-table compressed-table">
             <thead>
             <tr class="center-all wide-all">
                 <th style="width: 20px">№<br>п/п</th>
@@ -39,10 +39,10 @@
 
 
     export default {
-        pdf_name: 'works',
         data() {
             return {
                 rows: [],
+                pdf_name: 'works',
             }
         },
         methods: {
@@ -55,7 +55,7 @@
                 this.rows = rows;
 
 
-                printContent('works');
+                printContent(this.pdf_name, true);
             }
         },
         created() {

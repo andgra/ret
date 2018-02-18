@@ -8,13 +8,13 @@
                 </th>
             </tr>
             <tr v-for="(row,j) in grid" v-if="j<grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-if="cell.colspan">{{cell.title}}</th>
+                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan">{{cell.title}}</th>
             </tr>
             <tr class="center-all wide-all">
                 <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
                 <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
-                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-if="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <template v-if="controlDates">
                     <th scope="col" data-tablesaw-priority="1" data-sort="createdAt" class="sortable">Создан</th>
                     <th scope="col" data-tablesaw-priority="1" data-sort="updatedAt" class="sortable">Изменен</th>
@@ -149,6 +149,7 @@
                 struct,
                 united,
                 grid,
+                origGrid: clone(grid),
                 rowSeed,
                 editingRow: clone(rowSeed),
                 toRemove: [],
@@ -181,6 +182,12 @@
             copyRows: function () {
                 return clone(this.rows);
             },
+            heading() {
+                return this.controlEdit+this.controlRemove*2+1;
+            },
+            trailing() {
+                return this.controlDates*2+this.controlEdit+this.controlRemove;
+            }
             /*structedGrid() {
                 let resArr = [];
                 function addRec(arr, level = 1) {
@@ -436,6 +443,9 @@
                         for(let i in this.rows) {
                             Vue.set(this.rows, i, this.repairRow(this.rows[i]));
                         }
+                        Tablesaw.init();
+                        this.initGrid();
+                        this.initTfConf();
                     });
                 } else {
                     throw new Error('setRow не определено');
@@ -466,24 +476,22 @@
                 }
                 return row;
             },
-            initTfConf() {
-                let heading = this.controlEdit+this.controlRemove*2+1;
-                let trailing = this.controlDates*2+this.controlEdit+this.controlRemove;
+            initGrid() {
                 for(let i in this.grid) {
                     if(Number(i)+1<this.grid.length) {
                         for(let cell of this.grid[i]) {
                             cell.orig = cell.colspan;
                         }
                         if(this.grid[i][0].title==="") {
-                            this.grid[i][0].colspan += heading;
+                            this.grid[i][0].colspan += this.heading;
                         } else {
-                            this.grid[i].unshift({title: "",colspan:heading})
+                            this.grid[i].unshift({title: "",colspan:this.heading})
                         }
 
                         if(this.grid[i].last().title==="") {
-                            this.grid[i].last().colspan += trailing;
+                            this.grid[i].last().colspan += this.trailing;
                         } else {
-                            this.grid[i].push({title: "",colspan:trailing})
+                            this.grid[i].push({title: "",colspan:this.trailing})
                         }
                     } else {
                         for(let j in this.grid[i]) {
@@ -491,7 +499,8 @@
                         }
                     }
                 }
-
+            },
+            initTfConf() {
                 let tfConf = {
                     filters_row_index: this.grid.length+1,
                     paging: {
@@ -514,20 +523,23 @@
                     tfConf["col_"+(Number(this.grid.last().length)+(this.controlEdit*2+3+this.controlDates*2))] = "none";
                 }
 
+                let j = 0;
                 for(let i in this.grid.last()) {
                     let cell = this.grid.last()[i];
-                    let tablefilter = cell.tablefilter;
-                    if(tablefilter) {
-                        if(tablefilter.type) {
-                            tfConf["col_"+(Number(i)+heading)] = tablefilter.type;
+                    if(cell.colspan) {
+                        let tablefilter = cell.tablefilter;
+                        if (tablefilter) {
+                            if (tablefilter.type) {
+                                tfConf["col_" + (Number(j) + this.heading)] = tablefilter.type;
+                            }
                         }
+                        j++;
                     }
                 }
                 this.tfConf = Object.assign(tfConf, this.options.tfConf || {});
             }
         },
         created: function () {
-            this.initTfConf();
 
             this.setRows();
             window.appt = this;
@@ -555,20 +567,6 @@
                 }
             });
 
-            if (this.options.methods) {
-                for(let name in this.options.methods) {
-                    this[name] = this.options.methods[name];
-                }
-            }
-
-            if (this.options.created) {
-                this.options.created.call(this);
-            }
-        },
-        mounted: function () {
-            let $tCont = $('.table-container');
-//            $tCont.find('.mdl-textfield').addClass('is-dirty');
-
             $(document).on('keyup', e => {
                 if (this.edit) {
                     if (e.keyCode === 13 && ((e.target.type !== 'textarea' && !$(e.target).hasClass('ui-autocomplete-input'))
@@ -585,18 +583,31 @@
                 }
             });
 
-            $(document).on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
+            if (this.options.methods) {
+                for(let name in this.options.methods) {
+                    this[name] = this.options.methods[name];
+                }
+            }
+
+            if (this.options.created) {
+                this.options.created.call(this);
+            }
+        },
+        mounted: function () {
+            let $tCont = $('.table-container');
+//            $tCont.find('.mdl-textfield').addClass('is-dirty');
+
+            $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
                 let th = $(e.target).data("tablesaw-header");
                 let id = $(th).data('sort');
                 let change = e.target.checked ? 1 : -1;
+                console.log(th,id,change,clone(this.grid.last()));
                 let targetCell = this.grid.last().find(item => ( item.id == id ));
                 targetCell.colspan += change;
                 let tfRow = $('.'+this.tf.fltsRowCssClass)[0];
                 if(tfRow) {
-                    let heading = this.controlEdit+this.controlRemove*2+1;
-                    let tfCell = tfRow.children[heading+Number(targetCell.num)];
-                    tfCell.style.display = e.target.checked ? '' : 'none';
-                    console.log();
+                    this.initTfConf();
+                    this.initTf();
                 }
                 for (let i in this.grid) {
                     if (Number(i) + 1 < this.grid.length) {
@@ -605,7 +616,6 @@
                             cnt += cell.orig;
                             if(targetCell.num<cnt) {
                                 cell.colspan += change;
-                                console.log(cell, cnt, targetCell);
                                 break;
                             }
                         }

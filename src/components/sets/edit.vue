@@ -53,13 +53,13 @@
                             <p>Запас ресурса образца РЭТ</p>
                             <div class="form-indent">
                                 <mdl-textfield readonly="" floating-label="до КР (лет)" :value="props.getValue(props.editingRow, 'stock.year.kr.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.year.kr.per')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.year.kr.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield readonly="" floating-label="до списания (лет)" :value="props.getValue(props.editingRow, 'stock.year.cancel.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.year.cancel.per')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.year.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield readonly="" floating-label="до КР (час)" :value="props.getValue(props.editingRow, 'stock.hour.kr.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.hour.kr.per')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.hour.kr.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield readonly="" floating-label="до списания (час)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
                     </form>
@@ -167,8 +167,8 @@
                             {
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
-                                    {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.elabor.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {id: "num", title: "лет", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.dev.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             }
                         ]
@@ -187,7 +187,7 @@
                                 id: "cancel", title: "Запас ресурса до списания", children:
                                 [
                                     {id: "num", title: "час", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.num = filters.r2(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total)); return value }, default: "", tablesaw: {type: "number"}, readonly: true},
-                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.life.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
+                                    {id: "per", title: "%", type: 'text', cb(value,entity) { value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total/entity.est.res.cancel*100)); return value }, default: "", tablesaw: {type: "number"}, readonly: true, format: v=>(v+'%')},
                                 ]
                             }
                         ]

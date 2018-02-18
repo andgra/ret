@@ -2,34 +2,63 @@
     <div class="table-container wide">
         <h4>Итоги эксплуатации</h4>
         <table class="border-all-cells print-table compressed-table">
-            <thead>
+            <thead class="smaller">
             <tr class="center-all wide-all">
-                <th rowspan="2">Период</th>
-                <th rowspan="2">№ в/ч</th>
-                <th colspan="2">Количество</th>
-                <th colspan="2">Общее время простоя</th>
-                <th colspan="2">Среднее время простоя</th>
+                <th rowspan="2">Наименование</th>
+                <th colspan="4">Установленный ресурс</th>
+                <th colspan="2">Запас ресурса до КР</th>
+                <th colspan="2">Запас ресурса до списания</th>
+                <th colspan="2">Запас ресурса до КР</th>
+                <th colspan="2">Запас ресурса до списания</th>
             </tr>
-            <tr class="center-all wide-all smaller">
-                <th>Выходов из строя</th>
-                <th>Длительных выходов (более 5 сут.)</th>
-                <th>С учетом доставки ЗИП</th>
-                <th>Без учета доставки ЗИП</th>
-                <th>С учетом доставки ЗИП</th>
-                <th>Без учета доставки ЗИП</th>
+            <tr class="center-all wide-all">
+                <th>Ресурс до КР (час.)</th>
+                <th>Ресурс до списания (час.)</th>
+                <th>Срок службы до КР (лет)</th>
+                <th>Срок службы до списания (лет)</th>
+                <th>лет</th>
+                <th>%</th>
+                <th>лет</th>
+                <th>%</th>
+                <th>час</th>
+                <th>%</th>
+                <th>час</th>
+                <th>%</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" class="center-all smaller">
-                <td rowspan="3" v-if="index % 3 == 0">{{row.period}}</td>
-                <td>{{row.obj}}</td>
-                <td>{{row.total}}</td>
-                <td>{{row.extended}}</td>
-                <td>{{row.timeZip | myInterval}}</td>
-                <td>{{row.time | myInterval}}</td>
-                <td>{{row.avgTimeZip | myInterval}}</td>
-                <td>{{row.avgTime | myInterval}}</td>
-            </tr>
+            <template v-for="(row, index) in rows">
+                <template v-if="row.empty">
+                    <tr class="center-all smaller">
+                        <td colspan="13" :style="{height: row.rows+'em'}"></td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr :data-id="index" class="center-all smaller">
+                        <td rowspan="2">{{row.title}}</td>
+                        <td>{{row.est.res.kr}}</td>
+                        <td>{{row.est.res.cancel}}</td>
+                        <td>{{row.est.life.kr}}</td>
+                        <td>{{row.est.life.cancel}}</td>
+                        <td>{{row.stock.year.kr.num}}</td>
+                        <td>{{row.stock.year.kr.per}}%</td>
+                        <td>{{row.stock.year.cancel.num}}</td>
+                        <td>{{row.stock.year.cancel.per}}%</td>
+                        <td>{{row.stock.hour.kr.num}}</td>
+                        <td>{{row.stock.hour.kr.per}}%</td>
+                        <td>{{row.stock.hour.cancel.num}}</td>
+                        <td>{{row.stock.hour.cancel.per}}%</td>
+                    </tr>
+                    <tr :data-id="index" class="center-all smaller">
+                        <td colspan="2">{{row.est.res.total}}</td>
+                        <td colspan="2">{{row.est.life.total}}</td>
+                        <td colspan="2">{{row.stock.year.total.num}}</td>
+                        <td colspan="2">{{row.stock.year.total.per}}%</td>
+                        <td colspan="2">{{row.stock.hour.total.num}}</td>
+                        <td colspan="2">{{row.stock.hour.total.per}}%</td>
+                    </tr>
+                </template>
+            </template>
             </tbody>
         </table>
     </div>
@@ -37,139 +66,197 @@
 
 
 <script>
-    import PrintTable from '../mixins/print-table';
+    import set from 'models/set';
+    import dictionary from 'models/dictionary';
 
 
-    let rowSeed = {
-        _id: "",
-        obj: "",
-        place: "",
-        ret: "",
-        type: "",
-        zav: "",
-        failure: moment(),
-        faulty: "",
-        measures: "",
-        recovery: "",
-        zip: 0,
-    };
-    let selSeed = recValue(rowSeed, 1);
-    selSeed.createdAt = 1;
-    selSeed.updatedAt = 1;
-
-    let vm = PrintTable({
-        rowSeed,
-        selSeed,
-        table: 'ret',
-        pdf_name: 'ret',
-        data: {
-
+    export default {
+        data() {
+            return {
+                rows: [],
+                objects: [],
+                total: [],
+                pdf_name: 'results',
+            }
         },
         computed: {
         },
         methods: {
-        },
-        init(self) {
-            db
-                .find({table: 'ret', $where: function() {
-                    return this.recovery!==null && this.recovery!==undefined && this.recovery!=="";
-                }})
-                .exec(function (err, rows) {
-
-                    let year = 2017;
-
-                    let intervals = {
-                        '1stQuarter' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment(year+'/04/01','YYYY/MM/DD'), title: 'ИТОГО за 1 квартал '+year+' г.', sort: 1},
-                        '2ndQuarter' : {from: moment(year+'/04/01','YYYY/MM/DD'), to: moment(year+'/07/01','YYYY/MM/DD'), title: 'ИТОГО за 2 квартал '+year+' г.', sort: 2},
-                        '1stHalf' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment(year+'/07/01','YYYY/MM/DD'), title: 'ИТОГО за 1 полугодие '+year+' г.', sort: 3},
-                        '3thQuarter' : {from: moment(year+'/07/01','YYYY/MM/DD'), to: moment(year+'/10/01','YYYY/MM/DD'), title: 'ИТОГО за 3 квартал '+year+' г.', sort: 4},
-                        '4thQuarter' : {from: moment(year+'/10/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за 4 квартал '+year+' г.', sort: 5},
-                        '2ndHalf' : {from: moment(year+'/07/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за 2 полугодие '+year+' г.', sort: 6},
-                        'Year' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year1' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year2' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year3' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                    };
-
-                    let groups = {};
-                    let finalGroups = {};
-                    let res = [];
-
-                    for(let name in intervals) {
-                        let group = rows.filter(function (item) {
-                            return moment(item.failure)>=intervals[name].from && moment(item.failure)<intervals[name].to;
-                        });
-
-                        groups[name] = {};
-                        finalGroups[name] = {};
-
-                        groups[name].zero = group.filter(function (item) {
-                            return item.obj === '00000';
-                        });
-
-                        groups[name].one = group.filter(function (item) {
-                            return item.obj === '11111';
-                        });
-
-                        for(let obj in groups[name]) {
-                            finalGroups[name][obj] = {};
-                            finalGroups[name][obj].total = groups[name][obj].length;
-                            finalGroups[name][obj].extended = groups[name][obj].filter(function (item) {
-                                return moment(item.recovery).diff(moment(item.failure), 'days') > 5;
-                            }).length;
-
-
-                            finalGroups[name][obj].timeZip = groups[name][obj].reduce(
-                                function (sum, item) {
-                                    return sum + moment(item.recovery).diff(moment(item.failure), 'minutes');
-                                }, 0
-                            );
-                            finalGroups[name][obj].time = groups[name][obj].reduce(
-                                function (sum, item) {
-                                    return sum + (moment(item.recovery).diff(moment(item.failure), 'minutes') - item.zip);
-                                }, 0
-                            );
-                        }
-
-                        finalGroups[name].five = {};
-                        finalGroups[name].five.total = finalGroups[name].zero.total+finalGroups[name].one.total;
-                        finalGroups[name].five.extended = finalGroups[name].zero.extended+finalGroups[name].one.extended;
-                        finalGroups[name].five.timeZip = finalGroups[name].zero.timeZip+finalGroups[name].one.timeZip;
-                        finalGroups[name].five.time = finalGroups[name].zero.time+finalGroups[name].one.time;
-
-                        finalGroups[name].zero.obj = '00000';
-                        finalGroups[name].one.obj  = '11111';
-                        finalGroups[name].five.obj = '55555';
-                        for(let obj in finalGroups[name]) {
-                            finalGroups[name][obj].avgTimeZip = finalGroups[name][obj].total ? finalGroups[name][obj].timeZip / finalGroups[name][obj].total : 0;
-                            finalGroups[name][obj].avgTime = finalGroups[name][obj].total ? finalGroups[name][obj].time / finalGroups[name][obj].total : 0;
-                            finalGroups[name][obj].period = intervals[name].title;
-                            res.push(finalGroups[name][obj]);
+            async setRows() {
+                let awaited = await Promise.all([
+                    set.all(),
+                    dictionary.getDict('ret', {'sort': {'value': 1}}),
+                    dictionary.getDict('obj', {'sort': {'value': 1}}),
+                ]);
+                let sets = awaited[0];
+                let retDict = awaited[1];
+                let objDict = awaited[2];
+                let rows = [];
+                let rowSeed = {
+                    title: '',
+                    est: {
+                        res: {
+                            kr: 0,
+                            cancel: 0,
+                            total: 0
+                        },
+                        life: {
+                            kr: 0,
+                            cancel: 0,
+                            total: 0
+                        },
+                    },
+                    elabor: {
+                        elabor: {
+                            total: 0,
+                            before: 0,
+                            after: 0
+                        },
+                        dev: {
+                            total: 0,
+                            before: 0,
+                            after: 0
+                        },
+                    },
+                    stock: {
+                        year: {
+                            kr: {
+                                num: 0,
+                                per: 0
+                            },
+                            cancel: {
+                                num: 0,
+                                per: 0
+                            },
+                            total: {
+                                num: 0,
+                                per: 0
+                            }
+                        },
+                        hour: {
+                            kr: {
+                                num: 0,
+                                per: 0
+                            },
+                            cancel: {
+                                num: 0,
+                                per: 0
+                            },
+                            total: {
+                                num: 0,
+                                per: 0
+                            }
                         }
                     }
-                    self.rows = res;
-                    let dir = ngui.__dirname+'/print';
-                    if (!fs.existsSync(dir)){
-                        fs.mkdirSync(dir);
+                };
+                console.log(sets,retDict,objDict);
+
+                let total = {total: clone(rowSeed)};
+                total['total'].title = 'За соединение';
+                rows.push({empty: true, rows: 3});
+                rows.push(total['total']);
+                for(let ret of retDict) {
+                    total[ret.value] = clone(rowSeed);
+                    total[ret.value].title = ret.value;
+                    rows.push(total[ret.value]);
+                }
+                let objects = {}
+                for(let obj of objDict) {
+                    objects[obj.value] = {total: clone(rowSeed)};
+                    objects[obj.value]['total'].title = 'За войсковую часть ' + obj.value;
+                    rows.push({empty: true, rows: 3});
+                    rows.push(objects[obj.value]['total']);
+                    for(let ret of retDict) {
+                        objects[obj.value][ret.value] = clone(rowSeed);
+                        objects[obj.value][ret.value].title = ret.value;
+                        rows.push(objects[obj.value][ret.value]);
                     }
-                    let pdf_path = dir+'/results.pdf';
-                    nwin.print({
-                        headerFooterEnabled: false,
-                        landscape: true,
-                        pdf_path
-                    });
-                    ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
-                        fs.rmRf(dir);
-                    });
-                    nwin.close();
-                });
-        },
-        setWhere: {
-            $where: function() {
-                return !this.recovery || this.recovery==="";
+                }
+
+                function addSet(target,set) {
+                    target.est.res.kr += Number(set.est.res.kr);
+                    target.est.res.cancel += Number(set.est.res.cancel);
+                    target.est.res.total += Number(set.est.res.kr) + Number(set.est.res.cancel);
+                    target.est.life.kr += Number(set.est.life.kr);
+                    target.est.life.cancel += Number(set.est.life.cancel);
+                    target.est.life.total += Number(set.est.life.kr) + Number(set.est.life.cancel);
+                    target.elabor.elabor.total += Number(set.elabor.elabor.total);
+                    target.elabor.elabor.before += Number(set.elabor.elabor.before);
+                    target.elabor.elabor.after += Number(set.elabor.elabor.after);
+                    target.elabor.dev.total += Number(set.elabor.dev.total);
+                    target.elabor.dev.before += Number(set.elabor.dev.before);
+                    target.elabor.dev.after += Number(set.elabor.dev.after);
+                }
+
+                function calculateObj(target) {
+                    target.stock.year.kr.num = filters.r0(filters.NaN(target.est.life.kr - target.elabor.dev.before));
+                    target.stock.year.cancel.num = filters.r0(filters.NaN(target.est.life.cancel - target.elabor.dev.total));
+                    target.stock.hour.kr.num = filters.r0(filters.NaN(target.est.res.kr - target.elabor.elabor.before));
+                    target.stock.hour.cancel.num = filters.r0(filters.NaN(target.est.res.cancel - target.elabor.elabor.total));
+
+                    target.stock.year.total.num = target.stock.year.kr.num + target.stock.year.cancel.num;
+                    target.stock.hour.total.num = target.stock.hour.kr.num + target.stock.hour.cancel.num;
+
+                    calculatePers(target);
+                }
+
+                function addTotal(total, target) {
+                    total.est.res.kr += target.est.res.kr;
+                    total.est.res.cancel += target.est.res.cancel;
+                    total.est.res.total += target.est.res.total;
+                    total.est.life.kr += target.est.life.kr;
+                    total.est.life.cancel += target.est.life.cancel;
+                    total.est.life.total += target.est.life.total;
+                    total.stock.year.kr.num += target.stock.year.kr.num;
+                    total.stock.year.cancel.num += target.stock.year.cancel.num;
+                    total.stock.hour.kr.num += target.stock.hour.kr.num;
+                    total.stock.hour.cancel.num += target.stock.hour.cancel.num;
+
+                    total.stock.year.total.num += target.stock.year.total.num;
+                    total.stock.hour.total.num += target.stock.hour.total.num;
+
+                }
+
+                function calculatePers(target) {
+                    target.stock.year.kr.per = filters.r0(filters.NaN(target.stock.year.kr.num/target.est.life.kr*100));
+                    target.stock.year.cancel.per = filters.r0(filters.NaN(target.stock.year.cancel.num/target.est.life.cancel*100));
+                    target.stock.hour.kr.per = filters.r0(filters.NaN(target.stock.hour.kr.num/target.est.res.kr*100));
+                    target.stock.hour.cancel.per = filters.r0(filters.NaN(target.stock.hour.cancel.num/target.est.res.cancel*100));
+                    target.stock.year.total.per = filters.r0(filters.NaN(target.stock.year.total.num/target.est.life.total*100));
+                    target.stock.hour.total.per = filters.r0(filters.NaN(target.stock.hour.total.num/target.est.res.total*100));
+                }
+
+                for(let set of sets) {
+                    let obj = set.obj;
+                    let ret = set.ret;
+                    let target = objects[obj][ret];
+                    addSet(target,set);
+                }
+                for(let obj of objDict) {
+                    console.log(objects[obj.value]);
+                    for(let ret of retDict) {
+                        let target = objects[obj.value][ret.value];
+                        calculateObj(target);
+                        addTotal(objects[obj.value]['total'], target);
+                        addTotal(total[ret.value], target);
+
+                    }
+                    calculatePers(objects[obj.value]['total']);
+                    addTotal(total['total'], objects[obj.value]['total']);
+                }
+                calculatePers(total['total']);
+                for(let ret of retDict) {
+                    calculatePers(total[ret.value]);
+                }
+
+                console.log(total,objects);
+                this.rows = rows;
+
+                printContent(this.pdf_name, true);
             }
+        },
+        created() {
+            this.setRows();
         }
-    });
-
-    export default vm;
+    };
 </script>

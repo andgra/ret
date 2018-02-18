@@ -68,10 +68,20 @@ body {
   }
 }
 
-.smaller {
+.compressed-table {
+  td, th {
+    line-height: 1.1em;
+    padding: 4px;
+  }
+}
+
+.smaller-all {
   * {
     font-size: 0.8em;
   }
+}
+.smaller {
+    font-size: 0.8em;
 }
 
 .no-wrap {
@@ -164,4 +174,13 @@ body {
 
 .mdl-textfield__input[readonly] {
   background-color: #eaeaea;
+}
+
+.vertical-text {
+  transform: rotate(90deg);
+  transform-origin: left top 0;
+}
+
+.text-bold {
+  font-weight: bold;
 }

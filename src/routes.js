@@ -16,7 +16,7 @@ Vue.use(VueExtendLayout);
 nwin.width(800);*/
 
 import Settings from '@/settings/main.vue';
-import Print from '@/print/main.vue';
+import Print from '@/settings/print.vue';
 import DictCondition from '@/dictionaries/condition.vue';
 import DictObj from '@/dictionaries/obj.vue';
 import DictRet from '@/dictionaries/ret.vue';

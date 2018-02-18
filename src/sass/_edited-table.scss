@@ -21,12 +21,6 @@
   }
 }
 
-.compressed-table {
-  td, th {
-    line-height: 1.1em;
-    padding: 4px;
-  }
-}
 
 .mdl-th-padding {
   padding: 0 18px 12px 24px !important;
@@ -107,7 +101,7 @@
 }
 
 .tablesaw-columntoggle-popup {
-  height: 500px;
+  max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
 }

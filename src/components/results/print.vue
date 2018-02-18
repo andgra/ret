@@ -41,26 +41,11 @@
     import settings from 'models/settings';
 
 
-    let rowSeed = {
-        _id: "",
-        obj: "",
-        place: "",
-        ret: "",
-        type: "",
-        zav: "",
-        failure: moment(),
-        faulty: "",
-        measures: "",
-        recovery: "",
-        zip: 0,
-    };
-
-
     export default {
-        pdf_name: 'results',
         data() {
             return {
                 rows: [],
+                pdf_name: 'results',
             }
         },
         computed: {
@@ -159,20 +144,7 @@
                     }
                 }
                 this.rows = res;
-                let dir = ngui.__dirname+'/print';
-                if (!fs.existsSync(dir)){
-                    fs.mkdirSync(dir);
-                }
-                let pdf_path = dir+'/results.pdf';
-                nwin.print({
-                    headerFooterEnabled: false,
-                    landscape: true,
-                    pdf_path
-                });
-                ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
-                    fs.rmRf(dir);
-                });
-                nwin.close();
+                printContent(this.pdf_name, true);
             }
         },
         created() {

@@ -1,34 +1,45 @@
 <template>
     <div class="table-container wide">
-        <h4>Справка по состоянию РЭТ</h4>
+        <h4>Перерасход РЭТ</h4>
         <table class="border-all-cells print-table compressed-table">
-            <thead>
+            <thead class="smaller">
             <tr class="center-all wide-all">
-                <th rowspan="2">Период</th>
-                <th rowspan="2">№ в/ч</th>
-                <th colspan="2">Количество</th>
-                <th colspan="2">Общее время простоя</th>
-                <th colspan="2">Среднее время простоя</th>
+                <th rowspan="2">Наименование ВВТ</th>
+                <th rowspan="2">Положено (ед.)</th>
+                <th colspan="3">Имеется</th>
+                <th rowspan="2">Годовой ресурс</th>
+                <th rowspan="2">Расход<br>за 1кв. + 2кв.</th>
+                <th rowspan="2" width="40px">Расход ресурса</th>
+                <th rowspan="2"></th>
             </tr>
-            <tr class="center-all wide-all smaller">
-                <th>Выходов из строя</th>
-                <th>Длительных выходов (более 5 сут.)</th>
-                <th>С учетом доставки ЗИП</th>
-                <th>Без учета доставки ЗИП</th>
-                <th>С учетом доставки ЗИП</th>
-                <th>Без учета доставки ЗИП</th>
+            <tr class="center-all wide-all">
+                <th>Всего (ед.)</th>
+                <th>В эксплатуации (ед.)</th>
+                <th>Не эксплуатируется (ед.)</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" class="center-all smaller">
-                <td rowspan="3" v-if="index % 3 == 0">{{row.period}}</td>
-                <td>{{row.obj}}</td>
-                <td>{{row.total}}</td>
-                <td>{{row.extended}}</td>
-                <td>{{row.timeZip | myInterval}}</td>
-                <td>{{row.time | myInterval}}</td>
-                <td>{{row.avgTimeZip | myInterval}}</td>
-                <td>{{row.avgTime | myInterval}}</td>
+                <td>{{row.type}}</td>
+                <td>{{row.req}}</td>
+                <td>{{row.real}}</td>
+                <td>{{row.active}}</td>
+                <td>{{row.inactive}}</td>
+                <td>{{row.yearRes}}</td>
+                <td>{{row.consum}}</td>
+                <td>{{row.consumRate}}%</td>
+                <td>{{row.overrun}}</td>
+            </tr>
+            <tr class="center-all smaller text-bold">
+                <td>{{total.type}}</td>
+                <td>{{total.req}}</td>
+                <td>{{total.real}}</td>
+                <td>{{total.active}}</td>
+                <td>{{total.inactive}}</td>
+                <td>{{total.yearRes}}</td>
+                <td>{{total.consum}}</td>
+                <td>{{totalConsumRate}}%</td>
+                <td>{{totalOverrun}}</td>
             </tr>
             </tbody>
         </table>
@@ -37,139 +48,119 @@
 
 
 <script>
-    import PrintTable from '../mixins/print-table';
+    import set from 'models/set';
+    import overrun from 'models/overrun';
+    import dictionary from 'models/dictionary';
 
 
-    let rowSeed = {
-        _id: "",
-        obj: "",
-        place: "",
-        ret: "",
-        type: "",
-        zav: "",
-        failure: moment(),
-        faulty: "",
-        measures: "",
-        recovery: "",
-        zip: 0,
-    };
-    let selSeed = recValue(rowSeed, 1);
-    selSeed.createdAt = 1;
-    selSeed.updatedAt = 1;
-
-    let vm = PrintTable({
-        rowSeed,
-        selSeed,
-        table: 'ret',
-        pdf_name: 'ret',
-        data: {
-
+    export default {
+        data() {
+            return {
+                rows: [],
+                objDict: [],
+                retDict: [],
+                stats: {},
+                pdf_name: 'overrun',
+                total: {
+                    type: "Итого РЭТ:",
+                    req: 0,
+                    real: 0,
+                    active: 0,
+                    inactive: 0,
+                    yearRes:0,
+                    consum:0,
+                }
+            }
         },
         computed: {
+            totalConsumRate() {
+                return !!this.total.yearRes ? filters.r0(filters.NaN(this.total.consum/this.total.yearRes*100)) : 0;
+            },
+            totalOverrun() {
+                return this.totalConsumRate > 100 ? 'перерасход' : '-'
+            }
         },
         methods: {
-        },
-        init(self) {
-            db
-                .find({table: 'ret', $where: function() {
-                    return this.recovery!==null && this.recovery!==undefined && this.recovery!=="";
-                }})
-                .exec(function (err, rows) {
+            async setRows() {
+                let lists = await Promise.all([
+                    set.getItems(),
+                    overrun.getItems(),
+                    dictionary.getDict('type', {'sort': {'value': 1}})
+                ]);
+                let sets = lists[0];
+                let dbRows = lists[1];
+                let typesDict = lists[2];
+                let types = {
+                    all: [],
+                    req: {},
+                    real: {},
+                    active: {},
+                    inactive: {},
+                };
 
-                    let year = 2017;
+                console.log(1);
+                for(let set of sets) {
+                    if(types.req[set.type.req])types.req[set.type.req]++;
+                    else types.req[set.type.req]=1;
 
-                    let intervals = {
-                        '1stQuarter' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment(year+'/04/01','YYYY/MM/DD'), title: 'ИТОГО за 1 квартал '+year+' г.', sort: 1},
-                        '2ndQuarter' : {from: moment(year+'/04/01','YYYY/MM/DD'), to: moment(year+'/07/01','YYYY/MM/DD'), title: 'ИТОГО за 2 квартал '+year+' г.', sort: 2},
-                        '1stHalf' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment(year+'/07/01','YYYY/MM/DD'), title: 'ИТОГО за 1 полугодие '+year+' г.', sort: 3},
-                        '3thQuarter' : {from: moment(year+'/07/01','YYYY/MM/DD'), to: moment(year+'/10/01','YYYY/MM/DD'), title: 'ИТОГО за 3 квартал '+year+' г.', sort: 4},
-                        '4thQuarter' : {from: moment(year+'/10/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за 4 квартал '+year+' г.', sort: 5},
-                        '2ndHalf' : {from: moment(year+'/07/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за 2 полугодие '+year+' г.', sort: 6},
-                        'Year' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year1' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year2' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                        'Year3' : {from: moment(year+'/01/01','YYYY/MM/DD'), to: moment((year+1)+'/01/01','YYYY/MM/DD'), title: 'ИТОГО за ГОД', sort: 7},
-                    };
+                    if(types.real[set.type.real])types.real[set.type.real]++;
+                    else types.real[set.type.real]=1;
 
-                    let groups = {};
-                    let finalGroups = {};
-                    let res = [];
+                    types.all.push(set.type.req);
+                    types.all.push(set.type.real);
 
-                    for(let name in intervals) {
-                        let group = rows.filter(function (item) {
-                            return moment(item.failure)>=intervals[name].from && moment(item.failure)<intervals[name].to;
-                        });
-
-                        groups[name] = {};
-                        finalGroups[name] = {};
-
-                        groups[name].zero = group.filter(function (item) {
-                            return item.obj === '00000';
-                        });
-
-                        groups[name].one = group.filter(function (item) {
-                            return item.obj === '11111';
-                        });
-
-                        for(let obj in groups[name]) {
-                            finalGroups[name][obj] = {};
-                            finalGroups[name][obj].total = groups[name][obj].length;
-                            finalGroups[name][obj].extended = groups[name][obj].filter(function (item) {
-                                return moment(item.recovery).diff(moment(item.failure), 'days') > 5;
-                            }).length;
-
-
-                            finalGroups[name][obj].timeZip = groups[name][obj].reduce(
-                                function (sum, item) {
-                                    return sum + moment(item.recovery).diff(moment(item.failure), 'minutes');
-                                }, 0
-                            );
-                            finalGroups[name][obj].time = groups[name][obj].reduce(
-                                function (sum, item) {
-                                    return sum + (moment(item.recovery).diff(moment(item.failure), 'minutes') - item.zip);
-                                }, 0
-                            );
-                        }
-
-                        finalGroups[name].five = {};
-                        finalGroups[name].five.total = finalGroups[name].zero.total+finalGroups[name].one.total;
-                        finalGroups[name].five.extended = finalGroups[name].zero.extended+finalGroups[name].one.extended;
-                        finalGroups[name].five.timeZip = finalGroups[name].zero.timeZip+finalGroups[name].one.timeZip;
-                        finalGroups[name].five.time = finalGroups[name].zero.time+finalGroups[name].one.time;
-
-                        finalGroups[name].zero.obj = '00000';
-                        finalGroups[name].one.obj  = '11111';
-                        finalGroups[name].five.obj = '55555';
-                        for(let obj in finalGroups[name]) {
-                            finalGroups[name][obj].avgTimeZip = finalGroups[name][obj].total ? finalGroups[name][obj].timeZip / finalGroups[name][obj].total : 0;
-                            finalGroups[name][obj].avgTime = finalGroups[name][obj].total ? finalGroups[name][obj].time / finalGroups[name][obj].total : 0;
-                            finalGroups[name][obj].period = intervals[name].title;
-                            res.push(finalGroups[name][obj]);
-                        }
+                    if(set.condition && set.condition.toLowerCase() == 'свернуто') {
+                        if(types.inactive[set.type.real])types.inactive[set.type.real]++;
+                        else types.inactive[set.type.real]=1;
+                    } else {
+                        if(types.active[set.type.real])types.active[set.type.real]++;
+                        else types.active[set.type.real]=1;
                     }
-                    self.rows = res;
-                    let dir = ngui.__dirname+'/print';
-                    if (!fs.existsSync(dir)){
-                        fs.mkdirSync(dir);
-                    }
-                    let pdf_path = dir+'/results.pdf';
-                    nwin.print({
-                        headerFooterEnabled: false,
-                        landscape: true,
-                        pdf_path
+                }
+                for(let type of typesDict) {
+                    types.all.push(type.value);
+                }
+                types.all = [...new Set(types.all)];
+                console.log(types,dbRows,sets);
+                let rows = [];
+                for(let type of types.all) {
+                    let dbRow = dbRows.find(item => ( item.type == type ));
+                    let req = !!types.req[type]?types.req[type]:0,
+                        real = !!types.real[type]?types.real[type]:0,
+                        active = !!types.active[type]?types.active[type]:0,
+                        inactive = !!types.inactive[type]?types.inactive[type]:0,
+                        yearRes = !!dbRow ? (!!dbRow.yearRes ? dbRow.yearRes : 0) : 0,
+                        consum = !!dbRow ? (!!dbRow.consum ? dbRow.consum : 0) : 0,
+                        consumRate = !!yearRes ? filters.r0(filters.NaN(consum/yearRes*100)) : 0,
+                        overrun = consumRate > 100 ? 'перерасход' : '-';
+                    rows.push({
+                        _id: type,
+                        type,
+                        req,
+                        real,
+                        active,
+                        inactive,
+                        yearRes,
+                        consum,
+                        consumRate,
+                        overrun
                     });
-                    ngui.Window.open(pdf_path,{ width: 8000,height: 6000,}, function(win) {
-                        fs.rmRf(dir);
-                    });
-                    nwin.close();
-                });
-        },
-        setWhere: {
-            $where: function() {
-                return !this.recovery || this.recovery==="";
+                    this.total.req += Number(req);
+                    this.total.real += Number(real);
+                    this.total.active += Number(active);
+                    this.total.inactive += Number(inactive);
+                    this.total.yearRes += Number(yearRes);
+                    this.total.consum += Number(consum);
+                    this.total.consumRate += Number(consumRate);
+                }
+                this.rows = rows;
+
+
+                printContent(this.pdf_name);
             }
+        },
+        created() {
+            this.setRows();
         }
-    });
-
-    export default vm;
+    };
 </script>

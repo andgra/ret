@@ -22,7 +22,7 @@
                         <li class="mdl-menu__item" onclick="openPdf('/results/print')">Итоги эксплуатации</li>
                         <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
                         <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
-                        <li class="mdl-menu__item" onclick="openPdf('/overspend/print')">Перерасход</li>
+                        <li class="mdl-menu__item" onclick="openPdf('/overrun/print')">Перерасход</li>
                     </ul>
                     <!--<router-link tag="button" class="mdl-button mdl-js-button mdl-button&#45;&#45;white" to="/print">Печать</router-link>-->
                     <!--<button id="settings-menu" class="mdl-button mdl-js-button mdl-button--white">
