@@ -6,7 +6,8 @@
                     <form class="editing-form" action="#" onsubmit="return false;">
                         <input name="_id" v-model="props.editingRow._id" type="hidden"/>
                         <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield--full-width"></mdl-textfield>
+                        <mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
+                        <!--<mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
                         <mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield--full-width"></mdl-select>
                         <mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
@@ -83,7 +84,7 @@
     let struct =
         [
             {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
-            {id: "place", title: "дислокация", type: 'text', default: ""},
+            {id: "place", title: "дислокация", type: 'text', default: "", tablefilter: {type: "select"}},
             {id: "ret", title: "РЭТ", type: 'select', default: "РЛС", tablefilter: {type: "select"}},
             {id: "pn", title: "Наличие <br>ПН", type: 'text', default: "", tablefilter: {type: "select"}},
             {
@@ -106,12 +107,12 @@
                 ]
             },
             {id: "serial", title: "Заводской <br>номер", type: 'text', default: ""},
-            {id: "year", title: "Год <br>изготовления", type: 'number', default: 0, tablesaw: {type: "number"}},
+            {id: "year", title: "Год <br>изготовления", type: 'number', default: 0, tablesaw: {type: "number"}, tablefilter: {type: "select"}},
             {
                 id: "repair", title: "Вид и год последнего ремонта", children:
                 [
                     {id: "type", title: "Вид", type: 'select', default: "КР", tablefilter: {type: "select"}},
-                    {id: "year", title: "Год", type: 'number', default: 0, tablesaw: {type: "number"}},
+                    {id: "year", title: "Год", type: 'number', default: 0, tablesaw: {type: "number"}, tablefilter: {type: "select"}},
                 ]
             },
             {
@@ -125,7 +126,7 @@
             {
                 id: "resp", title: "Отв. за эксплуатацию, уход и сбережение", children:
                 [
-                    {id: "rank", title: "В/зв", type: 'text', default: ""},
+                    {id: "rank", title: "В/зв", type: 'text', default: "", tablefilter: {type: "select"}},
                     {id: "fio", title: "Ф.И.О.", type: 'text', default: ""},
                     {id: "order", title: "Пр. о закреплении", type: 'text', default: ""},
                 ]
@@ -181,7 +182,7 @@
                         [
                             {
                                 id: "total",
-                                title: "наработка с начала <br>эксплуатации на <br>01.07.17 (час.)",
+                                title: "наработка с начала <br>эксплуатации (час.)",
                                 type: 'number',
                                 default: 0,
                                 tablesaw: {type: "number"}
@@ -241,15 +242,15 @@
                                 [
                                     {
                                         id: "num", title: "лет", type: 'text', cb(value, entity) {
-                                        value = entity.stock.year.kr.num = filters.r2(filters.NaN(entity.est.life.kr - entity.elabor.dev.before));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                            value = entity.stock.year.kr.num = filters.r1(filters.NaN(entity.est.life.kr - entity.elabor.dev.before));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true
                                     },
                                     {
                                         id: "per", title: "%", type: 'text', cb(value, entity) {
-                                        value = entity.stock.year.kr.per = filters.r2(filters.NaN(entity.elabor.dev.before / entity.est.life.kr * 100));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                            value = entity.stock.year.kr.per = filters.r1(100 - filters.NaN(entity.elabor.dev.before / entity.est.life.kr * 100));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
                                     },
                                 ]
                             },
@@ -258,15 +259,15 @@
                                 [
                                     {
                                         id: "num", title: "лет", type: 'text', cb(value, entity) {
-                                        value = entity.stock.year.cancel.num = filters.r2(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                            value = entity.stock.year.cancel.num = filters.r1(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true
                                     },
                                     {
                                         id: "per", title: "%", type: 'text', cb(value, entity) {
-                                        value = entity.stock.year.cancel.per = filters.r2(filters.NaN(entity.elabor.dev.total / entity.est.life.cancel * 100));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                            value = entity.stock.year.cancel.per = filters.r1(100 - filters.NaN(entity.elabor.dev.total / entity.est.life.cancel * 100));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
                                     },
                                 ]
                             }
@@ -280,15 +281,15 @@
                                 [
                                     {
                                         id: "num", title: "час", type: 'text', cb(value, entity) {
-                                        value = entity.stock.hour.kr.num = filters.r2(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                            value = entity.stock.hour.kr.num = filters.r1(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true
                                     },
                                     {
                                         id: "per", title: "%", type: 'text', cb(value, entity) {
-                                        value = entity.stock.hour.kr.per = filters.r2(filters.NaN(entity.elabor.elabor.before / entity.est.res.kr * 100));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                            value = entity.stock.hour.kr.per = filters.r1(100 - filters.NaN(entity.elabor.elabor.before / entity.est.res.kr * 100));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
                                     },
                                 ]
                             },
@@ -297,15 +298,15 @@
                                 [
                                     {
                                         id: "num", title: "час", type: 'text', cb(value, entity) {
-                                        value = entity.stock.hour.cancel.num = filters.r2(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true
+                                            value = entity.stock.hour.cancel.num = filters.r1(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true
                                     },
                                     {
                                         id: "per", title: "%", type: 'text', cb(value, entity) {
-                                        value = entity.stock.hour.cancel.per = filters.r2(filters.NaN(entity.elabor.elabor.total / entity.est.res.cancel * 100));
-                                        return value
-                                    }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                                            value = entity.stock.hour.cancel.per = filters.r1(100 - filters.NaN(entity.elabor.elabor.total / entity.est.res.cancel * 100));
+                                            return value
+                                        }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
                                     },
                                 ]
                             }
@@ -361,12 +362,13 @@
             let startDateDb = (await settings.startDate);
             if (startDateDb) {
                 let startDate = moment(startDateDb.value).format('DD.MM.YYYY');
-                let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
-                cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/, `$1${startDate}$2`);
+                /*let cell = this.grid.last().find(cell => ( cell.id === 'elabor.elabor.total' ));
+                cell.title = cell.title.replace(/(\<br\>).*( \(час.\))/, `$1${startDate}$2`);*/
                 filter = {startDate};
             }
             // получение записей таблицы
             this.rows = await set.getItems(filter);
+            this.dicts.place = this.rows.map(row => ({value: row.place}));
         },
         async saveRow(item) {
             return await set.updateOrCreate({_id: item._id}, item);

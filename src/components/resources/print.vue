@@ -218,12 +218,12 @@
                 }
 
                 function calculatePers(target) {
-                    target.stock.year.kr.per = filters.r0(filters.NaN(target.stock.year.kr.num/target.est.life.kr*100));
-                    target.stock.year.cancel.per = filters.r0(filters.NaN(target.stock.year.cancel.num/target.est.life.cancel*100));
-                    target.stock.hour.kr.per = filters.r0(filters.NaN(target.stock.hour.kr.num/target.est.res.kr*100));
-                    target.stock.hour.cancel.per = filters.r0(filters.NaN(target.stock.hour.cancel.num/target.est.res.cancel*100));
-                    target.stock.year.total.per = filters.r0(filters.NaN(target.stock.year.total.num/target.est.life.total*100));
-                    target.stock.hour.total.per = filters.r0(filters.NaN(target.stock.hour.total.num/target.est.res.total*100));
+                    target.stock.year.kr.per = filters.r0(100 - filters.NaN(target.stock.year.kr.num/target.est.life.kr*100));
+                    target.stock.year.cancel.per = filters.r0(100 - filters.NaN(target.stock.year.cancel.num/target.est.life.cancel*100));
+                    target.stock.hour.kr.per = filters.r0(100 - filters.NaN(target.stock.hour.kr.num/target.est.res.kr*100));
+                    target.stock.hour.cancel.per = filters.r0(100 - filters.NaN(target.stock.hour.cancel.num/target.est.res.cancel*100));
+                    target.stock.year.total.per = filters.r0(100 - filters.NaN(target.stock.year.total.num/target.est.life.total*100));
+                    target.stock.hour.total.per = filters.r0(100 - filters.NaN(target.stock.hour.total.num/target.est.res.total*100));
                 }
 
                 for(let set of sets) {

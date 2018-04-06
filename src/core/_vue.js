@@ -31,6 +31,9 @@ window.filters = {
     r0(value) {
         return isNumeric(value) ? value.round(0) : value;
     },
+    r1(value) {
+        return isNumeric(value) ? value.round(1) : value;
+    },
     r2(value) {
         return isNumeric(value) ? value.round(2) : value;
     },
@@ -62,6 +65,7 @@ window.filters = {
 Vue.filter('NaN', filters.NaN );
 Vue.filter('per', filters.per );
 Vue.filter('r0', filters.r0 );
+Vue.filter('r1', filters.r1 );
 Vue.filter('r2', filters.r2 );
 Vue.filter('myDate', filters.myDate );
 Vue.filter('myDateTime', filters.myDateTime );

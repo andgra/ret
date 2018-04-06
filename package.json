@@ -59,7 +59,12 @@
     "webpack-notifier": "^1.5.0"
   },
   "build": {
-    "strippedProperties": [ "scripts", "devDependencies", "build", "dependencies" ],
+    "strippedProperties": [
+      "scripts",
+      "devDependencies",
+      "build",
+      "dependencies"
+    ],
     "excludes": [
       "src/**/*",
       "node_modules/**/*",
