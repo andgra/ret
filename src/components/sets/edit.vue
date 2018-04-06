@@ -6,7 +6,7 @@
                     <form class="editing-form" action="#" onsubmit="return false;">
                         <input name="_id" v-model="props.editingRow._id" type="hidden"/>
                         <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
+                        <mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="false" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <!--<mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
                         <mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield--full-width"></mdl-select>
                         <mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
@@ -63,6 +63,7 @@
                                 <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
+                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                     </form>
                     <div slot="actions">
                         <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
@@ -314,6 +315,7 @@
                     },
                 ]
             },
+            {hidden: true, id: "backgroundColor", default: '#ffffff'}
         ];
 
 

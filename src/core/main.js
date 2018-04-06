@@ -120,7 +120,7 @@ window.leavesCnt = (node) => {
         }
         return curLeaves;
     } else {
-        return 1;
+        return !node.hidden ? 1 : 0;
     }
 };
 

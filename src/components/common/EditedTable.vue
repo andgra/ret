@@ -8,13 +8,13 @@
                 </th>
             </tr>
             <tr v-for="(row,j) in grid" v-if="j<grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan">{{cell.title}}</th>
+                <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
             </tr>
             <tr class="center-all wide-all">
                 <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px"><mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox></th>
                 <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
-                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-html="cell.title" scope="col" data-tablesaw-priority="1" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw &amp;&amp; cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <template v-if="controlDates">
                     <th class="sortable">Создан</th>
                     <th class="sortable">Изменен</th>
@@ -23,12 +23,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(row, index) in rows" :key="row.num" :data-id="index">
+            <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" v-bind:style="{ backgroundColor: (row.backgroundColor && row.backgroundColor !== '#ffffff') ? row.backgroundColor : '' }">
                 <td v-if="controlRemove" class="text-center" width="67px"><mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox></td>
                 <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px"><i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px"><i class="fa fa-times"></i></td>
                 <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
                     <label>{{getValue(row,cell.id)}}</label>
                 </td>
                 <template v-if="controlDates">
@@ -41,7 +41,7 @@
             </tbody>
             <tfoot>
             <tr class="hidden">
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan"></td>
+                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
                 <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
             </tr>
             <tr>
@@ -119,10 +119,10 @@
             struct.unshift({id: "num", title: "№", type: Number, default: 0});*/
 //            console.log('struct',struct);
             let united = getUnited(struct);
-            // console.log('united',curArr)
+            console.log('united',united)
             let grid = getGrid(united);
 
-//            console.log('grid',grid.slice());
+           console.log('grid',grid.slice());
             let dicts = {};
 
             for(let cell of clone(grid.last())) {
