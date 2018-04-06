@@ -249,7 +249,6 @@
                     calculatePers(total[ret.value]);
                 }
 
-                console.log(total,objects);
                 this.rows = rows;
 
                 printContent(this.pdf_name, true);
