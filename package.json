@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "public/index.html",
-  "domain": "acc.dev",
+  "domain": "ret.dev",
   "window": {
     "width": 8000,
     "height": 6000
@@ -67,6 +67,7 @@
     ],
     "excludes": [
       "src/**/*",
+      "database/**/*",
       "node_modules/**/*",
       "package-lock.json",
       "webpack.*",
