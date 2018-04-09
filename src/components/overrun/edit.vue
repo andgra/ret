@@ -4,6 +4,7 @@
             <template slot="editModal" slot-scope="props">
                 <mdl-dialog ref="editModal" :title="'Редактирование записи'" :noFocusTrap="true">
                     <form class="editing-form" action="#" onsubmit="return false;">
+                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-textfield readonly="" class="mdl-textfield--full-width" floating-label="Наименование ВВТ" :value="props.editingRow.type"></mdl-textfield>
                         <mdl-textfield readonly="" class="mdl-textfield--full-width" floating-label="Положено" :value="props.editingRow.req"></mdl-textfield>
                         <mdl-textfield readonly="" class="mdl-textfield--full-width" floating-label="Всего имеется" :value="props.editingRow.real"></mdl-textfield>
@@ -32,6 +33,7 @@
 
     let struct =
         [
+            {hidden: true, id: "backgroundColor", default: '#ffffff'},
             {id: "type", title: "Наименование ВВТ", type: 'text', default: "", readonly: true},
             {id: "req", title: "Положено", type: 'text', default: 0, readonly: true},
             {id: "real", title: "Всего имеется", type: 'text', default: 0, readonly: true},

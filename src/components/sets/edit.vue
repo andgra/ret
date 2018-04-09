@@ -5,6 +5,7 @@
                 <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
                     <form class="editing-form" action="#" onsubmit="return false;">
                         <input name="_id" v-model="props.editingRow._id" type="hidden"/>
+                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="false" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <!--<mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
@@ -42,12 +43,12 @@
                         <div class="form-group">
                             <p>наработка РЭТ</p>
                             <div class="form-indent">
-                                <mdl-textfield :floating-label="'наработка с начала эксплуатации на '+settings.startDate+' (час.)'" v-model="props.editingRow.elabor.elabor.total" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield floating-label="наработка с начала эксплуатации (час.)'" v-model="props.editingRow.elabor.elabor.total" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield floating-label="наработка до КР (час.)" v-model="props.editingRow.elabor.elabor.before" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield floating-label="наработка после КР (час.)" v-model="props.editingRow.elabor.elabor.after" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="отработано ВСЕГО (лет)" v-model="props.editingRow.elabor.dev.total" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="отработано до КР (лет)" v-model="props.editingRow.elabor.dev.before" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="отработано после КР (лет)" v-model="props.editingRow.elabor.dev.after" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано ВСЕГО (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.total')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано до КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.before')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано после КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.after')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
                         <div class="form-group">
@@ -63,7 +64,6 @@
                                 <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
-                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                     </form>
                     <div slot="actions">
                         <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
@@ -84,6 +84,7 @@
 
     let struct =
         [
+            {hidden: true, id: "backgroundColor", default: '#ffffff'},
             {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "place", title: "дислокация", type: 'text', default: "", tablefilter: {type: "select"}},
             {id: "ret", title: "РЭТ", type: 'select', default: "РЛС", tablefilter: {type: "select"}},
@@ -208,25 +209,22 @@
                         id: "dev", title: "", children:
                         [
                             {
-                                id: "total",
-                                title: "отработано <br>ВСЕГО (лет)",
-                                type: 'number',
-                                default: 0,
-                                tablesaw: {type: "number"}
+                                id: "total", title: "отработано <br>ВСЕГО (лет)", type: 'number', cb(value, entity) {
+                                    value = entity.elabor.dev.total = moment().format('YYYY') - entity.year;
+                                    return value
+                                }, default: "", tablesaw: {type: "number"}, readonly: true
                             },
                             {
-                                id: "before",
-                                title: "отработано <br>до КР (лет)",
-                                type: 'number',
-                                default: 0,
-                                tablesaw: {type: "number"}
+                                id: "before", title: "отработано <br>до КР (лет)", type: 'number', cb(value, entity) {
+                                    value = entity.elabor.dev.before = (entity.repair.type === 'КР' ? entity.repair.year : moment().format('YYYY')) - entity.year;
+                                    return value
+                                }, default: "", tablesaw: {type: "number"}, readonly: true
                             },
                             {
-                                id: "after",
-                                title: "отработано <br>после КР (лет)",
-                                type: 'number',
-                                default: 0,
-                                tablesaw: {type: "number"}
+                                id: "after", title: "отработано <br>после КР (лет)", type: 'number', cb(value, entity) {
+                                    value = entity.elabor.dev.after = entity.repair.type === 'КР' ? moment().format('YYYY') - entity.repair.year : 0;
+                                    return value
+                                }, default: "", tablesaw: {type: "number"}, readonly: true
                             },
                         ]
                     }
@@ -314,8 +312,7 @@
                         ]
                     },
                 ]
-            },
-            {hidden: true, id: "backgroundColor", default: '#ffffff'}
+            }
         ];
 
 

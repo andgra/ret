@@ -9,7 +9,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="autodesk">
+      <paths name="autodesk (1)">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -17,20 +17,6 @@
         </serverdata>
       </paths>
       <paths name="bitrix">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="hack_ftp">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="hack_ftp (1)">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -58,7 +44,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="research">
+      <paths name="research.dev">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

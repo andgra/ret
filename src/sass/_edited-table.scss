@@ -105,3 +105,7 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.mdl-textfield__input[type="color"] + .mdl-textfield__label:after {
+  background: transparent !important;
+}

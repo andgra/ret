@@ -40,6 +40,7 @@
                 <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
                     <form class="editing-form" action="#" onsubmit="return false;">
                         <input name="_id" v-model="props.editingRow._id" type="hidden"/>
+                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-textfield class="mdl-textfield--full-width" floating-label="дислокация" v-model="props.editingRow.place"></mdl-textfield>
                         <mdl-select class="mdl-textfield--full-width" id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret"></mdl-select>
@@ -68,6 +69,7 @@
 
     let struct =
         [
+            {hidden: true, id: "backgroundColor", default: '#ffffff'},
             {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
             {id: "place", title: "дислокация", type: 'text', default: ""},
             {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", tablefilter: {type: "select"}},
