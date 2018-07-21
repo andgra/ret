@@ -1,4 +1,4 @@
-import { model, defectTable } from 'core/model';
+import { model, defectTable } from '~js/model';
 
 class defect extends model{
     constructor() {

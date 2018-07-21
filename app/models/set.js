@@ -1,4 +1,4 @@
-import { model, setTable } from 'core/model';
+import { model, setTable } from '~js/model';
 
 class set extends model{
     constructor() {

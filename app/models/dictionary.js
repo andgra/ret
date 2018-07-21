@@ -1,4 +1,4 @@
-import { model, dictionaryTable } from 'core/model';
+import { model, dictionaryTable } from '~js/model';
 
 class settings extends model {
     constructor() {

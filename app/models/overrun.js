@@ -1,4 +1,4 @@
-import { model, overrunTable } from 'core/model';
+import { model, overrunTable } from '~js/model';
 
 class overrun extends model {
     constructor() {

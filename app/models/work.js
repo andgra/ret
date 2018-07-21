@@ -1,4 +1,4 @@
-import { model, workTable } from 'core/model';
+import { model, workTable } from '~js/model';
 
 class work extends model{
     constructor() {
