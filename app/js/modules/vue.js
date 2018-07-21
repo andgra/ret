@@ -4,18 +4,20 @@ Vue.config.debug = true;
 import VueMdl from 'vue-mdl';
 Vue.use(VueMdl);
 
-import DateTimePicker from "@/common/datetimepicker.vue";
+import DateTimePicker from "~components/datetimepicker.vue";
 Vue.component('DateTimePicker', DateTimePicker);
 
 import 'mdl-selectfield/dist/mdl-selectfield';
-import MdlSelect from "@/common/select.vue";
+
+import MdlSelect from "~components/select.vue";
 Vue.component('mdl-select', MdlSelect);
 
 import 'jquery-ui/ui/widgets/autocomplete';
-import MdlAutocomplete from "@/common/autocomplete.vue";
+
+import MdlAutocomplete from "~components/autocomplete.vue";
 Vue.component('mdl-autocomplete', MdlAutocomplete);
 
-import IntervalPicker from "@/common/intervalpicker.vue";
+import IntervalPicker from "~components/intervalpicker.vue";
 Vue.component('IntervalPicker', IntervalPicker);
 
 Number.prototype.round = function(places) {
@@ -23,44 +25,7 @@ Number.prototype.round = function(places) {
     return Math.round(this * places) / places;
 };
 
-window.filters = {
-    NaN: value => (isNaN(value) ? 0 : value),
-    per(value) {
-        return isNumeric(value) ? value + '%' : value;
-    },
-    r0(value) {
-        return isNumeric(value) ? value.round(0) : value;
-    },
-    r1(value) {
-        return isNumeric(value) ? value.round(1) : value;
-    },
-    r2(value) {
-        return isNumeric(value) ? value.round(2) : value;
-    },
-    myDate(value) {
-        return moment(value).isValid() ? moment(value).format('DD.MM.YYYY') : '';
-    },
-    myDateTime(value) {
-        return moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
-    },
-    myInterval(value) {
-        let data = {};
-        data.days = Math.floor(Math.floor(value / 60) / 24);
-        data.hours = Math.floor((value) / 60) - data.days * 24;
-        data.minutes = value - (data.hours + data.days * 24) * 60;
-        let result = '';
-        if (data.days && data.days > 0) {
-            result += data.days + ' сут';
-        }
-        if (data.hours && data.hours > 0) {
-            result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
-        }
-        if (data.minutes && data.minutes > 0) {
-            result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
-        }
-        return result;
-    },
-};
+import filters from '~js/filters';
 
 Vue.filter('NaN', filters.NaN );
 Vue.filter('per', filters.per );
@@ -106,3 +71,5 @@ Vue.directive('deep-model', {
         }
     }
 });
+
+export default Vue;

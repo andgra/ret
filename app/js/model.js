@@ -12,7 +12,6 @@ class model {
     }
     update(item) {
         return new Promise((resolve, reject) => {
-            console.log(item);
             this.table.update({ _id: item._id }, {$set: item}, (err, item) =>  !err ? resolve(item) : reject(err));
         });
     }

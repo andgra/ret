@@ -21,7 +21,7 @@ module.exports = {
     // context: path.join(__dirname, 'app'),
     devtool: 'eval',
     entry: [
-        './src/routes.js'
+        './app/js/main.js'
     ],
     output: {
         filename: 'js/app.js',
@@ -29,8 +29,7 @@ module.exports = {
     },
     plugins: [
         new CopyWebpackPlugin([
-            {from: './src/index.html'},
-            {from: './src/components/tablefilter', to: './tablefilter'},
+            {from: './app/static', to: './'},
         ]),
         extractSass,
         new WebpackNotifierPlugin({title: 'Webpack',alwaysNotify: true})
@@ -39,10 +38,14 @@ module.exports = {
         extensions: ['.js', '.vue', '.json'],
         alias: {
             '/': path.resolve(__dirname, ''),
-            '@': path.resolve(__dirname, 'src/components/'),
-            'core': path.resolve(__dirname, 'src/core'),
-            'src': path.resolve(__dirname, 'src'),
-            'models': path.resolve(__dirname, 'src/models'),
+            '@': path.resolve(__dirname, 'app'),
+            '~assets': path.resolve(__dirname, 'app/assets/'),
+            '~components': path.resolve(__dirname, 'app/components/'),
+            '~js': path.resolve(__dirname, 'app/js'),
+            '~layouts': path.resolve(__dirname, 'app/layouts'),
+            '~pages': path.resolve(__dirname, 'app/pages'),
+            '~models': path.resolve(__dirname, 'app/models'),
+            '~node_modules': path.resolve(__dirname, 'node_modules'),
         }
     },
     target: 'node-webkit',

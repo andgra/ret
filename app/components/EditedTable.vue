@@ -90,7 +90,7 @@
 
 </template>
 <script>
-    let Vue = require("vue/dist/vue.js");
+    import Structure from '~js/structure';
 
     export default {
         props: {
@@ -105,37 +105,13 @@
         },
         data: function () {
             let struct = this.options.struct;
-            let rowSeed = getSeed({children: struct});
-            rowSeed._id = "";
 
-            /*struct.unshift({id: "checks", title: "1", type: String, default: ""});
-            struct.unshift({
-                id: "actions", title: "действия", children:
-                    [
-                        {id: "edit", title: "редактировать", type: String, default: ""},
-                        {id: "remove", title: "удалить", type: String, default: ""},
-                    ]
-            });
-            struct.unshift({id: "num", title: "№", type: Number, default: 0});*/
-//            console.log('struct',struct);
-            let united = getUnited(struct);
-            console.log('united',united)
-            let grid = getGrid(united);
+            let structure = new Structure(struct);
+            let rowSeed = structure.rowSeed;
+            let united = structure.united;
+            let grid = structure.grid;
+            let dicts = structure.dicts;
 
-           console.log('grid',grid.slice());
-            let dicts = {};
-
-            for(let cell of clone(grid.last())) {
-                if(cell.type==='select') {
-                    let path = cell.id.split('.');
-                    let res = dicts;
-                    for (let i in path) {
-                        let p = path[i];
-                        res[p] = !res[p] ? (i==path.length-1 ? [] : {}) : res[p];
-                        res = res[p];
-                    }
-                }
-            }
 //            console.log(tfConf);
 //            console.log(grid);
             return Object.assign({

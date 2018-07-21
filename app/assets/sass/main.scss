@@ -8,11 +8,11 @@
 }
 
 @import 'mdl/material-design-lite.scss';
-@import '../../node_modules/font-awesome/scss/font-awesome.scss';
-@import '../../node_modules/jquery-ui/themes/base/all.css';
-@import '../../node_modules/jquery-datetimepicker/jquery.datetimepicker.css';
-@import '../../node_modules/tablesaw/dist/tablesaw.css';
-@import '../../node_modules/mdl-selectfield/dist/mdl-selectfield.css';
+@import '~font-awesome/scss/font-awesome.scss';
+@import '~jquery-ui/themes/base/all.css';
+@import '~jquery-datetimepicker/jquery.datetimepicker.css';
+@import '~tablesaw/dist/tablesaw.css';
+@import '~mdl-selectfield/dist/mdl-selectfield.css';
 @import 'edited-table';
 
 body {
