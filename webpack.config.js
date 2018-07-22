@@ -41,6 +41,7 @@ module.exports = {
             '@': path.resolve(__dirname, 'app'),
             '~assets': path.resolve(__dirname, 'app/assets/'),
             '~components': path.resolve(__dirname, 'app/components/'),
+            '~mixins': path.resolve(__dirname, 'app/mixins/'),
             '~js': path.resolve(__dirname, 'app/js'),
             '~layouts': path.resolve(__dirname, 'app/layouts'),
             '~pages': path.resolve(__dirname, 'app/pages'),

@@ -26,6 +26,12 @@ class model {
     });
   }
 
+  count(where = {}) {
+    return new Promise((resolve, reject) => {
+      this.table.count(where).exec((err, item) => !err ? resolve(item) : reject(err));
+    });
+  }
+
   update(item) {
     return new Promise((resolve, reject) => {
       this.table.update({_id: item._id}, {$set: item}, (err, item) => !err ? resolve(item) : reject(err));
@@ -62,10 +68,15 @@ class model {
     });
   }
 
+  // Приведение типов перед добавлением в базу
+  sanitize(item) {
+    return item;
+  }
+
   updateOrCreate(attributes, item) {
     return new Promise((resolve, reject) => {
       delete item._id;
-      this.table.update(attributes, item, {upsert: true, returnUpdatedDocs: true}, (err, num, doc, insert) => {
+      this.table.update(attributes, this.sanitize(item), {upsert: true, returnUpdatedDocs: true}, (err, num, doc, insert) => {
         !err ? resolve({insert, doc}) : reject(err)
       });
     });

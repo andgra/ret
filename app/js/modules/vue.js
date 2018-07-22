@@ -72,4 +72,19 @@ Vue.directive('deep-model', {
     }
 });
 
+import SmartTable from '~components/smart-table/main.vue';
+Vue.component('smart-table', SmartTable);
+
+import Loading from '~components/loading.vue';
+Vue.component('loading', Loading);
+
+// Регистрируем глобальную пользовательскую директиву `v-focus`
+Vue.directive('focus', {
+  // Когда привязанный элемент вставлен в DOM...
+  inserted: function (el) {
+    // Переключаем фокус на элемент
+    el.focus()
+  }
+})
+
 export default Vue;

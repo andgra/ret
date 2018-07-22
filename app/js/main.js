@@ -10,15 +10,19 @@ import '~js/modules/helpers';
 import '~js/modules/print';
 import '~js/modules/fs';
 import '~js/modules/vue';
-
 import {db} from '~js/model';
-window.db = db;
+
+import router from '~js/routes';
+import {layout} from "vue-extend-layout";
 
 window.moment = require('moment');
 
+window.db = db;
+
+
 console.log('core loaded');
-import router from '~js/routes';
-import {layout} from "vue-extend-layout";
+
+require('~js/test');
 
 let app = new Vue({
   router,

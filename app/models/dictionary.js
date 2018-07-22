@@ -1,6 +1,6 @@
 import { model, dictionaryTable } from '~js/model';
 
-class settings extends model {
+class dictionary extends model {
     constructor() {
         super();
         this.table = dictionaryTable;
@@ -28,5 +28,5 @@ class settings extends model {
     }
 }
 
-export {settings};
-export default new settings;
+export {dictionary};
+export default new dictionary;

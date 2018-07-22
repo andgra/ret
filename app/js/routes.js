@@ -20,7 +20,7 @@ import Settings from '~pages/settings/main.vue';
 // import DictType from '~pages/dictionaries/type.vue';
 // import DictRepair from '~pages/dictionaries/repair.vue';
 //
-// import SetsEdit from '~pages/tables/sets.vue';
+import SetsEdit from '~pages/tables/sets.vue';
 // import DefectsEdit from '~pages/tables/defects.vue';
 // import WorksEdit from '~pages/tables/works.vue';
 // import OverrunEdit from '~pages/tables/overrun.vue';
@@ -47,7 +47,7 @@ const routes = [
   // {path: '/dictionary/type', component: DictType, meta: {layout: 'appLayout'}},
   // {path: '/dictionary/repair', component: DictRepair, meta: {layout: 'appLayout'}},
   //
-  // {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
+  {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
   // {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
   // {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
   // {path: '/overrun/edit', component: OverrunEdit, meta: {layout: 'appLayout'}},
@@ -66,11 +66,11 @@ const router = new VueRouter({
   routes // сокращение от `routes: routes`
 });
 
-  router.replace({path: '/settings', redirect: '/'});
+  // router.replace({path: '/settings', redirect: '/'});
 // if (getRequests()['route']) {
 //   router.replace({path: getRequests()['route'], redirect: '/'});
 // } else {
-//   router.replace({path: '/sets/edit', redirect: '/'});
+  router.replace({path: '/sets/edit', redirect: '/'});
 // }
 
 // 3. Создаём и монтируем корневой экземпляр Vue нашего приложения.
