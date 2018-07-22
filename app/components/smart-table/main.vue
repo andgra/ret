@@ -100,7 +100,8 @@
 </template>
 <script>
   import Pagination from '~components/pagination';
-  import Structure from '~js/structure';
+  import Structure from '~js/modules/structure';
+  // import store from '@/store/smart-table';
 
   export default {
     props: {
@@ -117,11 +118,11 @@
         required: true
       },
       settings: {
-        type: Number,
+        type: Object,
         required: true
       },
       dicts: {
-        type: Number,
+        type: Object,
         required: true
       },
       loading: {
@@ -155,7 +156,8 @@
         toRemove: [],
         tfConf: {},
         test: "",
-        tf: null
+        tf: null,
+        // sharedStore: store.state,
       }, this.options.data || {})
     },
     computed: {
@@ -541,6 +543,7 @@
       }
     },
     created: function () {
+      console.log('smart-table created');
 
       this.setRows();
       window.appt = this;

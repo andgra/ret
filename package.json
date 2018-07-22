@@ -27,7 +27,8 @@
     "nedb": "^1.8.0",
     "vue": "^2.5.5",
     "vue-mdl": "^1.1.1",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "chromium-args": "--mixed-context",
   "devDependencies": {

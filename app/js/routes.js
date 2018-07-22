@@ -1,16 +1,14 @@
-window.VueRouter = require("vue-router").default;
+import Vue from '~js/modules/vue';
+let VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
 
-import {VueExtendLayout, layout} from 'vue-extend-layout';
+import {VueExtendLayout} from 'vue-extend-layout';
 
 Vue.config.productionTip = false;
 Vue.use(VueExtendLayout);
 
 // 0. При использовании модульной системы (напр. vue-cli),
 // импортируйте Vue и VueRouter и затем вызовите `Vue.use(VueRouter)`
-// var ngui = window.nwDispatcher.requireNwGui() ;
-/*nwin.moveTo(1000, 0);
-nwin.width(800);*/
 
 import Settings from '~pages/settings/main.vue';
 // import Print from '~pages/settings/print.vue';

@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export default {
   NaN: value => (isNaN(value) ? 0 : value),
     per(value) {

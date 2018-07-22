@@ -1,4 +1,7 @@
 import fs from "~js/modules/fs"
+import {ngui, nwin} from "~js/modules/nw"
+
+
 let openPdf = function (name) {
   ngui.Window.open('public/index.html?route=' + name, { width: 1,height: 1, show: false});
 };

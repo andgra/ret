@@ -46,6 +46,7 @@ module.exports = {
             '~layouts': path.resolve(__dirname, 'app/layouts'),
             '~pages': path.resolve(__dirname, 'app/pages'),
             '~models': path.resolve(__dirname, 'app/models'),
+            '~store': path.resolve(__dirname, 'app/store'),
             '~node_modules': path.resolve(__dirname, 'node_modules'),
         }
     },

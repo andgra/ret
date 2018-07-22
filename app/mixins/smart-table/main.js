@@ -2,7 +2,7 @@ export default {
   data() {
     return {
       rows: [],
-      count: 0,
+      // count: 0,
       dicts: {},
       loaded: false,
       tableLoading: false

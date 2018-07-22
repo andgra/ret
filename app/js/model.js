@@ -92,6 +92,7 @@ let loadTable         = name => (new Datastore({
   timestampData: true,
   autoload: true
 }));
+
 const db              = loadTable('db');
 const setTable        = loadTable('sets');
 const workTable       = loadTable('works');

@@ -1,4 +1,4 @@
-window.Vue = require("vue/dist/vue.js");
+import Vue from 'vue/dist/vue'
 Vue.config.debug = true;
 
 import VueMdl from 'vue-mdl';
@@ -20,12 +20,7 @@ Vue.component('mdl-autocomplete', MdlAutocomplete);
 import IntervalPicker from "~components/intervalpicker.vue";
 Vue.component('IntervalPicker', IntervalPicker);
 
-Number.prototype.round = function(places) {
-    places = Math.pow(10, places);
-    return Math.round(this * places) / places;
-};
-
-import filters from '~js/filters';
+import filters from '~js/modules/filters';
 
 Vue.filter('NaN', filters.NaN );
 Vue.filter('per', filters.per );
@@ -85,6 +80,6 @@ Vue.directive('focus', {
     // Переключаем фокус на элемент
     el.focus()
   }
-})
+});
 
 export default Vue;

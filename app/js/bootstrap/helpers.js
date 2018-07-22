@@ -135,3 +135,8 @@ window.clone = (item) => {
 
   return result;
 };
+
+Number.prototype.round = function(places) {
+  places = Math.pow(10, places);
+  return Math.round(this * places) / places;
+};

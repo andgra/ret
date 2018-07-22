@@ -88,10 +88,12 @@
 </template>
 
 <script>
+  // import store from '@/store/store';
+  // import {mapState} from 'vuex';
   import set from '~models/set';
   import dictionary from '~models/dictionary';
-  import settings from '~models/settings';
-  import filters from '~js/filters';
+  import moment from 'moment';
+  import filters from '~js/modules/filters';
   import {mainMixin, paginationMixin, sortMixin, whereMixin, limitMixin} from '~mixins/smart-table';
 
   let struct =
@@ -381,18 +383,25 @@
     data() {
       return {
         options,
-        settings: {},
+        // settings: {},
       }
     },
+    // table,
+    computed: {
+
+      // ...mapState(['count']),
+    },
     methods: {
+      // test(...args) { console.log(this.$table, this.count); this.$table.commit('increment') },
       async getData() {
         await Promise.all([
-          this.getCount(),
+          // this.getCount(),
           this.getRows(),
           this.getDicts(),
-          this.getSettings(),
+          // this.getSettings(),
         ]);
         this.dicts.place = this.rows.map(row => ({value: row.place}));
+        console.log('data fetched');
         this.loaded      = true;
         console.log(this.data)
       },
@@ -434,11 +443,12 @@
         this.dicts = {...this.dicts, ...dicts};
       },
       async getSettings() {
-        this.settings = await settings.all();
+        // this.settings = await settings.all();
       }
     },
     created() {
       this.getData();
+      // this.test('asd');
     }
   };
 </script>
