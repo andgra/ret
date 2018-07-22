@@ -6,10 +6,9 @@ export default class Structure {
     this.grid    = {};
     this.dicts = {};
 
-    this._start();
   }
 
-  _start() {
+  start() {
     this.setRowSeed();
     this.setUnited();
     this.setGrid();

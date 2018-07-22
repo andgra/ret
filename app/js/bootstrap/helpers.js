@@ -3,11 +3,11 @@ window.isNumeric = function (n) {
 };
 
 window.getInObj = function (obj, path, cloneRes = false) {
-  path = path.split('.');
+  path    = path.split('.');
   let res = cloneRes ? clone(obj) : obj;
-  for(let p of path) {
+  for (let p of path) {
     res = res[p];
-    if(res === undefined || res === null) {
+    if (res === undefined || res === null) {
       break;
     }
   }
@@ -15,13 +15,11 @@ window.getInObj = function (obj, path, cloneRes = false) {
 };
 
 
-
-
 window.getRequests = function () {
   let s1 = location.search.substring(1, location.search.length).split('&'),
-      r = {}, s2, i;
+      r  = {}, s2, i;
   for (i = 0; i < s1.length; i += 1) {
-    s2 = s1[i].split('=');
+    s2                                         = s1[i].split('=');
     r[decodeURIComponent(s2[0]).toLowerCase()] = decodeURIComponent(s2[1]);
   }
   return r;
@@ -36,8 +34,6 @@ window.getRequests = function () {
 // };
 
 
-
-
 window.compareNumbers = function (a, b) {
   return a - b;
 };
@@ -50,7 +46,7 @@ window.isObject = function (mixed_var) {
   if (mixed_var instanceof Array) {
     return false;
   } else {
-    return (mixed_var !== null) && (typeof( mixed_var ) === 'object');
+    return (mixed_var !== null) && (typeof(mixed_var) === 'object');
   }
 };
 
@@ -77,37 +73,37 @@ window.recValue = function (arr, value) {
 
 Object.defineProperty(Array.prototype, 'last', {
   enumerable: false,
-  value: function() { return this[this.length - 1]; }
+  value: function () { return this[this.length - 1]; }
 });
 
 Object.defineProperty(Array.prototype, 'first', {
   enumerable: false,
-  value: function() { return this[0]; }
+  value: function () { return this[0]; }
 });
 
 window.clone = (item) => {
   if (!item) { return item; } // null, undefined values check
 
-  var types = [ Number, String, Boolean ],
+  var types = [Number, String, Boolean],
       result;
 
   // normalizing primitives if someone did new String('aaa'), or new Number('444');
-  types.forEach(function(type) {
+  types.forEach(function (type) {
     if (item instanceof type) {
-      result = type( item );
+      result = type(item);
     }
   });
 
   if (typeof result == "undefined") {
-    if (Object.prototype.toString.call( item ) === "[object Array]") {
+    if (Object.prototype.toString.call(item) === "[object Array]") {
       result = [];
-      item.forEach(function(child, index, array) {
-        result[index] = clone( child );
+      item.forEach(function (child, index, array) {
+        result[index] = clone(child);
       });
     } else if (typeof item == "object") {
       // testing that this is DOM
       if (item.nodeType && typeof item.cloneNode == "function") {
-        var result = item.cloneNode( true );
+        var result = item.cloneNode(true);
       } else if (!item.prototype) { // check that this is a literal
         if (item instanceof Date) {
           result = new Date(item);
@@ -115,7 +111,7 @@ window.clone = (item) => {
           // it is an object literal
           result = {};
           for (var i in item) {
-            result[i] = clone( item[i] );
+            result[i] = clone(item[i]);
           }
         }
       } else {
@@ -136,7 +132,17 @@ window.clone = (item) => {
   return result;
 };
 
-Number.prototype.round = function(places) {
+Number.prototype.round = function (places) {
   places = Math.pow(10, places);
   return Math.round(this * places) / places;
 };
+
+Promise.allObject = map =>
+  Promise.all(Array.from(Object.entries(map)).map(([key, value]) =>
+    Promise.resolve(value).then(value => ({key, value}))
+  ))
+    .then(results => {
+      const ret = {};
+      results.forEach(({key, value}) => ret[key] = value);
+      return ret;
+    });
