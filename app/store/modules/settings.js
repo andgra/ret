@@ -3,7 +3,7 @@ import settings from '~models/settings';
 const store = {
   namespaced: true,
   state: {
-    settings: {}
+    settings: null
   },
   mutations: {
     gotSettings(state, settings) {

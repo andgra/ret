@@ -101,6 +101,7 @@
 <script>
   import Pagination from '~components/pagination';
   import Structure from '~js/modules/structure';
+  import {mapState,mapActions,mapGetters,mapMutations} from 'vuex';
   // import store from '@/store/smart-table';
 
   export default {
@@ -161,6 +162,8 @@
       }, this.options.data || {})
     },
     computed: {
+      ...mapState('settings', ['settings']),
+      ...mapState('table', ['count','query','rows','info','loading','model','structure']),
       controlRemove() {
         return this.options.remove === undefined || this.options.remove ? 1 : 0;
       },
@@ -330,10 +333,10 @@
           // Удаляем из базы
           let id    = this.rows[index]._id;
           if (id) {
-            if (this.options.saveRow) {
+            if (this.options.removeRow) {
               this.options.removeRow(id);
             } else {
-              throw new Error('saveRow не определено');
+              throw new Error('removeRow не определено');
             }
           }
 

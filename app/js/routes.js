@@ -2,14 +2,12 @@ import Vue from '~js/modules/vue';
 let VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
 
-import {VueExtendLayout} from 'vue-extend-layout';
-
 Vue.config.productionTip = false;
-Vue.use(VueExtendLayout);
 
 // 0. При использовании модульной системы (напр. vue-cli),
 // импортируйте Vue и VueRouter и затем вызовите `Vue.use(VueRouter)`
 
+import LayoutTable from '~layouts/app.vue';
 import Settings from '~pages/settings/main.vue';
 // import Print from '~pages/settings/print.vue';
 // import DictCondition from '~pages/dictionaries/condition.vue';
@@ -36,7 +34,13 @@ import SetsEdit from '~pages/tables/sets.vue';
 // полноценный конструктор, так и просто объект с настройками компонента
 // Вложенные пути будут рассмотрены далее.
 const routes = [
-  {path: '/settings', component: Settings, meta: {layout: 'appLayout'}},
+  {
+    path: '', component: LayoutTable,
+    children: [
+      {path: '/settings', component: Settings},
+      {path: '/sets/edit', component: SetsEdit},
+    ],
+  },
   // {path: '/print', component: Print, meta: {layout: 'appLayout'}},
   //
   // {path: '/dictionary/condition', component: DictCondition, meta: {layout: 'appLayout'}},
@@ -45,7 +49,6 @@ const routes = [
   // {path: '/dictionary/type', component: DictType, meta: {layout: 'appLayout'}},
   // {path: '/dictionary/repair', component: DictRepair, meta: {layout: 'appLayout'}},
   //
-  {path: '/sets/edit', component: SetsEdit, meta: {layout: 'appLayout'}},
   // {path: '/defects/edit', component: DefectsEdit, meta: {layout: 'appLayout'}},
   // {path: '/works/edit', component: WorksEdit, meta: {layout: 'appLayout'}},
   // {path: '/overrun/edit', component: OverrunEdit, meta: {layout: 'appLayout'}},
@@ -61,7 +64,7 @@ const routes = [
 // 2. Создаём экземпляр роутера с опцией `routes`
 // Можно передать и другие опции, но пока не будем усложнять
 const router = new VueRouter({
-  routes // сокращение от `routes: routes`
+  routes
 });
 
   // router.replace({path: '/settings', redirect: '/'});

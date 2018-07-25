@@ -67,7 +67,6 @@
         name: 'appLayout', // id of the layout, use "CamelCase" for compound words,
         created() {
             nwin.maximize();
-            console.log(this.$store.state.settings);
         }
     }
 </script>

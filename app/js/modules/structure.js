@@ -1,10 +1,14 @@
 export default class Structure {
-  constructor(struct) {
+  constructor(struct, start = true) {
     this.struct  = struct;
-    this.rowSeed = {};
+    this.defaultRow = {};
     this.united  = {};
     this.grid    = {};
     this.dicts = {};
+
+    if (start) {
+      this.start();
+    }
 
   }
 
@@ -28,8 +32,8 @@ export default class Structure {
         return node.default !== undefined ? node.default : "";
       }
     };
-    this.rowSeed     = getSeed({children: this.struct});
-    this.rowSeed._id = "";
+    this.defaultRow     = getSeed({children: this.struct});
+    this.defaultRow._id = "";
   }
 
   setDicts() {
@@ -201,7 +205,7 @@ export default class Structure {
 // console.log('shifted',shifted)
 
     this.united = unionStruct(shifted);
-    console.log('united', this.united);
+    // console.log('united', this.united);
   }
 
 

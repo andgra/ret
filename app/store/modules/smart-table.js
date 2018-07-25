@@ -9,20 +9,30 @@ let defaultQuery = {
 };
 
 export default {
+  namespaced: true,
   state: {
-    count: 0,
     query: clone(defaultQuery),
     defaultQuery,
     rows: [],
+    all: [],
     info: {},
     loading: 0,
     model: null,
+    structure: null,
+    edit: null,
+    options: {},
+    toRemove: [],
   },
-  modules: {
-  },
+  modules: {},
   mutations: {
+    ['SET_OPTIONS'](state, options) {
+      state.options = options;
+    },
     ['SET_MODEL'](state, model) {
       state.model = model;
+    },
+    ['SET_STRUCTURE'](state, structure) {
+      state.structure = structure;
     },
     ['RELOAD_DATA'](state) {
       state.loading = 1;
@@ -39,16 +49,37 @@ export default {
     ['SET_INFO'](state, info) {
       state.info = info;
     },
+    ['SET_ALL'](state, all) {
+      state.all = all;
+    },
     ['UPDATE_QUERY'](state, query) {
       state.query = query;
     },
     ['UPDATE_DEFAULT_QUERY'](state, defaultQuery) {
       state.defaultQuery = clone(defaultQuery);
     },
+    ['ADD_ROW'](state) {
+      state.edit = clone(state.defaultRow);
+    },
+    ['EDIT_ROW'](state, index) {
+      state.edit = clone(state.rows[index]);
+    },
+    ['CLOSE_EDIT'](state) {
+      state.edit = null;
+    },
+    ['SET_REMOVE'](state, arr) {
+      state.toRemove = arr;
+    },
   },
   getters: {
     sortBy(state) {
       return Object.keys(state.query.sort)[0];
+    },
+    count(state) {
+      return state.all.length;
+    },
+    maxPage(state) {
+      return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
     },
     sortDirection(state) {
       return Object.values(state.query.sort)[0];
@@ -56,40 +87,103 @@ export default {
   },
   actions: {
     async reloadRows({commit, state}, query) {
-      commit('UPDATE_QUERY', query);
+      commit('UPDATE_QUERY', {...state.query, ...query});
       commit('RELOAD_DATA');
       commit('SET_ROWS', await state.model.all(state.query));
       commit('DATA_READY');
     },
-    async loadData({commit, state}, {query, infoLoader, dataFetched, struct}) {
-      commit('UPDATE_DEFAULT_QUERY', query);
-      commit('UPDATE_QUERY', query);
+    async loadAll({state, commit}) {
+      commit('SET_ALL', await state.model.all({...state.defaultQuery, limit: 0}));
+    },
+    async loadData({commit, state}, {model, query, infoLoader, dataFetched, struct}) {
+      if (model) {
+        commit('SET_MODEL', model);
+      }
+      commit('UPDATE_DEFAULT_QUERY', {...state.defaultQuery, ...query});
+      commit('UPDATE_QUERY', state.defaultQuery);
       commit('LOAD_DATA');
+
+      let infoPromise = infoLoader(state);
+      let all = await state.model.all({...state.defaultQuery, limit: 0});
+
       let data = await Promise.allObject({
-        rows: await state.model.all(state.query),
-        info: await infoLoader(state),
+        rows: state.model.all(state.query),
+        info: infoPromise,
       });
 
       let structure = new Structure(struct);
-      structure.start();
 
-      dataFetched({data, state, structure});
+      await dataFetched({all, data, state, commit, structure});
+
+      commit('SET_STRUCTURE', structure);
+      commit('SET_ALL', all);
       commit('SET_ROWS', data.rows);
       commit('SET_INFO', data.info);
       commit('DATA_READY');
     },
     async setPage({state, dispatch}, page) {
-      dispatch('reloadRows', {...state.query, page});
+      await dispatch('reloadRows', {...state.query, page});
     },
     async setSort({state, dispatch}, {sortBy, sortDirection}) {
-      let sort = {[sortBy]: sortDirection};
-      let page = state.defaultQuery.page;
+      let sort  = {[sortBy]: sortDirection};
+      let page  = state.defaultQuery.page;
       let where = state.defaultQuery.where;
-      dispatch('reloadRows', {...state.query, ...{sort, page, where}});
+      await dispatch('reloadRows', {...state.query, ...{sort, page, where}});
     },
     async setLimit({state, dispatch}, limit) {
       let page = state.defaultQuery.page;
-      dispatch('reloadRows', {...state.query, ...{limit, page}});
+      await dispatch('reloadRows', {...state.query, ...{limit, page}});
+    },
+    async saveRow({state, dispatch, commit}) {
+      commit('RELOAD_DATA');
+      let result;
+
+      // Добавляем или обновляем запись
+      let item = state.edit;
+      let index = item.index;
+      delete item.index;
+      if (state.options.saveRow) {
+        result = await state.options.saveRow(item);
+      } else {
+        result = await state.model.updateOrCreate({_id: item._id}, item);
+      }
+      let {insert, doc} = result;
+
+      // Обновляем все
+      await dispatch('loadAll');
+
+      if (insert) {
+        // Переход на последнюю страницу
+        // Записи автоматически обновятся
+        await dispatch('setPage', state.maxPage);
+      } else {
+        // Обновляем записи
+        await dispatch('reloadRows')
+      }
+
+      commit('CLOSE_EDIT');
+      commit('DATA_READY');
+    },
+    async removeRows({state, dispatch, commit}) {
+      commit('RELOAD_DATA');
+
+      // Получаем функцию удаления - стандартную или кастомную
+      let removeFunc = state.options.removeRow ? state.options.removeRow : state.model.delete;
+
+      let awaitRemove = [];
+      state.toRemove.forEach(id => awaitRemove.push(removeFunc(id)) );
+
+      // Дожидаемся удаления всех строк
+      await Promise.all(awaitRemove);
+
+      // Обновляем данные
+      // Получаем все данные (в том числе и о пагинации)
+      await dispatch('loadAll');
+      // Затем обновляем текущую страницу
+      await dispatch('reloadRows');
+
+      commit('SET_REMOVE', []);
+      commit('DATA_READY');
     },
   }
 };

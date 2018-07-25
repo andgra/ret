@@ -1,3 +1,5 @@
+window.env = process.env.NODE_ENV ? process.env.NODE_ENV : 'production';
+
 window.isNumeric = function (n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
@@ -137,12 +139,3 @@ Number.prototype.round = function (places) {
   return Math.round(this * places) / places;
 };
 
-Promise.allObject = map =>
-  Promise.all(Array.from(Object.entries(map)).map(([key, value]) =>
-    Promise.resolve(value).then(value => ({key, value}))
-  ))
-    .then(results => {
-      const ret = {};
-      results.forEach(({key, value}) => ret[key] = value);
-      return ret;
-    });

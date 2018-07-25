@@ -1,95 +1,95 @@
 <template>
     <div class="table-container">
-        <smart-table v-if="loaded"
-                :options="options"
-                :rows="rows"
-                :count="count"
-                :dicts="dicts"
-                :settings="settings"
-                :loading="tableLoading"
-                v-bind:page.sync="page"
-                v-bind:sort-by.sync="sortBy"
-                v-bind:sort-direction.sync="sortDirection"
-                v-bind:limit.sync="limit"
-        >
-            <template slot="editModal" slot-scope="props">
-                <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
-                    <form class="editing-form" action="#" onsubmit="return false;">
-                        <input name="_id" v-model="props.editingRow._id" type="hidden"/>
-                        <mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
-                        <mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="false" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <!--<mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
-                        <mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield--full-width"></mdl-select>
-                        <mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
-                        <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-autocomplete id="editingTypeReal" label="тип РЭТ в наличии" v-model.lazy="props.editingRow.type.real" :options="props.dicts.type.real" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <mdl-textfield floating-label="заводской номер" v-model="props.editingRow.serial" class="mdl-textfield--full-width"></mdl-textfield>
-                        <mdl-textfield floating-label="год изготовления" v-model="props.editingRow.year" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                        <div class="form-group">
-                            <p>вид и год последнего ремонта</p>
-                            <div class="form-indent">
-                                <mdl-select id="editingRepairType" label="вид" v-model="props.editingRow.repair.type" :options="props.dicts.repair.type" class="mdl-textfield--full-width"></mdl-select>
-                                <mdl-textfield floating-label="год" v-model="props.editingRow.repair.year" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                        <mdl-select id="editingCondition" label="состояние РЭТ" v-model="props.editingRow.condition" :options="props.dicts.condition" class="mdl-textfield--full-width"></mdl-select>
-                        <div class="form-group">
-                            <p>отв. за эксплуатацию, уход и сбережение</p>
-                            <div class="form-indent">
-                                <mdl-textfield floating-label="воинское звание" v-model="props.editingRow.resp.rank" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="ФИО" v-model="props.editingRow.resp.fio" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="приказ о закреплении" v-model="props.editingRow.resp.order" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <p>установленный ресурс РЭТ</p>
-                            <div class="form-indent">
-                                <mdl-textfield floating-label="ресурс до КР (час.)" v-model="props.editingRow.est.res.kr" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="ресурс до списания (час.)" v-model="props.editingRow.est.res.cancel" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="срок службы до КР (лет)" v-model="props.editingRow.est.life.kr" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="срок службы до списания (лет)" v-model="props.editingRow.est.life.cancel" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <p>наработка РЭТ</p>
-                            <div class="form-indent">
-                                <mdl-textfield floating-label="наработка с начала эксплуатации (час.)'" v-model="props.editingRow.elabor.elabor.total" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="наработка до КР (час.)" v-model="props.editingRow.elabor.elabor.before" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="наработка после КР (час.)" v-model="props.editingRow.elabor.elabor.after" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано ВСЕГО (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.total')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано до КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.before')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано после КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.after')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <p>Запас ресурса образца РЭТ</p>
-                            <div class="form-indent">
-                                <mdl-textfield readonly="" floating-label="до КР (лет)" :value="props.getValue(props.editingRow, 'stock.year.kr.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.year.kr.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (лет)" :value="props.getValue(props.editingRow, 'stock.year.cancel.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.year.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (час)" :value="props.getValue(props.editingRow, 'stock.hour.kr.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.hour.kr.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (час)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.num')" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                    </form>
-                    <div slot="actions">
-                        <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
-                        <mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>
-                    </div>
-                </mdl-dialog>
-            </template>
-        </smart-table>
-        <loading v-else></loading>
+        <!--<smart-table v-if="loaded"-->
+        <!--:options="options"-->
+        <!--:rows="rows"-->
+        <!--:count="count"-->
+        <!--:dicts="dicts"-->
+        <!--:settings="settings"-->
+        <!--:loading="tableLoading"-->
+        <!--v-bind:page.sync="page"-->
+        <!--v-bind:sort-by.sync="sortBy"-->
+        <!--v-bind:sort-direction.sync="sortDirection"-->
+        <!--v-bind:limit.sync="limit"-->
+        <!--&gt;-->
+        <!--<template slot="editModal" slot-scope="props">-->
+        <!--<mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">-->
+        <!--<form class="editing-form" action="#" onsubmit="return false;">-->
+        <!--<input name="_id" v-model="props.editingRow._id" type="hidden"/>-->
+        <!--<mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
+        <!--<mdl-autocomplete label="дислокация" v-model="props.editingRow.place" :options="props.dicts.place" :strict="false" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
+        <!--&lt;!&ndash;<mdl-textfield floating-label="дислокация" v-model="props.editingRow.place" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>&ndash;&gt;-->
+        <!--<mdl-select id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret" class="mdl-textfield&#45;&#45;full-width"></mdl-select>-->
+        <!--<mdl-textfield floating-label="наличие пн" v-model="props.editingRow.pn" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="props.editingRow.type.req" :options="props.dicts.type.req" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
+        <!--<mdl-autocomplete id="editingTypeReal" label="тип РЭТ в наличии" v-model.lazy="props.editingRow.type.real" :options="props.dicts.type.real" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
+        <!--<mdl-textfield floating-label="заводской номер" v-model="props.editingRow.serial" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="год изготовления" v-model="props.editingRow.year" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<div class="form-group">-->
+        <!--<p>вид и год последнего ремонта</p>-->
+        <!--<div class="form-indent">-->
+        <!--<mdl-select id="editingRepairType" label="вид" v-model="props.editingRow.repair.type" :options="props.dicts.repair.type" class="mdl-textfield&#45;&#45;full-width"></mdl-select>-->
+        <!--<mdl-textfield floating-label="год" v-model="props.editingRow.repair.year" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<mdl-select id="editingCondition" label="состояние РЭТ" v-model="props.editingRow.condition" :options="props.dicts.condition" class="mdl-textfield&#45;&#45;full-width"></mdl-select>-->
+        <!--<div class="form-group">-->
+        <!--<p>отв. за эксплуатацию, уход и сбережение</p>-->
+        <!--<div class="form-indent">-->
+        <!--<mdl-textfield floating-label="воинское звание" v-model="props.editingRow.resp.rank" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="ФИО" v-model="props.editingRow.resp.fio" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="приказ о закреплении" v-model="props.editingRow.resp.order" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<p>установленный ресурс РЭТ</p>-->
+        <!--<div class="form-indent">-->
+        <!--<mdl-textfield floating-label="ресурс до КР (час.)" v-model="props.editingRow.est.res.kr" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="ресурс до списания (час.)" v-model="props.editingRow.est.res.cancel" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="срок службы до КР (лет)" v-model="props.editingRow.est.life.kr" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="срок службы до списания (лет)" v-model="props.editingRow.est.life.cancel" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<p>наработка РЭТ</p>-->
+        <!--<div class="form-indent">-->
+        <!--<mdl-textfield floating-label="наработка с начала эксплуатации (час.)'" v-model="props.editingRow.elabor.elabor.total" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="наработка до КР (час.)" v-model="props.editingRow.elabor.elabor.before" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield floating-label="наработка после КР (час.)" v-model="props.editingRow.elabor.elabor.after" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="отработано ВСЕГО (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.total')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="отработано до КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.before')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="отработано после КР (лет)" :value="props.getValue(props.editingRow, 'elabor.dev.after')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="form-group">-->
+        <!--<p>Запас ресурса образца РЭТ</p>-->
+        <!--<div class="form-indent">-->
+        <!--<mdl-textfield readonly="" floating-label="до КР (лет)" :value="props.getValue(props.editingRow, 'stock.year.kr.num')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.year.kr.per')" type="text" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до списания (лет)" :value="props.getValue(props.editingRow, 'stock.year.cancel.num')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.year.cancel.per')" type="text" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до КР (час)" :value="props.getValue(props.editingRow, 'stock.hour.kr.num')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до КР (%)" :value="props.getValue(props.editingRow, 'stock.hour.kr.per')" type="text" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до списания (час)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.num')" type="number" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--<mdl-textfield readonly="" floating-label="до списания (%)" :value="props.getValue(props.editingRow, 'stock.hour.cancel.per')" type="text" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</form>-->
+        <!--<div slot="actions">-->
+        <!--<mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>-->
+        <!--<mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>-->
+        <!--</div>-->
+        <!--</mdl-dialog>-->
+        <!--</template>-->
+        <!--</smart-table>-->
+        <!--<loading v-else></loading>-->
     </div>
 </template>
 
 <script>
   // import store from '@/store/store';
-  // import {mapState} from 'vuex';
+  import {mapState, mapActions, mapGetters, mapMutations} from 'vuex';
   import set from '~models/set';
   import dictionary from '~models/dictionary';
   import moment from 'moment';
@@ -345,13 +345,7 @@
 
 
   let options = {
-    struct,
-    table: 'sets',
     title: 'Таблица сводных данных',
-    computed: {},
-    init: function () {
-
-    },
     async created() {
       // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
       this.$watch('editingRow.type.req', (newVal) => {
@@ -368,8 +362,6 @@
         }
       });
     },
-    async setRows() {
-    },
     async saveRow(item) {
       return await set.updateOrCreate({_id: item._id}, item);
     },
@@ -379,7 +371,7 @@
   };
 
   export default {
-    mixins: [mainMixin, paginationMixin, sortMixin, limitMixin, whereMixin],
+    // mixins: [mainMixin, paginationMixin, sortMixin, limitMixin, whereMixin],
     data() {
       return {
         options,
@@ -388,39 +380,21 @@
     },
     // table,
     computed: {
+      ...mapState('settings', ['settings']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'model']),
+      ...mapGetters('table', ['count', 'sortBy', 'sortDirection']),
 
       // ...mapState(['count']),
     },
     methods: {
+      ...mapActions('settings', ['fetchSettings']),
+      ...mapActions('table', ['reloadRows', 'loadData', 'setPage', 'setSort', 'setLimit']),
+      // ...mapMutations('table', ['SET_MODEL']),
       // test(...args) { console.log(this.$table, this.count); this.$table.commit('increment') },
-      async getData() {
-        await Promise.all([
-          // this.getCount(),
-          this.getRows(),
-          this.getDicts(),
-          // this.getSettings(),
-        ]);
-        this.dicts.place = this.rows.map(row => ({value: row.place}));
-        console.log('data fetched');
-        this.loaded      = true;
-        console.log(this.data)
+      async dataFetched({data, all}) {
+        data.info.place = [...new Set(all.map(o => (JSON.stringify({value: o.place}))))].map(s => JSON.parse(s));
       },
-      async getCount() {
-        this.count = await set.count();
-      },
-      async getRows() {
-        let options = {
-          where: {},
-          sort: {},
-          limit: this.limit,
-          page: this.page,
-        };
-
-        options.sort[this.sortBy] = this.sort;
-
-        this.rows = await set.all(options);
-      },
-      async getDicts() {
+      async getInfo() {
         let dictsArray = await Promise.all([
           dictionary.getDict('obj'),
           dictionary.getDict('ret'),
@@ -439,15 +413,20 @@
           repair: {type: dictsArray[3]},
           condition: dictsArray[4],
         };
-
-        this.dicts = {...this.dicts, ...dicts};
+        return dicts;
       },
       async getSettings() {
         // this.settings = await settings.all();
       }
     },
     created() {
-      this.getData();
+      this.loadData({
+        model: set,
+        infoLoader: this.getInfo,
+        dataFetched: this.dataFetched,
+        struct,
+      });
+      // this.getData();
       // this.test('asd');
     }
   };
