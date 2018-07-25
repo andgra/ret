@@ -1,10 +1,11 @@
 export default class Structure {
   constructor(struct, start = true) {
-    this.struct  = struct;
+    this.struct     = struct;
     this.defaultRow = {};
-    this.united  = {};
-    this.grid    = {};
-    this.dicts = {};
+    this.united     = {};
+    this.grid       = {};
+    this.originGrid = {};
+    this.dicts      = {};
 
     if (start) {
       this.start();
@@ -17,10 +18,11 @@ export default class Structure {
     this.setUnited();
     this.setGrid();
     this.setDicts();
+    this.originGrid = clone(this.grid);
   }
 
   setRowSeed() {
-    let getSeed = (node) => {
+    let getSeed         = (node) => {
       if (node.children) {
         let res = {};
         for (let i in node.children) {
@@ -51,8 +53,6 @@ export default class Structure {
       }
     }
   }
-
-
 
 
   leavesCnt(node) {

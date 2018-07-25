@@ -55,7 +55,7 @@
             </tr>
             <tr>
                 <td :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
-                    <pagination :count="this.count" @change="$emit('update:page', $event)" />
+                    <pagination :count="this.count" @change="$emit('update:page', $event)"/>
                 </td>
             </tr>
             <tr>
@@ -99,62 +99,15 @@
 
 </template>
 <script>
+  import moment from 'moment';
   import Pagination from '~components/pagination';
-  import Structure from '~js/modules/structure';
-  import {mapState,mapActions,mapGetters,mapMutations} from 'vuex';
-  // import store from '@/store/smart-table';
+  import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
 
   export default {
-    props: {
-      options: {
-        type: Object,
-        default: {}
-      },
-      rows: {
-        type: Array,
-        default: []
-      },
-      count: {
-        type: Number,
-        required: true
-      },
-      settings: {
-        type: Object,
-        required: true
-      },
-      dicts: {
-        type: Object,
-        required: true
-      },
-      loading: {
-        type: Boolean,
-        default: false
-      },
-    },
     data: function () {
-      let struct = this.options.struct;
-
-      let structure = new Structure(struct);
-      let rowSeed   = structure.rowSeed;
-      let united    = structure.united;
-      let grid      = structure.grid;
-
-//            console.log(tfConf);
-//            console.log(grid);
       return Object.assign({
-        page: 1,
         checks: [],
         checkAll: false,
-        edit: false,
-        checkAllChanged: false,
-        savedRow: null,
-        struct,
-        united,
-        grid,
-        origGrid: clone(grid),
-        rowSeed,
-        editingRow: clone(rowSeed),
-        toRemove: [],
         tfConf: {},
         test: "",
         tf: null,
@@ -163,7 +116,8 @@
     },
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['count','query','rows','info','loading','model','structure']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'model', 'structure', 'edit', 'options', 'toRemove']),
+      ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'maxPage']),
       controlRemove() {
         return this.options.remove === undefined || this.options.remove ? 1 : 0;
       },
@@ -213,6 +167,8 @@
       },*/
     },
     methods: {
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE']),
+      ...mapActions('table', ['setPage', 'setSort', 'setLimit', 'saveRow', 'removeRows']),
       getInterval: function (d1, d2) {
         d1 = moment(d1);
         d2 = moment(d2);
@@ -237,7 +193,7 @@
       },
       getValue(row, path) {
         let value   = getInObj(row, path);
-        let options = this.grid.last().filter(item => {return item.id && item.id === path}).first();
+        let options = this.structure.grid.last().filter(item => {return item.id && item.id === path}).first();
         if (options) {
           if (options.type === 'interval') {
             value = this.getIntervalString(value)
@@ -259,7 +215,7 @@
         return getInObj(...args);
       },
       getItems(path) {
-        let items = getInObj(this.dicts, path);
+        let items = getInObj(this.info, path);
         if (items) {
           return items.map(item => (item.value));
         }
@@ -307,59 +263,22 @@
         return items[0].name;
       },
       addRow: function (index) {
-        try {
-          this.rows.splice(index + 1, 0, clone(this.rowSeed));
-          setTimeout(() => this.tf.Mod.paging.setPage('last'), 0);
-
-        } catch (e) {
-          console.error(e);
-        }
+        // try {
+        //   this.rows.splice(index + 1, 0, clone(this.rowSeed));
+        //   setTimeout(() => this.tf.Mod.paging.setPage('last'), 0);
+        //
+        // } catch (e) {
+        //   console.error(e);
+        // }
       },
 
       inquireRemove: function (input) {
-        this.toRemove = input;
+        this.SET_REMOVE(input);
         this.$refs.removeModal.open();
       },
-      removeRows: function () {
-        let indexes = clone(this.toRemove);
-        indexes.sort(compareNumbers).reverse();
-        let ln = indexes.length;
-
-        // Будем работать с буфером
-        let rows = clone(this.rows);
-        for (let i = 0; i < ln; i++) {
-
-          let index = indexes[i];
-          // Удаляем из базы
-          let id    = this.rows[index]._id;
-          if (id) {
-            if (this.options.removeRow) {
-              this.options.removeRow(id);
-            } else {
-              throw new Error('removeRow не определено');
-            }
-          }
-
-          // Удаляем чб, если был отмечен
-          let delCheck = this.checks.indexOf(index);
-          if (delCheck !== -1) {
-            this.checks.splice(delCheck, 1);
-          }
-
-          // Сдвигаем последующие чб вниз
-          for (let j = 0; j < this.checks.length; j++) {
-            if (this.checks[j] > index) {
-              Vue.set(this.checks, j, this.checks[j] - 1)
-            }
-          }
-
-          // Удаляем строку в буфере
-          rows.splice(index, 1);
-        }
-
-        // Переносим буфер в актуал
-        this.rows     = rows;
-        this.toRemove = [];
+      startRemoveRows: async function () {
+        await this.removeRows();
+        this.SET_REMOVE([]);
         this.$refs.removeModal.close();
         this.$root.$emit('msgSent', {message: 'Удалено'});
 
@@ -367,28 +286,26 @@
           $.proxy(this.options.onRemove, this)();
         }
       },
-      initTf() {
-        return;
-        if (this.rows.length) {
-          setTimeout(() => {
-            if (this.tf) {
-              this.tf.destroy();
-            }
-            let $thead                = $(this.$refs.table).find('thead');
-            this.tfConf.paging.length = this.options.perPage || Math.round((nwin.height - ($thead.height() + $thead.offset().top)) / 65);
-            this.tf                   = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
-            this.tf.init();
-          }, 0);
-        }
-      },
+      // initTf() {
+      //   return;
+      //   if (this.rows.length) {
+      //     setTimeout(() => {
+      //       if (this.tf) {
+      //         this.tf.destroy();
+      //       }
+      //       let $thead                = $(this.$refs.table).find('thead');
+      //       this.tfConf.paging.length = this.options.perPage || Math.round((nwin.height - ($thead.height() + $thead.offset().top)) / 65);
+      //       this.tf                   = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
+      //       this.tf.init();
+      //     }, 0);
+      //   }
+      // },
       editRow: function (index) {
         if (this.rows[index]) {
-          this.editingRow       = clone(this.rows[index]);
-          this.editingRow.index = index;
+          this.EDIT_ROW(index);
         } else {
-          this.editingRow = clone(this.rowSeed);
+          this.ADD_ROW();
         }
-        this.edit = true;
         this.$parent.$refs.editModal.open();
 
         setTimeout(() => {
@@ -398,34 +315,12 @@
       },
       closeEdit: function () {
         this.$parent.$refs.editModal.close();
-        this.edit       = false;
-        this.editingRow = clone(this.rowSeed);
-      },
-      saveRow: function () {
-        let item  = this.editingRow;
-        let index = item.index;
-        delete item.index;
-        if (this.options.saveRow) {
-          this.options.saveRow(item).then(({insert, doc}) => {
-            if (insert) {
-              this.rows.push(doc);
-              if (this.rows.length === 1) {
-                this.initTf();
-              }
-            } else {
-              this.rows.splice(index, 1, doc);
-            }
-            this.$root.$emit('msgSent', {message: 'Сохранено'});
-            this.closeEdit();
-          });
-        } else {
-          throw new Error('saveRow не определено');
-        }
+        this.CLOSE_EDIT();
       },
       toggleCheck: function () {
         // Кликнули по чб в строках
         let checkNum;
-        if (this.rows.length < this.page * this.perPage) {
+        if (this.count < this.page * this.perPage) {
           checkNum = this.rows.length - (this.page - 1) * this.perPage;
         } else {
           checkNum = this.perPage;
@@ -442,45 +337,8 @@
           }
         }
       },
-      setRows() {
-        if (this.options.setRows) {
-          this.options.setRows.call(this).then(() => {
-            for (let i in this.rows) {
-              Vue.set(this.rows, i, this.repairRow(this.rows[i]));
-            }
-            Tablesaw.init();
-            // инициализация tablefilter
-            this.initTfConf();
-            this.initTf();
-          });
-        } else {
-          throw new Error('setRow не определено');
-        }
-
-        if (this.options.setDicts) {
-          this.options.setDicts.call(this);
-        }
-      },
       paginating() {
         this.checks = [];
-      },
-      repairRow(row, level = 0) {
-        for (let cell of clone(this.grid.last())) {
-          let path = cell.id.split('.');
-          let res  = row;
-          for (let i in path) {
-            let p = path[i];
-            if (res[p] === undefined) {
-              if (i == path.length - 1) {
-                res[p] = cell.default;
-              } else {
-                res[p] = {};
-              }
-            }
-            res = res[p];
-          }
-        }
-        return row;
       },
       initGrid() {
         for (let i in this.grid) {
@@ -506,73 +364,72 @@
           }
         }
       },
-      initTfConf() {
-        let tfConf = {
-          filters_row_index: this.grid.length + 1,
-          paging: {
-            toolbar_position: 'left',
-            page_text: 'стр',
-            of_text: ' из ',
-            target_id: 'paging'
-          },
-          clear_filter_text: " ",
-          locale: "ru",
-          refresh_filters: true,
-        };
-        if (this.controlEdit) {
-          tfConf["col_" + (this.controlRemove)]                                                                     = "none";
-          tfConf["col_" + (Number(this.grid.last().length) + (this.controlRemove * 2 + 2 + this.controlDates * 2))] = "none";
-        }
-        if (this.controlRemove) {
-          tfConf["col_0"]                                                                                         = "none";
-          tfConf["col_" + (this.controlEdit + 1)]                                                                 = "none";
-          tfConf["col_" + (Number(this.grid.last().length) + (this.controlEdit * 2 + 3 + this.controlDates * 2))] = "none";
-        }
-
-        let j = 0;
-        for (let i in this.grid.last()) {
-          let cell = this.grid.last()[i];
-          if (cell.colspan) {
-            let tablefilter = cell.tablefilter;
-            if (tablefilter) {
-              if (tablefilter.type) {
-                tfConf["col_" + (Number(j) + this.heading)] = tablefilter.type;
-              }
-            }
-            j++;
-          }
-        }
-        this.tfConf = Object.assign(tfConf, this.options.tfConf || {});
-      }
+      // initTfConf() {
+      //   let tfConf = {
+      //     filters_row_index: this.grid.length + 1,
+      //     paging: {
+      //       toolbar_position: 'left',
+      //       page_text: 'стр',
+      //       of_text: ' из ',
+      //       target_id: 'paging'
+      //     },
+      //     clear_filter_text: " ",
+      //     locale: "ru",
+      //     refresh_filters: true,
+      //   };
+      //   if (this.controlEdit) {
+      //     tfConf["col_" + (this.controlRemove)]                                                                     = "none";
+      //     tfConf["col_" + (Number(this.grid.last().length) + (this.controlRemove * 2 + 2 + this.controlDates * 2))] = "none";
+      //   }
+      //   if (this.controlRemove) {
+      //     tfConf["col_0"]                                                                                         = "none";
+      //     tfConf["col_" + (this.controlEdit + 1)]                                                                 = "none";
+      //     tfConf["col_" + (Number(this.grid.last().length) + (this.controlEdit * 2 + 3 + this.controlDates * 2))] = "none";
+      //   }
+      //
+      //   let j = 0;
+      //   for (let i in this.grid.last()) {
+      //     let cell = this.grid.last()[i];
+      //     if (cell.colspan) {
+      //       let tablefilter = cell.tablefilter;
+      //       if (tablefilter) {
+      //         if (tablefilter.type) {
+      //           tfConf["col_" + (Number(j) + this.heading)] = tablefilter.type;
+      //         }
+      //       }
+      //       j++;
+      //     }
+      //   }
+      //   this.tfConf = Object.assign(tfConf, this.options.tfConf || {});
+      // }
     },
     created: function () {
       console.log('smart-table created');
 
-      this.setRows();
       window.appt = this;
       this.watchCollection(['checks'], this.toggleCheck);
-      this.watchCollection(['rows'], () => this.$parent.rows = this.rows, {deep: true});
-      this.watchCollection(['tf.Mod.paging.currentPageNb'], this.paginating);
-      this.watchCollection(['copyRows'], (newVal, oldVal) => {
-        if (this.tf) {
-          let curPage = this.tf.Mod.paging.currentPageNb;
-          setTimeout(() => {
-            this.tf.refreshFilters();
-            this.tf.Mod.paging.destroy();
-            this.tf.Mod.paging.init();
-            setTimeout(() => {
-              if (oldVal.length < newVal.length || curPage > this.tf.Mod.paging.nbPages) {
-//                                console.log('last');
-                this.tf.Mod.paging.setPage('last');
-                // debugger;
-              } else {
-//                                console.log('cur', curPage);
-                this.tf.Mod.paging.setPage(curPage);
-              }
-            }, 0);
-          }, 0);
-        }
-      });
+      // this.watchCollection(['rows'], () => this.$parent.rows = this.rows, {deep: true});
+      // this.watchCollection(['tf.Mod.paging.currentPageNb'], this.paginating);
+//       this.watchCollection(['copyRows'], (newVal, oldVal) => {
+//         if (this.tf) {
+//           let curPage = this.tf.Mod.paging.currentPageNb;
+//           setTimeout(() => {
+//             this.tf.refreshFilters();
+//             this.tf.Mod.paging.destroy();
+//             this.tf.Mod.paging.init();
+//             setTimeout(() => {
+//               if (oldVal.length < newVal.length || curPage > this.tf.Mod.paging.nbPages) {
+// //                                console.log('last');
+//                 this.tf.Mod.paging.setPage('last');
+//                 // debugger;
+//               } else {
+// //                                console.log('cur', curPage);
+//                 this.tf.Mod.paging.setPage(curPage);
+//               }
+//             }, 0);
+//           }, 0);
+//         }
+//       });
 
       $(document).on('keyup', e => {
         if (this.edit) {
@@ -601,7 +458,7 @@
       }
     },
     mounted: function () {
-      this.initGrid();
+      // this.initGrid();
       let $tCont = $('.table-container');
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 

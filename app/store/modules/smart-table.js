@@ -16,7 +16,7 @@ export default {
     rows: [],
     all: [],
     info: {},
-    loading: 0,
+    loading: 2,
     model: null,
     structure: null,
     edit: null,
@@ -98,9 +98,12 @@ export default {
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.model.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state}, {model, query, infoLoader, dataFetched, struct}) {
+    async loadData({commit, state}, {options, model, query, infoLoader, dataFetched, struct}) {
       if (model) {
         commit('SET_MODEL', model);
+      }
+      if (options) {
+        commit('SET_OPTIONS', options);
       }
       commit('UPDATE_DEFAULT_QUERY', {...state.defaultQuery, ...query});
       commit('UPDATE_QUERY', state.defaultQuery);
@@ -185,10 +188,7 @@ export default {
       let numDeleted = await removeFunc({$or}, true);
 
       // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
-      let page = state.maxPageByCount(state.count - numDeleted);
-      if (state.query.page < page) {
-        page = state.query.page;
-      }
+      let page = Math.min(state.query.page, state.maxPageByCount(state.count - numDeleted));
 
       // Обновляем данные
       await Promise.all([
