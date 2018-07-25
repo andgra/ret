@@ -44,12 +44,12 @@ class model {
     });
   }
 
-  delete(attributes) {
+  delete(attributes, multi = false) {
     if (!isObject(attributes)) {
       attributes = {_id: attributes};
     }
     return new Promise((resolve, reject) => {
-      this.table.remove(attributes, (err, item) => !err ? resolve(item) : reject(err));
+      this.table.remove(attributes, {multi}, (err, item) => !err ? resolve(item) : reject(err));
     });
   }
 

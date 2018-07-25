@@ -426,6 +426,9 @@
         dataFetched: this.dataFetched,
         struct,
       });
+      set.delete({$or:[{_id: '6YhRmxy9FfTyAOmG'}, {_id: '3FfYlqytAcJGjuiR'}]}, true).then(function(num) {
+        console.log('num: ', num);
+      });
       // this.getData();
       // this.test('asd');
     }

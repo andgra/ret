@@ -81,6 +81,9 @@ export default {
     maxPage(state) {
       return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
     },
+    maxPageByCount: state => count => {
+      return state.query.limit ? Math.ceil(count / state.query.limit) || 1 : 1;
+    },
     sortDirection(state) {
       return Object.values(state.query.sort)[0];
     },
@@ -104,7 +107,7 @@ export default {
       commit('LOAD_DATA');
 
       let infoPromise = infoLoader(state);
-      let all = await state.model.all({...state.defaultQuery, limit: 0});
+      let all         = await state.model.all({...state.defaultQuery, limit: 0});
 
       let data = await Promise.allObject({
         rows: state.model.all(state.query),
@@ -139,7 +142,7 @@ export default {
       let result;
 
       // Добавляем или обновляем запись
-      let item = state.edit;
+      let item  = state.edit;
       let index = item.index;
       delete item.index;
       if (state.options.saveRow) {
@@ -149,16 +152,21 @@ export default {
       }
       let {insert, doc} = result;
 
-      // Обновляем все
-      await dispatch('loadAll');
-
       if (insert) {
         // Переход на последнюю страницу
-        // Записи автоматически обновятся
-        await dispatch('setPage', state.maxPage);
+        // Учитываем, что кол-во записей на 1 больше
+        let lastPage = state.maxPageByCount(state.count + 1);
+        // Обновляем записи параллельно, т.к. общее число записей уже учтено
+        await Promise.all([
+          dispatch('loadAll'),
+          dispatch('setPage', lastPage), // Здесь же идет и обновление страницы
+        ]);
       } else {
-        // Обновляем записи
-        await dispatch('reloadRows')
+        // Обновляем записи параллельно, т.к. количество записей не изменилось
+        await Promise.all([
+          dispatch('loadAll'),
+          dispatch('reloadRows'),
+        ]);
       }
 
       commit('CLOSE_EDIT');
@@ -170,17 +178,23 @@ export default {
       // Получаем функцию удаления - стандартную или кастомную
       let removeFunc = state.options.removeRow ? state.options.removeRow : state.model.delete;
 
-      let awaitRemove = [];
-      state.toRemove.forEach(id => awaitRemove.push(removeFunc(id)) );
+      let $or = [];
+      state.toRemove.forEach(_id => $or.push({_id}));
 
       // Дожидаемся удаления всех строк
-      await Promise.all(awaitRemove);
+      let numDeleted = await removeFunc({$or}, true);
+
+      // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
+      let page = state.maxPageByCount(state.count - numDeleted);
+      if (state.query.page < page) {
+        page = state.query.page;
+      }
 
       // Обновляем данные
-      // Получаем все данные (в том числе и о пагинации)
-      await dispatch('loadAll');
-      // Затем обновляем текущую страницу
-      await dispatch('reloadRows');
+      await Promise.all([
+        dispatch('loadAll'),
+        dispatch('setPage', page), // Здесь же и идет обновление данных на странице
+      ]);
 
       commit('SET_REMOVE', []);
       commit('DATA_READY');
