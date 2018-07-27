@@ -192,6 +192,7 @@ export default {
           dispatch('reloadRows'),
         ]);
       }
+      dispatch('sentMsg', 'Сохранено', { root: true });
 
       commit('RESET_EDIT_ROW');
       commit('DATA_READY');

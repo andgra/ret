@@ -335,14 +335,13 @@
       this.$watch('editRow.type.req', (newVal) => {
         if (this.info && this.editRow && this.info.type && this.info.type.req && this.info.type.req.length
           && !this.editRow.est.res.kr && !this.editRow.est.res.cancel && !this.editRow.est.life.kr && !this.editRow.est.life.cancel) {
-          console.log(clone(this.editRow));
-          let found = this.info.type.req.find(item => (item.name == newVal));
+          let found = this.info.type.req.find(item => (item.name === newVal));
           if (!found)
             return;
-          let newEst = clone(found.est);
-          if (newEst && isObject(newEst)) {
-            this.UPDATE_EDIT_ROW({...this.editRow, est: newEst});
-            this.$root.$emit('msgSent', {message: 'Ресурс РЭТ подставлен'});
+          let est = clone(found.est);
+          if (est && isObject(est)) {
+            this.UPDATE_EDIT_ROW({...this.editRow, est});
+            this.notify('Ресурс РЭТ подставлен');
           }
         }
       });

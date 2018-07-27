@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import table from './modules/smart-table'
 import settings from './modules/settings'
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 // const debug = process.env.NODE_ENV !== 'production'
 
@@ -11,6 +11,25 @@ export default new Vuex.Store({
   modules: {
     table,
     settings
+  },
+  state: {
+    snackbarEmitter: null
+  },
+  mutations: {
+    ['SET_SNACKBAR_EMITTER'](state, emitter) {
+      state.snackbarEmitter = emitter;
+    }
+  },
+  actions: {
+    /**
+     * Вызывает сообщение снизу экрана
+     *
+     * @param state
+     * @param [message]
+     */
+    notify({state}, message) {
+      state.snackbarEmitter.$emit('msgSent', {message});
+    },
   },
   // strict: debug,
   // plugins: debug ? [createLogger()] : []

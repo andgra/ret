@@ -59,14 +59,21 @@
             <!-- отображение компонента, для которого совпал путь -->
             <router-view></router-view>
         </main>
+        <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 </template>
 <script>
-    import {nwin} from '~js/modules/nw'
-    export default {
-        name: 'appLayout', // id of the layout, use "CamelCase" for compound words,
-        created() {
-            nwin.maximize();
-        }
+  import {nwin} from '~js/modules/nw'
+  import {mapMutations} from 'vuex'
+
+  export default {
+    name: 'appLayout', // id of the layout, use "CamelCase" for compound words,
+    methods: {
+      ...mapMutations(['SET_SNACKBAR_EMITTER'])
+    },
+    created() {
+      nwin.maximize();
+      this.SET_SNACKBAR_EMITTER(this.$root);
     }
+  }
 </script>
