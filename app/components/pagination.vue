@@ -14,33 +14,22 @@
 </template>
 
 <script>
+  import {mapActions, mapGetters} from 'vuex';
   export default {
     name: "pagination",
-    props: {
-      count: {
-        type: Number,
-        required: true,
-      },
-      limit: {
-        type: Number,
-        required: false,
-        default: 10,
-      },
-    },
     data: function () {
       return {
-        page: 1,
+        page: this.$store.state.table.query.page,
       };
     },
     computed: {
-      maxPage() {
-        return this.limit ? Math.ceil(this.count / this.limit) || 1 : 1;
-      },
+      ...mapGetters('table', ['maxPage']),
     },
     methods: {
+      ...mapActions('table', {storeSetPage: 'setPage'}),
       emitChange(oldPage) {
         if (oldPage !== this.page) {
-          this.$emit('change', this.page);
+          this.storeSetPage(this.page);
         }
       },
       setPage(num) {
@@ -70,7 +59,7 @@
         this.page = this.maxPage;
         this.emitChange(page);
       },
-    }
+    },
   }
 </script>
 

@@ -8,6 +8,7 @@ const extractSass = new ExtractTextPlugin({
     filename: "css/main.css",
 });
 
+let dev = process.env.NODE_ENV === 'development';
 
 const babelLoader = {
     loader: 'babel-loader',
@@ -19,7 +20,7 @@ const babelLoader = {
 
 module.exports = {
     // context: path.join(__dirname, 'app'),
-    devtool: 'eval',
+    devtool: dev ? 'eval-cheap-module-source-map' : 'source-map',
     entry: [
         './app/js/main.js'
     ],

@@ -1,5 +1,6 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 import Structure from '~js/modules/structure'
+import moment from 'moment';
 
 let defaultQuery = {
   sort: {createdAt: 1},
@@ -19,7 +20,8 @@ export default {
     loading: 2,
     model: null,
     structure: null,
-    edit: null,
+    editRow: null,
+    editModal: null,
     options: {},
     toRemove: [],
   },
@@ -59,16 +61,28 @@ export default {
       state.defaultQuery = clone(defaultQuery);
     },
     ['ADD_ROW'](state) {
-      state.edit = clone(state.defaultRow);
+      state.editRow = clone(state.structure.defaultRow);
     },
     ['EDIT_ROW'](state, index) {
-      state.edit = clone(state.rows[index]);
+      state.editRow = clone(state.rows[index]);
     },
-    ['CLOSE_EDIT'](state) {
-      state.edit = null;
+    ['UPDATE_EDIT_ROW'](state, row) {
+      state.editRow = row;
+    },
+    ['RESET_EDIT_ROW'](state) {
+      state.editRow = null;
+    },
+    ['OPEN_EDIT_MODAL'](state) {
+      state.editModal.open();
+    },
+    ['CLOSE_EDIT_MODAL'](state) {
+      state.editModal.close();
     },
     ['SET_REMOVE'](state, arr) {
       state.toRemove = arr;
+    },
+    ['SET_EDIT_MODAL'](state, editModal) {
+      state.editModal = editModal;
     },
   },
   getters: {
@@ -78,8 +92,8 @@ export default {
     count(state) {
       return state.all.length;
     },
-    maxPage(state) {
-      return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
+    maxPage(state, getters) {
+      return state.query.limit ? Math.ceil(getters.count / state.query.limit) || 1 : 1;
     },
     maxPageByCount: state => count => {
       return state.query.limit ? Math.ceil(count / state.query.limit) || 1 : 1;
@@ -87,6 +101,12 @@ export default {
     sortDirection(state) {
       return Object.values(state.query.sort)[0];
     },
+    editMode(state) {
+      return state.editRow !== null;
+    },
+    page: state => state.query.page,
+    limit: state => state.query.limit,
+    num: (state, getters) => index => (getters.page - 1) * getters.limit + index + 1,
   },
   actions: {
     async reloadRows({commit, state}, query) {
@@ -140,12 +160,13 @@ export default {
       let page = state.defaultQuery.page;
       await dispatch('reloadRows', {...state.query, ...{limit, page}});
     },
-    async saveRow({state, dispatch, commit}) {
+    async saveEdit({state, dispatch, commit, getters}) {
       commit('RELOAD_DATA');
+      commit('CLOSE_EDIT_MODAL');
       let result;
 
       // Добавляем или обновляем запись
-      let item  = state.edit;
+      let item  = state.editRow;
       let index = item.index;
       delete item.index;
       if (state.options.saveRow) {
@@ -158,7 +179,7 @@ export default {
       if (insert) {
         // Переход на последнюю страницу
         // Учитываем, что кол-во записей на 1 больше
-        let lastPage = state.maxPageByCount(state.count + 1);
+        let lastPage = getters.maxPageByCount(getters.count + 1);
         // Обновляем записи параллельно, т.к. общее число записей уже учтено
         await Promise.all([
           dispatch('loadAll'),
@@ -172,7 +193,7 @@ export default {
         ]);
       }
 
-      commit('CLOSE_EDIT');
+      commit('RESET_EDIT_ROW');
       commit('DATA_READY');
     },
     async removeRows({state, dispatch, commit}) {
@@ -198,6 +219,18 @@ export default {
 
       commit('SET_REMOVE', []);
       commit('DATA_READY');
+    },
+    async cancelEdit({commit}) {
+      commit('CLOSE_EDIT_MODAL');
+      commit('RESET_EDIT_ROW');
+    },
+    async openEdit({state, commit}, index) {
+      if (isNumeric(index) && state.rows[index]) {
+        commit('EDIT_ROW', index);
+      } else {
+        commit('ADD_ROW');
+      }
+      commit('OPEN_EDIT_MODAL');
     },
   }
 };

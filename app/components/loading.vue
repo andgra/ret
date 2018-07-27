@@ -23,7 +23,7 @@
         position: fixed;
         width: 100%;
         height: 100%;
-        z-index: 1000;
+        z-index: 11000;
         &-img {
             position: absolute;
             top: calc(50vh - #{$size} / 2);

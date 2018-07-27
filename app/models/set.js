@@ -46,6 +46,8 @@ class set extends model{
         item.stock.hour.kr.per = +item.stock.hour.kr.per;
         item.stock.hour.cancel.num = +item.stock.hour.cancel.num;
         item.stock.hour.cancel.per = +item.stock.hour.cancel.per;
+
+        return item;
     }
 }
 

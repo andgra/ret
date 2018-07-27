@@ -8,16 +8,16 @@
                     <h4>{{options.title}}</h4>
                 </th>
             </tr>
-            <tr v-for="(row,j) in grid" v-if="j<grid.length-1" data-tablesaw-ignorerow="" class="center-all">
+            <tr v-for="(row,j) in structure.grid" v-if="j<structure.grid.length-1" data-tablesaw-ignorerow="" class="center-all">
                 <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
             </tr>
             <tr class="center-all wide-all">
                 <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px">
-                    <mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="edit"></mdl-checkbox>
+                    <mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="editMode"></mdl-checkbox>
                 </th>
                 <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                 <th scope="col" class="text-center" width="50px">№</th>
-                <th v-for="(cell,i) in grid[grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
                 <template v-if="controlDates">
                     <th class="sortable">Создан</th>
                     <th class="sortable">Изменен</th>
@@ -28,21 +28,21 @@
             <tbody>
             <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" v-bind:style="{ backgroundColor: (row.backgroundColor && row.backgroundColor !== '#ffffff') ? row.backgroundColor : '' }">
                 <td v-if="controlRemove" class="text-center" width="67px">
-                    <mdl-checkbox v-model="checks" :val="index" :disabled="edit"></mdl-checkbox>
+                    <mdl-checkbox v-model="checks" :val="index" :disabled="editMode"></mdl-checkbox>
                 </td>
-                <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
                     <i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
                     <i class="fa fa-times"></i></td>
-                <td>{{index+1}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
-                    <label>{{getValue(row,cell.id)}}</label>
+                <td>{{num(index)}}<input name="_id" v-model="row._id" type="hidden"/></td>
+                <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                    <label>{{getValue({row, path: cell.id})}}</label>
                 </td>
                 <template v-if="controlDates">
                     <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
                     <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
                 </template>
-                <td @click="editRow(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
                     <i class="fa fa-pencil"></i></td>
                 <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
                     <i class="fa fa-times"></i></td>
@@ -50,23 +50,21 @@
             </tbody>
             <tfoot>
             <tr class="hidden">
-                <td v-for="(cell,j) in grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
+                <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
                 <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
-            </tr>
-            <tr>
-                <td :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
-                    <pagination :count="this.count" @change="$emit('update:page', $event)"/>
-                </td>
-            </tr>
-            <tr>
-                <td :colspan="colspanFooter" class="mdl-data-table__cell--non-numeric">
-                    <mdl-button :disabled="edit" v-if="controlAdd" @click.native="editRow(rows.index)" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
-                    <mdl-button :disabled="edit || checks.length===0" v-if="controlRemove" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
-                    <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
-                </td>
             </tr>
             </tfoot>
         </table>
+        <div class="footer">
+            <div class="pagination">
+                <pagination/>
+            </div>
+            <div class="actions">
+                <mdl-button :disabled="editMode" v-if="controlAdd" @click.native="openEdit()" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
+                <mdl-button :disabled="editMode || checks.length===0" v-if="controlRemove" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
+                <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
+            </div>
+        </div>
         <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
             <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
             <div slot="actions">
@@ -74,7 +72,6 @@
                 <mdl-button primary="" @click.native="removeRows()">Удалить</mdl-button>
             </div>
         </mdl-dialog>
-        <slot name="editModal" :editingRow="editingRow" v-id="controlEdit || controlAdd" :saveRow="saveRow" :closeEdit="closeEdit" :getItems="getItems" :dicts="dicts" :getValue="getValue"></slot>
         <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
             <form action="#" class="editing-form">
                 <input name="_id" v-model="editingRow._id" type="hidden"/>
@@ -101,23 +98,22 @@
 <script>
   import moment from 'moment';
   import Pagination from '~components/pagination';
-  import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
+  import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
     data: function () {
-      return Object.assign({
+      return {
         checks: [],
         checkAll: false,
         tfConf: {},
         test: "",
         tf: null,
-        // sharedStore: store.state,
-      }, this.options.data || {})
+      };
     },
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'model', 'structure', 'edit', 'options', 'toRemove']),
-      ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'maxPage']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'model', 'structure', 'editRow', 'options', 'toRemove', 'editModal']),
+      ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'maxPage', 'editMode', 'num', 'page', 'limit']),
       controlRemove() {
         return this.options.remove === undefined || this.options.remove ? 1 : 0;
       },
@@ -135,7 +131,7 @@
         return false;
       },
       colspanFooter: function () {
-        return (this.controlEdit * 2) + (this.controlRemove * 3) + this.getColspan(this.grid.last()) + (this.controlDates * 2) + 1;
+        return (this.controlEdit * 2) + (this.controlRemove * 3) + this.getColspan(this.structure.grid.last()) + (this.controlDates * 2) + 1;
       },
       copyRows: function () {
         return clone(this.rows);
@@ -167,69 +163,16 @@
       },*/
     },
     methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE']),
-      ...mapActions('table', ['setPage', 'setSort', 'setLimit', 'saveRow', 'removeRows']),
-      getInterval: function (d1, d2) {
-        d1 = moment(d1);
-        d2 = moment(d2);
-        return d1.diff(d2, 'minutes');
-      },
-      getIntervalString: function (mins) {
-        let data     = {};
-        data.days    = Math.floor(Math.floor(mins / 60) / 24);
-        data.hours   = Math.floor((mins) / 60) - data.days * 24;
-        data.minutes = mins - (data.hours + data.days * 24) * 60;
-        let result   = '';
-        if (data.days && data.days > 0) {
-          result += data.days + ' сут';
-        }
-        if (data.hours && data.hours > 0) {
-          result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
-        }
-        if (data.minutes && data.minutes > 0) {
-          result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
-        }
-        return result;
-      },
-      getValue(row, path) {
-        let value   = getInObj(row, path);
-        let options = this.structure.grid.last().filter(item => {return item.id && item.id === path}).first();
-        if (options) {
-          if (options.type === 'interval') {
-            value = this.getIntervalString(value)
-          } else if (options.type === 'datetime') {
-            value = moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
-          } else if (options.type === 'date') {
-            value = moment(value).isValid() ? moment(value).format('DD.MM.YYYY') : '';
-          } else if (options.cb) {
-            value = options.cb(value, row);
-          }
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW']),
+      ...mapActions('table', ['setPage', 'setSort', 'setLimit', 'saveRow', 'openEdit']),
+      ...mapActions('table', {storeRemoveRows: 'removeRows'}),
 
-          if (options.format) {
-            value = options.format(value);
-          }
-        }
-        return value;
-      },
-      getInObj(...args) {
-        return getInObj(...args);
-      },
-      getItems(path) {
-        let items = getInObj(this.info, path);
-        if (items) {
-          return items.map(item => (item.value));
-        }
-        return null;
-      },
       changeItems() {
 
       },
       removeClosed: function () {
 //                this.sel = clone(this.selSeed);
         return true;
-      },
-      recValue: function (arr, val) {
-        return recValue(arr, val);
       },
       getColspan: function (arr) {
         let res = 0;
@@ -276,8 +219,8 @@
         this.SET_REMOVE(input);
         this.$refs.removeModal.open();
       },
-      startRemoveRows: async function () {
-        await this.removeRows();
+      removeRows: async function () {
+        await this.storeRemoveRows();
         this.SET_REMOVE([]);
         this.$refs.removeModal.close();
         this.$root.$emit('msgSent', {message: 'Удалено'});
@@ -294,36 +237,32 @@
       //         this.tf.destroy();
       //       }
       //       let $thead                = $(this.$refs.table).find('thead');
-      //       this.tfConf.paging.length = this.options.perPage || Math.round((nwin.height - ($thead.height() + $thead.offset().top)) / 65);
+      //       this.tfConf.paging.length = this.options.limit || Math.round((nwin.height - ($thead.height() + $thead.offset().top)) / 65);
       //       this.tf                   = new TableFilter(this.$refs.table, this.tfConf, this.tfConf.filters_row_index);
       //       this.tf.init();
       //     }, 0);
       //   }
       // },
-      editRow: function (index) {
+      editRow1: function (index) {
         if (this.rows[index]) {
           this.EDIT_ROW(index);
         } else {
           this.ADD_ROW();
         }
-        this.$parent.$refs.editModal.open();
+        this.editModal.open();
 
         setTimeout(() => {
-          let el = $(this.$parent.$refs.editModal.$el).find('input:not([type="hidden"])')[0];
+          let el = $(this.editModal.$el).find('input:not([type="hidden"])')[0];
           if (el) $(el).focus()
         }, 50);
-      },
-      closeEdit: function () {
-        this.$parent.$refs.editModal.close();
-        this.CLOSE_EDIT();
       },
       toggleCheck: function () {
         // Кликнули по чб в строках
         let checkNum;
-        if (this.count < this.page * this.perPage) {
-          checkNum = this.rows.length - (this.page - 1) * this.perPage;
+        if (this.count < this.page * this.limit) {
+          checkNum = this.rows.length - (this.page - 1) * this.limit;
         } else {
-          checkNum = this.perPage;
+          checkNum = this.limit;
         }
 
         this.checkAll = this.checks.length === checkNum;
@@ -332,7 +271,7 @@
         // Кликнули по общему чб
         this.checks = [];
         if (this.checkAll) {
-          for (let i = (this.page - 1) * this.perPage; i < this.rows.length && i < this.page * this.perPage; i++) {
+          for (let i = (this.page - 1) * this.limit; i < this.rows.length && i < this.page * this.limit; i++) {
             this.checks.push(i);
           }
         }
@@ -341,25 +280,25 @@
         this.checks = [];
       },
       initGrid() {
-        for (let i in this.grid) {
-          if (Number(i) + 1 < this.grid.length) {
-            for (let cell of this.grid[i]) {
+        for (let i in this.structure.grid) {
+          if (Number(i) + 1 < this.structure.grid.length) {
+            for (let cell of this.structure.grid[i]) {
               cell.orig = cell.colspan;
             }
-            if (this.grid[i][0].title === "") {
-              this.grid[i][0].colspan += this.heading;
+            if (this.structure.grid[i][0].title === "") {
+              this.structure.grid[i][0].colspan += this.heading;
             } else {
-              this.grid[i].unshift({title: "", colspan: this.heading})
+              this.structure.grid[i].unshift({title: "", colspan: this.heading})
             }
 
-            if (this.grid[i].last().title === "") {
-              this.grid[i].last().colspan += this.trailing;
+            if (this.structure.grid[i].last().title === "") {
+              this.structure.grid[i].last().colspan += this.trailing;
             } else {
-              this.grid[i].push({title: "", colspan: this.trailing})
+              this.structure.grid[i].push({title: "", colspan: this.trailing})
             }
           } else {
-            for (let j in this.grid[i]) {
-              this.grid[i][j].num = Number(JSON.parse(JSON.stringify(j)));
+            for (let j in this.structure.grid[i]) {
+              this.structure.grid[i][j].num = Number(JSON.parse(JSON.stringify(j)));
             }
           }
         }
@@ -432,7 +371,7 @@
 //       });
 
       $(document).on('keyup', e => {
-        if (this.edit) {
+        if (this.editMode) {
           if (e.keyCode === 13 && ((e.target.type !== 'textarea' && !$(e.target).hasClass('ui-autocomplete-input'))
             || e.ctrlKey || e.altKey)) {
             this.saveRow();
@@ -466,8 +405,8 @@
         let th         = $(e.target).data("tablesaw-header");
         let id         = $(th).data('sort');
         let change     = e.target.checked ? 1 : -1;
-        let targetCell = this.grid.last().find(item => (item.id == id));
-        console.log(th, id, change, targetCell, clone(this.grid.last()));
+        let targetCell = this.structure.grid.last().find(item => (item.id == id));
+        console.log(th, id, change, targetCell, clone(this.structure.grid.last()));
         targetCell.colspan += change;
         if (this.tf) {
           let tfRow = $('.' + this.tf.fltsRowCssClass)[0];
@@ -476,10 +415,10 @@
             this.initTf();
           }
         }
-        for (let i in this.grid) {
-          if (Number(i) + 1 < this.grid.length) {
+        for (let i in this.structure.grid) {
+          if (Number(i) + 1 < this.structure.grid.length) {
             let cnt = 0;
-            for (let cell of this.grid[i]) {
+            for (let cell of this.structure.grid[i]) {
               cnt += cell.orig;
               if (targetCell.num < cnt) {
                 cell.colspan += change;

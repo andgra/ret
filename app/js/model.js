@@ -76,6 +76,7 @@ class model {
   updateOrCreate(attributes, item) {
     return new Promise((resolve, reject) => {
       delete item._id;
+      console.log(attributes, item, this.sanitize(item));
       this.table.update(attributes, this.sanitize(item), {upsert: true, returnUpdatedDocs: true}, (err, num, doc, insert) => {
         !err ? resolve({insert, doc}) : reject(err)
       });
