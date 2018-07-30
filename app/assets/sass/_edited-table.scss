@@ -9,7 +9,7 @@
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    //border: 1px solid rgba(0, 0, 0, 0.12) !important;
   }
 }
 .edited-table-container {
@@ -25,8 +25,18 @@
   .table-footer {
     flex: 0 1;
   }
+  .after-actions {
+    margin-top: 2.5%;
+  }
 }
 .edited-table {
+  //thead {
+  //  tr:first-of-type {
+  //    th {
+  //      border: none !important;
+  //    }
+  //  }
+  //}
   th {
     font-weight: bold;
     //background-color: lightcyan;

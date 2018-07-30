@@ -72,7 +72,7 @@
       ...mapMutations(['SET_SNACKBAR_EMITTER'])
     },
     created() {
-      nwin.maximize();
+      // nwin.maximize();
       this.SET_SNACKBAR_EMITTER(this.$root);
     }
   }

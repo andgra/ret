@@ -53,6 +53,14 @@ body {
   }
 }
 
+.bordered-top {
+  border-top: $data-table-dividers !important;
+}
+
+.bordered-bottom {
+  border-bottom: $data-table-dividers !important;
+}
+
 .overflow-x {
   overflow-x: auto;
 }

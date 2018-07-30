@@ -3,8 +3,8 @@
         <loading v-show="loading > 0" :background="true"></loading>
         <div class="table-content">
             <slot name="header"></slot>
-            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
-            <div class="table-responsive">
+            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed" class="bordered-top"></actions>
+            <div class="table-responsive after-actions">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
                     <thead>
                     <tr v-for="(row,j) in structure.grid" v-if="j<structure.grid.length-1" data-tablesaw-ignorerow="" class="center-all">
@@ -57,9 +57,7 @@
             </div>
         </div>
         <div class="table-footer">
-            <div class="pagination">
-                <pagination/>
-            </div>
+            <pagination class="bordered-bottom" />
             <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
         </div>
         <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
@@ -96,7 +94,7 @@
 </template>
 <script>
   import moment from 'moment';
-  import Pagination from '~components/pagination';
+  import Pagination from '~components/smart-table/pagination';
   import Actions from '~components/smart-table/actions';
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 

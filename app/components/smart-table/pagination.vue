@@ -1,5 +1,5 @@
 <template>
-    <div style="visibility: visible;">
+    <div class="pagination">
         <span><input type="button" value="" @click="firstPage" class="pgInp firstPage" title="Первая страница"></span>
         <span><input type="button" value="" @click="prevPage" class="pgInp previousPage" title="Предыдущая страница"></span>
         <span class="nbpg">стр</span>
@@ -64,5 +64,7 @@
 </script>
 
 <style scoped>
-
+    .pagination {
+        padding: 3px 0;
+    }
 </style>
