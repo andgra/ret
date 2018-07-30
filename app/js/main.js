@@ -24,7 +24,7 @@ let app = new Vue({
   router,
   store,
   computed: {
-    ...mapState('settings', ['settings'])
+    ...mapState('settings', {settings: 'options'}),
   },
   methods: {
     ...mapActions('settings', ['fetchSettings'])

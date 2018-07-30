@@ -335,33 +335,18 @@
 
 
   let options = {
-    title: 'Таблица сводных данных',
     async created() {
-      // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
-      this.$watch('editRow.type.req', (newVal) => {
-        if (this.info && this.editRow && this.info.type && this.info.type.req && this.info.type.req.length
-          && !this.editRow.est.res.kr && !this.editRow.est.res.cancel && !this.editRow.est.life.kr && !this.editRow.est.life.cancel) {
-          let found = this.info.type.req.find(item => (item.name === newVal));
-          if (!found)
-            return;
-          let est = clone(found.est);
-          if (est && isObject(est)) {
-            this.UPDATE_EDIT_ROW({...this.editRow, est});
-            this.notify('Ресурс РЭТ подставлен');
-          }
-        }
-      });
     },
   };
 
   export default {
     computed: {
-      ...mapState('settings', ['settings']),
+      ...mapState('settings', {settings: 'options'}),
       ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options', 'editRow', 'structure']),
       ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'editMode']),
     },
     methods: {
-      ...mapMutations('table', []),
+      ...mapMutations('table', ['UPDATE_EDIT_ROW']),
       ...mapActions('table', ['loadData', 'saveEdit', 'cancelEdit']),
       async dataFetched({data, all}) {
         data.info.place = [...new Set(all.map(o => (JSON.stringify({value: o.place}))))].map(s => JSON.parse(s));
@@ -394,6 +379,20 @@
         dataFetched: this.dataFetched,
         struct,
         options,
+      });
+      // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
+      this.$watch('editRow.type.req', (newVal) => {
+        if (this.info && this.editRow && this.info.type && this.info.type.req && this.info.type.req.length
+          && !this.editRow.est.res.kr && !this.editRow.est.res.cancel && !this.editRow.est.life.kr && !this.editRow.est.life.cancel) {
+          let found = this.info.type.req.find(item => (item.name === newVal));
+          if (!found)
+            return;
+          let est = clone(found.est);
+          if (est && isObject(est)) {
+            this.UPDATE_EDIT_ROW({...this.editRow, est});
+            this.$store.dispatch('notify', 'Ресурс РЭТ подставлен');
+          }
+        }
       });
       // this.getData();
       // this.test('asd');

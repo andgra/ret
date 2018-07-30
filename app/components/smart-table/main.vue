@@ -3,6 +3,7 @@
         <loading v-show="loading > 0" :background="true"></loading>
         <div class="table-content">
             <slot name="header"></slot>
+            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
             <div class="table-responsive">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
                     <thead>
@@ -59,11 +60,7 @@
             <div class="pagination">
                 <pagination/>
             </div>
-            <div class="actions">
-                <mdl-button :disabled="editMode" v-if="controlAdd" @click.native="openEdit()" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
-                <mdl-button :disabled="editMode || checks.length===0" v-if="controlRemove" @click.native="inquireRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
-                <mdl-button v-if="isClosed" @click.native="removeClosed()" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
-            </div>
+            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
         </div>
         <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
             <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
@@ -100,6 +97,7 @@
 <script>
   import moment from 'moment';
   import Pagination from '~components/pagination';
+  import Actions from '~components/smart-table/actions';
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
@@ -492,7 +490,10 @@
         this.options.mounted.call(this);
       }
     },
-    components: {'pagination': Pagination}
+    components: {
+      'pagination': Pagination,
+      'actions': Actions,
+    }
   }
 </script>
 
