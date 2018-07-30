@@ -64,16 +64,12 @@
 </template>
 <script>
   import {nwin} from '~js/modules/nw'
-  import {mapMutations} from 'vuex'
 
   export default {
     name: 'appLayout', // id of the layout, use "CamelCase" for compound words,
-    methods: {
-      ...mapMutations(['SET_SNACKBAR_EMITTER'])
-    },
     created() {
-      // nwin.maximize();
-      this.SET_SNACKBAR_EMITTER(this.$root);
+      nwin.maximize();
+      this.$store.commit('SET_SNACKBAR_EMITTER', this.$root);
     }
   }
 </script>
