@@ -74,8 +74,7 @@
         </mdl-dialog>
         <slot name="editModal">
             <!--todo: модаль по умолчанию-->
-        </slot>
-        <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
+            <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
             <form action="#" class="editing-form">
                 <input name="_id" v-model="editingRow._id" type="hidden"/>
                 <div v-for="(cell,j) in structedGrid" v-if="cell.id" :style="{'padding-left':(cell.level-1)*15+'px', width: 'calc(100% - '+(cell.level-1)*15+'px)'}">
@@ -93,6 +92,7 @@
                 <mdl-button primary="" @click.native="saveRow()">Сохранить</mdl-button>
             </div>
         </mdl-dialog>-->
+        </slot>
     </div>
 
 

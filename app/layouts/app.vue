@@ -55,7 +55,7 @@
                 </nav>
             </div>
         </header>
-        <main class="mdl-layout__content overflow-x">
+        <main class="mdl-layout__content">
             <!-- отображение компонента, для которого совпал путь -->
             <router-view></router-view>
         </main>
