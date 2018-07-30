@@ -1,6 +1,7 @@
-import { model, settingsTable } from '~js/model';
+import api from '~api';
+import {settingsTable} from '~js/db';
 
-class settings extends model{
+class settings extends api{
     constructor() {
         super();
         this.table = settingsTable;

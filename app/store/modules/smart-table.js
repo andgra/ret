@@ -18,7 +18,7 @@ export default {
     all: [],
     info: {},
     loading: 2,
-    model: null,
+    api: null,
     structure: null,
     editRow: null,
     editModal: null,
@@ -30,8 +30,8 @@ export default {
     ['SET_OPTIONS'](state, options) {
       state.options = options;
     },
-    ['SET_MODEL'](state, model) {
-      state.model = model;
+    ['SET_API'](state, api) {
+      state.api = api;
     },
     ['SET_STRUCTURE'](state, structure) {
       state.structure = structure;
@@ -112,15 +112,15 @@ export default {
     async reloadRows({commit, state}, query) {
       commit('UPDATE_QUERY', {...state.query, ...query});
       commit('RELOAD_DATA');
-      commit('SET_ROWS', await state.model.all(state.query));
+      commit('SET_ROWS', await state.api.all(state.query));
       commit('DATA_READY');
     },
     async loadAll({state, commit}) {
-      commit('SET_ALL', await state.model.all({...state.defaultQuery, limit: 0}));
+      commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state}, {options, model, query, infoLoader, dataFetched, struct}) {
-      if (model) {
-        commit('SET_MODEL', model);
+    async loadData({commit, state}, {options, api, query, infoLoader, dataFetched, struct}) {
+      if (api) {
+        commit('SET_API', api);
       }
       if (options) {
         commit('SET_OPTIONS', options);
@@ -130,10 +130,10 @@ export default {
       commit('LOAD_DATA');
 
       let infoPromise = infoLoader(state);
-      let all         = await state.model.all({...state.defaultQuery, limit: 0});
+      let all         = await state.api.all({...state.defaultQuery, limit: 0});
 
       let data = await Promise.allObject({
-        rows: state.model.all(state.query),
+        rows: state.api.all(state.query),
         info: infoPromise,
       });
 
@@ -172,7 +172,7 @@ export default {
       if (state.options.saveRow) {
         result = await state.options.saveRow(item);
       } else {
-        result = await state.model.updateOrCreate({_id: item._id}, item);
+        result = await state.api.updateOrCreate({_id: item._id}, item);
       }
       let {insert, doc} = result;
 
@@ -201,7 +201,7 @@ export default {
       commit('RELOAD_DATA');
 
       // Получаем функцию удаления - стандартную или кастомную
-      let removeFunc = state.options.removeRow ? state.options.removeRow : state.model.delete;
+      let removeFunc = state.options.removeRow ? state.options.removeRow : state.api.delete;
 
       let $or = [];
       state.toRemove.forEach(_id => $or.push({_id}));

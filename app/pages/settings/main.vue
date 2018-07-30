@@ -22,7 +22,7 @@
 </template>
 
 <script>
-    import settings from '~models/settings';
+    import settings from '~api/settings';
     export default {
         data() {
             return {

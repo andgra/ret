@@ -1,6 +1,7 @@
-import { model, defectTable } from '~js/model';
+import api from '~api';
+import {defectTable} from '~js/db';
 
-class defect extends model{
+class defect extends api{
     constructor() {
         super();
         this.table = defectTable;

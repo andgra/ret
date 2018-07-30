@@ -1,57 +1,59 @@
 <template>
     <div class="edited-table-container">
-        <loading v-if="loading" :background="true"></loading>
-        <div class="table-header">{{options.title}}</div>
-        <div class="table-responsive">
-            <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
-                <thead>
-                <tr v-for="(row,j) in structure.grid" v-if="j<structure.grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                    <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
-                </tr>
-                <tr class="center-all wide-all">
-                    <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px">
-                        <mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="editMode"></mdl-checkbox>
-                    </th>
-                    <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
-                    <th scope="col" class="text-center" width="50px">№</th>
-                    <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
-                    <template v-if="controlDates">
-                        <th class="sortable">Создан</th>
-                        <th class="sortable">Изменен</th>
-                    </template>
-                    <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" v-bind:style="{ backgroundColor: (row.backgroundColor && row.backgroundColor !== '#ffffff') ? row.backgroundColor : '' }">
-                    <td v-if="controlRemove" class="text-center" width="67px">
-                        <mdl-checkbox v-model="checks" :val="index" :disabled="editMode"></mdl-checkbox>
-                    </td>
-                    <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
-                        <i class="fa fa-pencil"></i></td>
-                    <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
-                        <i class="fa fa-times"></i></td>
-                    <td>{{num(index)}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                    <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
-                        <label>{{getValue({row, path: cell.id})}}</label>
-                    </td>
-                    <template v-if="controlDates">
-                        <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
-                        <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
-                    </template>
-                    <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
-                        <i class="fa fa-pencil"></i></td>
-                    <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
-                        <i class="fa fa-times"></i></td>
-                </tr>
-                </tbody>
-                <tfoot>
-                <tr class="hidden">
-                    <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
-                    <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
-                </tr>
-                </tfoot>
-            </table>
+        <loading v-show="loading > 0" :background="true"></loading>
+        <div class="table-content">
+            <slot name="header"></slot>
+            <div class="table-responsive">
+                <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
+                    <thead>
+                    <tr v-for="(row,j) in structure.grid" v-if="j<structure.grid.length-1" data-tablesaw-ignorerow="" class="center-all">
+                        <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
+                    </tr>
+                    <tr class="center-all wide-all">
+                        <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px">
+                            <mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="editMode"></mdl-checkbox>
+                        </th>
+                        <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
+                        <th scope="col" class="text-center" width="50px">№</th>
+                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                        <template v-if="controlDates">
+                            <th class="sortable">Создан</th>
+                            <th class="sortable">Изменен</th>
+                        </template>
+                        <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" v-bind:style="{ backgroundColor: (row.backgroundColor && row.backgroundColor !== '#ffffff') ? row.backgroundColor : '' }">
+                        <td v-if="controlRemove" class="text-center" width="67px">
+                            <mdl-checkbox v-model="checks" :val="index" :disabled="editMode"></mdl-checkbox>
+                        </td>
+                        <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                            <i class="fa fa-pencil"></i></td>
+                        <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
+                            <i class="fa fa-times"></i></td>
+                        <td>{{num(index)}}<input name="_id" v-model="row._id" type="hidden"/></td>
+                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                            <label>{{getValue({row, path: cell.id})}}</label>
+                        </td>
+                        <template v-if="controlDates">
+                            <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
+                            <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
+                        </template>
+                        <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                            <i class="fa fa-pencil"></i></td>
+                        <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
+                            <i class="fa fa-times"></i></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr class="hidden">
+                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
+                        <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
         <div class="table-footer">
             <div class="pagination">
@@ -70,6 +72,9 @@
                 <mdl-button primary="" @click.native="removeRows()">Удалить</mdl-button>
             </div>
         </mdl-dialog>
+        <slot name="editModal">
+            <!--todo: модаль по умолчанию-->
+        </slot>
         <!--<mdl-dialog ref="editModal" :title="editingRow._id?'Редактирование записи':'Добавление записи'">
             <form action="#" class="editing-form">
                 <input name="_id" v-model="editingRow._id" type="hidden"/>
@@ -109,7 +114,7 @@
     },
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'model', 'structure', 'editRow', 'options', 'toRemove', 'editModal']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'editRow', 'options', 'toRemove', 'editModal']),
       ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'maxPage', 'editMode', 'num', 'page', 'limit']),
       controlRemove() {
         return this.options.remove === undefined || this.options.remove ? 1 : 0;
@@ -160,7 +165,7 @@
       },*/
     },
     methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE']),
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'SET_EDIT_MODAL']),
       ...mapActions('table', ['setPage', 'setSort', 'setLimit', 'saveEdit', 'openEdit', 'cancelEdit']),
       ...mapActions('table', {storeRemoveRows: 'removeRows'}),
       ...mapActions(['notify']),
@@ -399,6 +404,9 @@
     mounted: function () {
       this.initGrid();
       let $tCont = $('.table-container');
+      if(this.$slots.editModal) {
+        this.SET_EDIT_MODAL(this.$slots.editModal[0].componentInstance);
+      }
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
       $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {

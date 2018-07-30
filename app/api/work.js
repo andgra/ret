@@ -1,6 +1,7 @@
-import { model, workTable } from '~js/model';
+import api from '~api';
+import {workTable} from '~js/db';
 
-class work extends model{
+class work extends api{
     constructor() {
         super();
         this.table = workTable;

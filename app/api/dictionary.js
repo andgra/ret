@@ -1,6 +1,7 @@
-import { model, dictionaryTable } from '~js/model';
+import api from '~api';
+import {dictionaryTable} from '~js/db';
 
-class dictionary extends model {
+class dictionary extends api {
     constructor() {
         super();
         this.table = dictionaryTable;

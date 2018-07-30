@@ -1,4 +1,4 @@
-import settings from '~models/settings';
+import settings from '~api/settings';
 
 const store = {
   namespaced: true,
