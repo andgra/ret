@@ -15,6 +15,7 @@
 
 <script>
   import {mapActions, mapGetters} from 'vuex';
+
   export default {
     name: "pagination",
     data: function () {

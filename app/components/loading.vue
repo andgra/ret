@@ -1,7 +1,9 @@
 <template>
     <div class="loading">
         <div class="loading-background" v-if="background"></div>
-        <div class="loading-img"><mdl-spinner></mdl-spinner></div>
+        <div class="loading-img">
+            <mdl-spinner></mdl-spinner>
+        </div>
     </div>
 </template>
 
@@ -35,7 +37,7 @@
             height: 100%;
             top: 0;
             left: 0;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.3);
         }
         .mdl-spinner {
             height: $size;

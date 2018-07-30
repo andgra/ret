@@ -1,4 +1,5 @@
 import Vue from '~js/modules/vue';
+
 let VueRouter = require("vue-router").default;
 Vue.use(VueRouter);
 
@@ -67,11 +68,11 @@ const router = new VueRouter({
   routes
 });
 
-  // router.replace({path: '/settings', redirect: '/'});
+// router.replace({path: '/settings', redirect: '/'});
 // if (getRequests()['route']) {
 //   router.replace({path: getRequests()['route'], redirect: '/'});
 // } else {
-  router.replace({path: '/sets/edit', redirect: '/'});
+router.replace({path: '/sets/edit', redirect: '/'});
 // }
 
 // 3. Создаём и монтируем корневой экземпляр Vue нашего приложения.

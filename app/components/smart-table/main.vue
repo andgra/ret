@@ -1,9 +1,11 @@
 <template>
     <div class="edited-table-container">
         <loading v-show="loading > 0" :background="true"></loading>
-        <div class="table-content">
+        <div class="table-header">
             <slot name="header"></slot>
             <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed" class="bordered-top"></actions>
+        </div>
+        <div class="table-content">
             <div class="table-responsive after-actions">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
                     <thead>
@@ -57,7 +59,7 @@
             </div>
         </div>
         <div class="table-footer">
-            <pagination class="bordered-bottom" />
+            <pagination class="bordered-bottom"/>
             <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
         </div>
         <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
@@ -400,7 +402,7 @@
     mounted: function () {
       this.initGrid();
       let $tCont = $('.table-container');
-      if(this.$slots.editModal) {
+      if (this.$slots.editModal) {
         this.SET_EDIT_MODAL(this.$slots.editModal[0].componentInstance);
       }
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');

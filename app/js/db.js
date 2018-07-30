@@ -2,7 +2,7 @@ const Datastore = require('nedb');
 
 let tables = ['db', 'sets', 'works']
 
-let loadTable         = name => (new Datastore({
+let loadTable = name => (new Datastore({
   filename: window.__dirname + '/database/' + name + '.json',
   timestampData: true,
   autoload: true

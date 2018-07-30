@@ -22,7 +22,7 @@ export default class Structure {
   }
 
   setRowSeed() {
-    let getSeed         = (node) => {
+    let getSeed = (node) => {
       if (node.children) {
         let res = {};
         for (let i in node.children) {
@@ -34,6 +34,7 @@ export default class Structure {
         return node.default !== undefined ? node.default : "";
       }
     };
+
     this.defaultRow     = getSeed({children: this.struct});
     this.defaultRow._id = "";
   }

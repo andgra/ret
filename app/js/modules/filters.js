@@ -2,7 +2,7 @@ import moment from 'moment'
 
 export default {
   NaN: value => (isNaN(value) ? 0 : value),
-    per(value) {
+  per(value) {
     return isNumeric(value) ? value + '%' : value;
   },
   r0(value) {
@@ -21,11 +21,11 @@ export default {
     return moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
   },
   myInterval(value) {
-    let data = {};
-    data.days = Math.floor(Math.floor(value / 60) / 24);
-    data.hours = Math.floor((value) / 60) - data.days * 24;
+    let data     = {};
+    data.days    = Math.floor(Math.floor(value / 60) / 24);
+    data.hours   = Math.floor((value) / 60) - data.days * 24;
     data.minutes = value - (data.hours + data.days * 24) * 60;
-    let result = '';
+    let result   = '';
     if (data.days && data.days > 0) {
       result += data.days + ' сут';
     }

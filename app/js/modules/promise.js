@@ -1,6 +1,6 @@
 Promise.allObject = object => {
   let promisedProperties = [];
-  const objectKeys = Object.keys(object);
+  const objectKeys       = Object.keys(object);
 
   objectKeys.forEach((key) => promisedProperties.push(object[key]));
 

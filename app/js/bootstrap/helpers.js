@@ -139,3 +139,9 @@ Number.prototype.round = function (places) {
   return Math.round(this * places) / places;
 };
 
+
+window.delay = function (t) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve, t);
+  });
+};

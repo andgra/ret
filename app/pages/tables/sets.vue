@@ -2,7 +2,7 @@
     <div class="table-container">
         <smart-table v-if="loading < 2">
             <template slot="header">
-                <h4 class="table-header">Таблица сводных данных</h4>
+                <h4 class="table-title">Таблица сводных данных</h4>
             </template>
             <template slot="editModal">
                 <mdl-dialog :title="editMode && editRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">

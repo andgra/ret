@@ -1,4 +1,5 @@
 import Vue from '~js/modules/vue'
+
 let sorts = {};
 
 sorts.shellSort = function (arr, compareFunc) {

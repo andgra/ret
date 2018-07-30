@@ -1,5 +1,5 @@
-import '~assets/sass/main.scss';
 require('babel-polyfill');
+import '~assets/sass/main.scss';
 import "material-design-lite";
 import '~js/bootstrap/jquery';
 import '~js/bootstrap/helpers';
@@ -8,8 +8,9 @@ import Promise from '~js/modules/promise';
 import Vue from '~js/modules/vue';
 import router from '~js/routes';
 import store from "~store";
-import {mapState,mapActions} from 'vuex';
-if(env === 'development') {
+import {mapState, mapActions} from 'vuex';
+
+if (env === 'development') {
   nwin.showDevTools();
 }
 /*nwin.moveTo(1000, 0);

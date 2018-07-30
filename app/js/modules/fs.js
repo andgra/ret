@@ -1,4 +1,4 @@
-let fs = require("fs");
+let fs  = require("fs");
 fs.rmRf = function (path) {
   if (fs.existsSync(path)) {
     fs.readdirSync(path).forEach(function (file, index) {
