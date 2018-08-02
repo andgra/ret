@@ -1,12 +1,14 @@
 window.env = process.env.NODE_ENV ? process.env.NODE_ENV : 'production';
+import moment from 'moment';
 
 window.isNumeric = function (n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
 window.getInObj = function (obj, path, cloneRes = false) {
-  path    = path.split('.');
   let res = cloneRes ? clone(obj) : obj;
+  if (path === "") return res;
+  path = path.split('.');
   for (let p of path) {
     res = res[p];
     if (res === undefined || res === null) {
@@ -14,6 +16,24 @@ window.getInObj = function (obj, path, cloneRes = false) {
     }
   }
   return res;
+};
+
+window.cast = function (value, type) {
+  switch (type) {
+    case 'number':
+      value = +value;
+      break;
+    case 'int':
+      value = Math.floor(value);
+      break;
+    case 'string':
+      value = '' + value;
+      break;
+    case 'date':
+      value = moment(value);
+      break;
+  }
+  return value;
 };
 
 
@@ -141,7 +161,7 @@ Number.prototype.round = function (places) {
 
 
 window.delay = function (t) {
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     setTimeout(resolve, t);
   });
 };

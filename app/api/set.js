@@ -29,30 +29,30 @@ class set extends api {
     });
   }
 
-  sanitize(item) {
-    item.year                  = +item.year;
-    item.repair.year           = +item.repair.year;
-    item.est.res.kr            = +item.est.res.kr;
-    item.est.res.cancel        = +item.est.res.cancel;
-    item.est.life.kr           = +item.est.life.kr;
-    item.est.life.cancel       = +item.est.life.cancel;
-    item.elabor.elabor.before  = +item.elabor.elabor.before;
-    item.elabor.elabor.after   = +item.elabor.elabor.after;
-    item.elabor.elabor.total   = +item.elabor.elabor.total;
-    item.elabor.dev.before     = +item.elabor.dev.before;
-    item.elabor.dev.after      = +item.elabor.dev.after;
-    item.elabor.dev.total      = +item.elabor.dev.total;
-    item.stock.year.kr.num     = +item.stock.year.kr.num;
-    item.stock.year.kr.per     = +item.stock.year.kr.per;
-    item.stock.year.cancel.num = +item.stock.year.cancel.num;
-    item.stock.year.cancel.per = +item.stock.year.cancel.per;
-    item.stock.hour.kr.num     = +item.stock.hour.kr.num;
-    item.stock.hour.kr.per     = +item.stock.hour.kr.per;
-    item.stock.hour.cancel.num = +item.stock.hour.cancel.num;
-    item.stock.hour.cancel.per = +item.stock.hour.cancel.per;
-
-    return item;
-  }
+  // sanitize(item, dots) {
+    // item.year                  = +item.year;
+    // item.repair.year           = +item.repair.year;
+    // item.est.res.kr            = +item.est.res.kr;
+    // item.est.res.cancel        = +item.est.res.cancel;
+    // item.est.life.kr           = +item.est.life.kr;
+    // item.est.life.cancel       = +item.est.life.cancel;
+    // item.elabor.elabor.before  = +item.elabor.elabor.before;
+    // item.elabor.elabor.after   = +item.elabor.elabor.after;
+    // item.elabor.elabor.total   = +item.elabor.elabor.total;
+    // item.elabor.dev.before     = +item.elabor.dev.before;
+    // item.elabor.dev.after      = +item.elabor.dev.after;
+    // item.elabor.dev.total      = +item.elabor.dev.total;
+    // item.stock.year.kr.num     = +item.stock.year.kr.num;
+    // item.stock.year.kr.per     = +item.stock.year.kr.per;
+    // item.stock.year.cancel.num = +item.stock.year.cancel.num;
+    // item.stock.year.cancel.per = +item.stock.year.cancel.per;
+    // item.stock.hour.kr.num     = +item.stock.hour.kr.num;
+    // item.stock.hour.kr.per     = +item.stock.hour.kr.per;
+    // item.stock.hour.cancel.num = +item.stock.hour.cancel.num;
+    // item.stock.hour.cancel.per = +item.stock.hour.cancel.per;
+    //
+    // return item;
+  // }
 }
 
 export {set};

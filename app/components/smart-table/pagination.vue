@@ -25,6 +25,7 @@
     },
     computed: {
       ...mapGetters('table', ['maxPage']),
+      ...mapGetters('table', {storePage: 'page'}),
     },
     methods: {
       ...mapActions('table', {storeSetPage: 'setPage'}),
@@ -60,6 +61,9 @@
         this.page = this.maxPage;
         this.emitChange(page);
       },
+    },
+    watch: {
+      storePage(newPage) { this.page = newPage },
     },
   }
 </script>

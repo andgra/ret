@@ -6,6 +6,7 @@ export default class Structure {
     this.grid       = {};
     this.originGrid = {};
     this.dicts      = {};
+    this.dots       = {};
 
     if (start) {
       this.start();
@@ -18,6 +19,7 @@ export default class Structure {
     this.setUnited();
     this.setGrid();
     this.setDicts();
+    this.setDots();
     this.originGrid = clone(this.grid);
   }
 
@@ -230,5 +232,20 @@ export default class Structure {
       nextArr = [];
     }
     this.grid = resArr;
+  }
+
+  setDots() {
+    let dotsRec = (nodes, parent = '') => {
+      let res = {};
+      for (let node of nodes) {
+        let id = `${parent}${node.id}`;
+        if (node.children && node.children.length) {
+          res = {...res, ...dotsRec(node.children, `${id}.`)}
+        }
+        res = {...res, [id]: node}
+      }
+      return res
+    };
+    this.dots   = dotsRec(this.struct);
   }
 }

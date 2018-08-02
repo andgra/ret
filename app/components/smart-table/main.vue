@@ -163,8 +163,8 @@
       },*/
     },
     methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'SET_EDIT_MODAL']),
-      ...mapActions('table', ['setPage', 'setSort', 'setLimit', 'saveEdit', 'openEdit', 'cancelEdit']),
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE']),
+      ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'openEdit', 'cancelEdit']),
       ...mapActions('table', {storeRemoveRows: 'removeRows'}),
       ...mapActions(['notify']),
 
@@ -403,7 +403,8 @@
       this.initGrid();
       let $tCont = $('.table-container');
       if (this.$slots.editModal) {
-        this.SET_EDIT_MODAL(this.$slots.editModal[0].componentInstance);
+        let editModal = this.$slots.editModal[0].componentInstance;
+        this.$watch('editModal', newVal => newVal ? editModal.open() : editModal.close());
       }
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
@@ -440,6 +441,10 @@
         if (!$th.hasClass('sortable')) {
           return false;
         }
+        this.toggleSort($th.data('sort'));
+
+
+        /*
         // let rows = clone(this.rows);
         let sort;
         if ($th.hasClass('mdl-data-table__header--sorted-ascending')) {
@@ -483,7 +488,7 @@
           return a1 > b1 ? t : (a1 === b1 ? 0 : f);
         }
 
-        this.rows.sort(compare);
+        this.rows.sort(compare);*/
       });
 
       if (this.options.mounted) {

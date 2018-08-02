@@ -118,7 +118,7 @@
             title: "Год <br>изготовления",
             type: 'number',
             default: 0,
-            tablesaw: {type: "number"},
+            sortType: "number",
             tablefilter: {type: "select"}
           },
           {
@@ -130,7 +130,7 @@
                   title: "Год",
                   type: 'number',
                   default: 0,
-                  tablesaw: {type: "number"},
+                  sortType: "number",
                   tablefilter: {type: "select"}
                 },
               ]
@@ -162,14 +162,14 @@
                         title: "ресурс до <br>КР (час.)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                       {
                         id: "cancel",
                         title: "ресурс до <br>списания (час.)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                     ]
                 },
@@ -181,14 +181,14 @@
                         title: "срок службы <br>до КР (лет)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                       {
                         id: "cancel",
                         title: "срок службы <br>до списания (лет)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                     ]
                 }
@@ -205,21 +205,21 @@
                         title: "наработка с начала <br>эксплуатации (час.)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                       {
                         id: "before",
                         title: "наработка до <br>КР (час.)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                       {
                         id: "after",
                         title: "наработка после <br>КР (час.)",
                         type: 'number',
                         default: 0,
-                        tablesaw: {type: "number"}
+                        sortType: "number"
                       },
                     ]
                 },
@@ -230,19 +230,19 @@
                         id: "total", title: "отработано <br>ВСЕГО (лет)", type: 'number', cb(value, entity) {
                           value = entity.elabor.dev.total = moment().format('YYYY') - entity.year;
                           return value
-                        }, default: "", tablesaw: {type: "number"}, readonly: true
+                        }, default: "", sortType: "number", readonly: true
                       },
                       {
                         id: "before", title: "отработано <br>до КР (лет)", type: 'number', cb(value, entity) {
                           value = entity.elabor.dev.before = (entity.repair.type === 'КР' ? entity.repair.year : moment().format('YYYY')) - entity.year;
                           return value
-                        }, default: "", tablesaw: {type: "number"}, readonly: true
+                        }, default: "", sortType: "number", readonly: true
                       },
                       {
                         id: "after", title: "отработано <br>после КР (лет)", type: 'number', cb(value, entity) {
                           value = entity.elabor.dev.after = entity.repair.type === 'КР' ? moment().format('YYYY') - entity.repair.year : 0;
                           return value
-                        }, default: "", tablesaw: {type: "number"}, readonly: true
+                        }, default: "", sortType: "number", readonly: true
                       },
                     ]
                 }
@@ -261,13 +261,13 @@
                               id: "num", title: "лет", type: 'text', cb(value, entity) {
                                 value = entity.stock.year.kr.num = filters.r1(filters.NaN(entity.est.life.kr - entity.elabor.dev.before));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true
+                              }, default: "", sortType: "number", readonly: true
                             },
                             {
                               id: "per", title: "%", type: 'text', cb(value, entity) {
                                 value = entity.stock.year.kr.per = filters.r1(100 - filters.NaN(entity.elabor.dev.before / entity.est.life.kr * 100));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                              }, default: "", sortType: "number", readonly: true, format: v => (v + '%')
                             },
                           ]
                       },
@@ -278,13 +278,13 @@
                               id: "num", title: "лет", type: 'text', cb(value, entity) {
                                 value = entity.stock.year.cancel.num = filters.r1(filters.NaN(entity.est.life.cancel - entity.elabor.dev.total));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true
+                              }, default: "", sortType: "number", readonly: true
                             },
                             {
                               id: "per", title: "%", type: 'text', cb(value, entity) {
                                 value = entity.stock.year.cancel.per = filters.r1(100 - filters.NaN(entity.elabor.dev.total / entity.est.life.cancel * 100));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                              }, default: "", sortType: "number", readonly: true, format: v => (v + '%')
                             },
                           ]
                       }
@@ -300,13 +300,13 @@
                               id: "num", title: "час", type: 'text', cb(value, entity) {
                                 value = entity.stock.hour.kr.num = filters.r1(filters.NaN(entity.est.res.kr - entity.elabor.elabor.before));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true
+                              }, default: "", sortType: "number", readonly: true
                             },
                             {
                               id: "per", title: "%", type: 'text', cb(value, entity) {
                                 value = entity.stock.hour.kr.per = filters.r1(100 - filters.NaN(entity.elabor.elabor.before / entity.est.res.kr * 100));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                              }, default: "", sortType: "number", readonly: true, format: v => (v + '%')
                             },
                           ]
                       },
@@ -317,13 +317,13 @@
                               id: "num", title: "час", type: 'text', cb(value, entity) {
                                 value = entity.stock.hour.cancel.num = filters.r1(filters.NaN(entity.est.res.cancel - entity.elabor.elabor.total));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true
+                              }, default: "", sortType: "number", readonly: true
                             },
                             {
                               id: "per", title: "%", type: 'text', cb(value, entity) {
                                 value = entity.stock.hour.cancel.per = filters.r1(100 - filters.NaN(entity.elabor.elabor.total / entity.est.res.cancel * 100));
                                 return value
-                              }, default: "", tablesaw: {type: "number"}, readonly: true, format: v => (v + '%')
+                              }, default: "", sortType: "number", readonly: true, format: v => (v + '%')
                             },
                           ]
                       }
@@ -379,6 +379,10 @@
         dataFetched: this.dataFetched,
         struct,
         options,
+      }).then(() => {
+        for (let row of this.$store.state.table.all) {
+          set.update(row)
+        }
       });
       // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
       this.$watch('editRow.type.req', (newVal) => {

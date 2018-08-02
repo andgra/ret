@@ -66,15 +66,30 @@ class api {
   }
 
   // Приведение типов перед добавлением в базу
-  sanitize(item) {
+  sanitize(item, dots) {
+    console.log(item, dots);
+    for (let id in dots) {
+      let node = dots[id];
+      if (node.children && node.children.length) {
+        continue;
+      }
+      let path = id.split('.');
+      let childPath = path[path.length - 1];
+      path.pop();
+      let parentPath = path.join('.');
+      let parent = getInObj(item, clone(parentPath));
+      if(node.sortType) {
+        parent[childPath] = cast(parent[childPath], node.sortType);
+      }
+      console.log(item, parent[childPath]);
+    }
     return item;
   }
 
   updateOrCreate(attributes, item) {
     return new Promise((resolve, reject) => {
       delete item._id;
-      console.log(attributes, item, this.sanitize(item));
-      this.table.update(attributes, this.sanitize(item), {
+      this.table.update(attributes, item, {
         upsert: true,
         returnUpdatedDocs: true
       }, (err, num, doc, insert) => {

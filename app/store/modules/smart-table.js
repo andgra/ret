@@ -21,7 +21,7 @@ export default {
     api: null,
     structure: null,
     editRow: null,
-    editModal: null,
+    editModal: false,
     options: {},
     toRemove: [],
   },
@@ -73,19 +73,19 @@ export default {
       state.editRow = null;
     },
     ['OPEN_EDIT_MODAL'](state) {
-      state.editModal.open();
+      state.editModal = true;
     },
     ['CLOSE_EDIT_MODAL'](state) {
-      state.editModal.close();
+      state.editModal = false;
     },
     ['SET_REMOVE'](state, arr) {
       state.toRemove = arr;
     },
-    ['SET_EDIT_MODAL'](state, editModal) {
-      state.editModal = editModal;
-    },
   },
   getters: {
+    dots(state) {
+      return state.structure.dots;
+    },
     sortBy(state) {
       return Object.keys(state.query.sort)[0];
     },
@@ -150,6 +150,10 @@ export default {
     async setPage({state, dispatch}, page) {
       await dispatch('reloadRows', {...state.query, page});
     },
+    async toggleSort({state, dispatch, getters}, sortBy) {
+      let sortDirection = getters.sortBy === sortBy ? getters.sortDirection * -1 : 1;
+      await dispatch('setSort', {sortBy, sortDirection});
+    },
     async setSort({state, dispatch}, {sortBy, sortDirection}) {
       let sort  = {[sortBy]: sortDirection};
       let page  = state.defaultQuery.page;
@@ -160,6 +164,9 @@ export default {
       let page = state.defaultQuery.page;
       await dispatch('reloadRows', {...state.query, ...{limit, page}});
     },
+    // async sanitize({state, dispatch}, item) {
+    //   return item;
+    // },
     async saveEdit({state, dispatch, commit, getters}) {
       commit('RELOAD_DATA');
       commit('CLOSE_EDIT_MODAL');
@@ -167,8 +174,8 @@ export default {
 
       // Добавляем или обновляем запись
       let item  = state.editRow;
-      let index = item.index;
       delete item.index;
+      item = state.api.sanitize(item, getters.dots);
       if (state.options.saveRow) {
         result = await state.options.saveRow(item);
       } else {
