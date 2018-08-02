@@ -9,6 +9,7 @@ import Vue from '~js/modules/vue';
 import router from '~js/routes';
 import store from "~store";
 import {mapState, mapActions} from 'vuex';
+require('tablesaw/dist/tablesaw.jquery');
 
 if (env === 'development') {
   nwin.showDevTools();

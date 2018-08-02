@@ -18,7 +18,7 @@
                         </th>
                         <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                         <th scope="col" class="text-center" width="50px">№</th>
-                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.tablesaw && cell.tablesaw.type?cell.tablesaw.type:false" class="sortable"></th>
+                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false" class="sortable"></th>
                         <template v-if="controlDates">
                             <th class="sortable">Создан</th>
                             <th class="sortable">Изменен</th>
@@ -36,7 +36,7 @@
                         <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
                             <i class="fa fa-times"></i></td>
                         <td>{{num(index)}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.tablesaw || !cell.tablesaw.type || cell.tablesaw.type!=='number'}">
+                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.sortType || cell.sortType!=='number'}">
                             <label>{{getValue({row, path: cell.id})}}</label>
                         </td>
                         <template v-if="controlDates">
@@ -401,6 +401,7 @@
     },
     mounted: function () {
       this.initGrid();
+      Tablesaw.init();
       let $tCont = $('.table-container');
       if (this.$slots.editModal) {
         let editModal = this.$slots.editModal[0].componentInstance;
