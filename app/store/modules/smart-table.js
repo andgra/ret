@@ -151,7 +151,21 @@ export default {
       await dispatch('reloadRows', {...state.query, page});
     },
     async toggleSort({state, dispatch, getters}, sortBy) {
-      let sortDirection = getters.sortBy === sortBy ? getters.sortDirection * -1 : 1;
+      let sortDirection;
+      if (getters.sortBy === sortBy) {
+        if (getters.sortDirection === -1) {
+          // третий клик подряд
+          sortBy = Object.keys(state.defaultQuery.sort)[0];
+          sortDirection = Object.values(state.defaultQuery.sort)[0];
+        } else {
+          // второй клик подряд
+          sortDirection = -1;
+        }
+      } else {
+        // первый клик по столбцу
+        sortDirection = 1;
+      }
+
       await dispatch('setSort', {sortBy, sortDirection});
     },
     async setSort({state, dispatch}, {sortBy, sortDirection}) {

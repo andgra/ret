@@ -18,10 +18,10 @@
                         </th>
                         <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                         <th scope="col" class="text-center" width="50px">№</th>
-                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false" class="sortable"></th>
+                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :class="sortClass(cell.id)" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false"></th>
                         <template v-if="controlDates">
-                            <th class="sortable">Создан</th>
-                            <th class="sortable">Изменен</th>
+                            <th data-sort="createdAt" :class="sortClass('createdAt')">Создан</th>
+                            <th data-sort="updatedAt" :class="sortClass('updatedAt')">Изменен</th>
                         </template>
                         <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
                     </tr>
@@ -168,8 +168,12 @@
       ...mapActions('table', {storeRemoveRows: 'removeRows'}),
       ...mapActions(['notify']),
 
-      changeItems() {
-
+      sortClass(id) {
+        return {
+          'mdl-data-table__header--sorted-ascending': this.sortBy === id && this.sortDirection === 1,
+          'mdl-data-table__header--sorted-descending': this.sortBy === id && this.sortDirection === -1,
+          'sortable': true,
+        }
       },
       removeClosed: function () {
 //                this.sel = clone(this.selSeed);
