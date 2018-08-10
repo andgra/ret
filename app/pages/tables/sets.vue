@@ -89,10 +89,10 @@
   let struct =
         [
           {hidden: true, id: "backgroundColor", default: '#ffffff'},
-          {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
-          {id: "place", title: "дислокация", type: 'text', default: "", tablefilter: {type: "select"}},
-          {id: "ret", title: "РЭТ", type: 'select', default: "РЛС", tablefilter: {type: "select"}},
-          {id: "pn", title: "Наличие <br>ПН", type: 'text', default: "", tablefilter: {type: "select"}},
+          {id: "obj", title: "в/ч", type: 'select', default: "", filterType: "select"},
+          {id: "place", title: "дислокация", type: 'text', default: "", filterType: "select"},
+          {id: "ret", title: "РЭТ", type: 'select', default: "РЛС", filterType: "select"},
+          {id: "pn", title: "Наличие <br>ПН", type: 'text', default: "", filterType: "select"},
           {
             id: "type", title: "", children:
               [
@@ -101,14 +101,14 @@
                   title: "Тип РЭТ <br>по штату",
                   type: 'select',
                   default: "",
-                  tablefilter: {type: "select"}
+                  filterType: "select"
                 },
                 {
                   id: "real",
                   title: "Тип РЭТ <br>в наличии",
                   type: 'text',
                   default: "",
-                  tablefilter: {type: "select"}
+                  filterType: "select"
                 },
               ]
           },
@@ -119,19 +119,19 @@
             type: 'number',
             default: 0,
             sortType: "number",
-            tablefilter: {type: "select"}
+            filterType: "select"
           },
           {
             id: "repair", title: "Вид и год последнего ремонта", children:
               [
-                {id: "type", title: "Вид", type: 'select', default: "КР", tablefilter: {type: "select"}},
+                {id: "type", title: "Вид", type: 'select', default: "КР", filterType: "select"},
                 {
                   id: "year",
                   title: "Год",
                   type: 'number',
                   default: 0,
                   sortType: "number",
-                  tablefilter: {type: "select"}
+                  filterType: "select"
                 },
               ]
           },
@@ -141,12 +141,12 @@
             type: 'select',
             items: [{name: 'Свернуто', value: 'closed'}, {name: 'Находится в эксплуатации', value: 'in_prod'}],
             default: "in_prod",
-            tablefilter: {type: "select"}
+            filterType: "select"
           },
           {
             id: "resp", title: "Отв. за эксплуатацию, уход и сбережение", children:
               [
-                {id: "rank", title: "В/зв", type: 'text', default: "", tablefilter: {type: "select"}},
+                {id: "rank", title: "В/зв", type: 'text', default: "", filterType: "select"},
                 {id: "fio", title: "Ф.И.О.", type: 'text', default: ""},
                 {id: "order", title: "Пр. о закреплении", type: 'text', default: ""},
               ]

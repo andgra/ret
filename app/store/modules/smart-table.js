@@ -1,6 +1,5 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 import Structure from '~js/modules/structure'
-import moment from 'moment';
 
 let defaultQuery = {
   sort: {createdAt: 1},
@@ -26,6 +25,9 @@ export default {
     toRemove: [],
     removeModal: false,
     checks: [],
+    filter: {
+      search: '',
+    }
   },
   modules: {},
   getters: {
@@ -84,6 +86,15 @@ export default {
         checks: getters.controlRemove,
       }
     },
+    optionsInAll: state => cellId => {
+      let options = new Set();
+      options.add('--');
+      for (let item of state.all) {
+        let value = getInObj(item, cellId);
+        options.add(value ? value : 'пусто');
+      }
+      return [...options];
+    },
     colspanFooter: function (state, getters) {
       return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;
     },
@@ -120,7 +131,7 @@ export default {
       state.query = query;
     },
     ['SET_PAGE'](state, page) {
-      state.query = {...state.query, page};
+      state.query  = {...state.query, page};
       state.checks = [];
     },
     ['UPDATE_DEFAULT_QUERY'](state, defaultQuery) {
@@ -160,7 +171,7 @@ export default {
   actions: {
     async toggleCheck({commit, state}, id) {
       let checks = state.checks;
-      let pos = checks.indexOf(id);
+      let pos    = checks.indexOf(id);
       if (pos === -1) {
         checks.push(id);
       } else {
@@ -173,8 +184,8 @@ export default {
       // Запоминаем сколько сейчас отмечено
       let checkedAll = getters.checkedAll;
       // Всегда снимаем сначала все
-      let checks = [];
-      if(!checkedAll) {
+      let checks     = [];
+      if (!checkedAll) {
         // Если не все были отмечены, отмечаем все
         for (let row of state.rows) {
           checks.push(row._id);
@@ -263,7 +274,7 @@ export default {
       if (getters.sortBy === sortBy) {
         if (getters.sortDirection === -1) {
           // третий клик подряд
-          sortBy = Object.keys(state.defaultQuery.sort)[0];
+          sortBy        = Object.keys(state.defaultQuery.sort)[0];
           sortDirection = Object.values(state.defaultQuery.sort)[0];
         } else {
           // второй клик подряд
@@ -297,7 +308,7 @@ export default {
       let result;
 
       // Добавляем или обновляем запись
-      let item  = state.editRow;
+      let item = state.editRow;
       delete item.index;
       item = state.api.sanitize(item, getters.dots);
       if (state.options.saveRow) {

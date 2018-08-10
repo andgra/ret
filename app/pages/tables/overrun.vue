@@ -42,7 +42,7 @@
             {id: "yearRes", title: "Годовой ресурс", type: 'text', default: 0},
             {id: "consum", title: "Расход за 1кв. + 2кв.", type: 'text', default: 0},
             {id: "consumRate", title: "Расход ресурса", type: 'text', cb(value,entity) { value = entity.consumRate = !!entity.yearRes ? filters.r0(filters.NaN(entity.consum/entity.yearRes*100)) : 0; return value }, default: 0, readonly: true, format: v=>(v+'%')},
-            {id: "overrun", title: " ", type: 'text', cb(value,entity) { value = entity.overrun = entity.consumRate > 100 ? 'перерасход' : '-'; return value }, default: "", tablefilter: {type: "select"}, readonly: true},
+            {id: "overrun", title: " ", type: 'text', cb(value,entity) { value = entity.overrun = entity.consumRate > 100 ? 'перерасход' : '-'; return value }, default: "", filterType: "select", readonly: true},
         ];
 
     let options = {

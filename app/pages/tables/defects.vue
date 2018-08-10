@@ -70,10 +70,10 @@
     let struct =
         [
             {hidden: true, id: "backgroundColor", default: '#ffffff'},
-            {id: "obj", title: "в/ч", type: 'select', default: "", tablefilter: {type: "select"}},
+            {id: "obj", title: "в/ч", type: 'select', default: "", filterType: "select"},
             {id: "place", title: "дислокация", type: 'text', default: ""},
-            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", tablefilter: {type: "select"}},
-            {id: "type", title: "Тип РЭТ", type: 'select', default: "", tablefilter: {type: "select"}},
+            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", filterType: "select"},
+            {id: "type", title: "Тип РЭТ", type: 'select', default: "", filterType: "select"},
             {id: "zav", title: "зав. №", type: 'text', default: ""},
             {id: "failure", title: "дата и время <br>отказа", type: 'datetime', default: ""},
             {id: "faulty", title: "неисправная <br>система", type: 'text', default: ""},

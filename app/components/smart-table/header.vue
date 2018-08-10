@@ -4,7 +4,7 @@
         <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
     </tr>
     <tr class="center-all wide-all">
-        <th v-if="controls.remove" class="mdl-th-padding text-center" width="67px">
+        <th v-if="controls.checks" class="mdl-th-padding text-center" width="67px">
             <mdl-checkbox id="checkAll" :value="checkedAll" @change.native="toggleCheckAll" :disabled="editModal"></mdl-checkbox>
         </th>
         <th v-if="controls.edit || controls.remove" :colspan="controls.edit+controls.remove" class="text-center" :width="(controls.edit*43+controls.remove*43)+'px'">Действия</th>
@@ -16,11 +16,13 @@
         </template>
         <th v-if="controls.edit || controls.remove" :colspan="controls.edit+controls.remove" class="text-center" :width="(controls.edit*43+controls.remove*43)+'px'">Действия</th>
     </tr>
+    <tr is="table-filters"></tr>
     </thead>
 </template>
 
 <script>
-  import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
+  import Filters from '~components/smart-table/filters';
+  import {mapActions, mapGetters, mapState} from 'vuex';
 
   export default {
     name: "header",
@@ -40,6 +42,9 @@
         }
       },
     },
+    components: {
+      'table-filters': Filters,
+    }
   }
 </script>
 
