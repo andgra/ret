@@ -379,6 +379,7 @@
         dataFetched: this.dataFetched,
         struct,
         options,
+        repairGrid: true,
       }).then(() => {
         for (let row of this.$store.state.table.all) {
           set.update(row)

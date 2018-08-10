@@ -71,6 +71,14 @@ Vue.directive('deep-model', {
   }
 });
 
+window.getColspan = Vue.getColspan = arr => {
+  let res = 0;
+  for (let cell of arr) {
+    res += cell.colspan;
+  }
+  return res;
+};
+
 window.getInterval = Vue.getInterval = function (d1, d2) {
   d1 = moment(d1);
   d2 = moment(d2);

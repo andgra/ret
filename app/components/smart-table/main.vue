@@ -3,66 +3,49 @@
         <loading v-show="loading > 0" :background="true"></loading>
         <div class="table-header">
             <slot name="header"></slot>
-            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed" class="bordered-top"></actions>
+            <actions :isClosed="isClosed" class="bordered-top"></actions>
         </div>
         <div class="table-content">
             <div class="table-responsive after-actions">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
-                    <thead>
-                    <tr v-for="(row,j) in structure.grid" v-if="j<structure.grid.length-1" data-tablesaw-ignorerow="" class="center-all">
-                        <th v-for="(cell,i) in row" :colspan="cell.colspan" v-show="cell.colspan && !cell.hidden">{{cell.title}}</th>
-                    </tr>
-                    <tr class="center-all wide-all">
-                        <th v-if="controlRemove" class="mdl-th-padding text-center" width="67px">
-                            <mdl-checkbox id="checkAll" v-model="checkAll" @change.native="toggleCheckAll" :disabled="editMode"></mdl-checkbox>
-                        </th>
-                        <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
-                        <th scope="col" class="text-center" width="50px">№</th>
-                        <th v-for="(cell,i) in structure.grid[structure.grid.length-1]" :colspan="cell.colspan" v-show="!cell.hidden" v-html="cell.title" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :class="sortClass(cell.id)" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false"></th>
-                        <template v-if="controlDates">
-                            <th data-sort="createdAt" :class="sortClass('createdAt')">Создан</th>
-                            <th data-sort="updatedAt" :class="sortClass('updatedAt')">Изменен</th>
-                        </template>
-                        <th v-if="controlEdit || controlRemove" :colspan="controlEdit+controlRemove" class="text-center" :width="(controlEdit*43+controlRemove*43)+'px'">Действия</th>
-                    </tr>
-                    </thead>
+                    <thead is="table-header"></thead>
                     <tbody>
                     <tr v-for="(row, index) in rows" :key="row.num" :data-id="index" v-bind:style="{ backgroundColor: (row.backgroundColor && row.backgroundColor !== '#ffffff') ? row.backgroundColor : '' }">
-                        <td v-if="controlRemove" class="text-center" width="67px">
-                            <mdl-checkbox v-model="checks" :val="index" :disabled="editMode"></mdl-checkbox>
+                        <td v-if="controls.checks" class="text-center" width="67px">
+                            <mdl-checkbox :value="checked(row._id)" @change.native="toggleCheck(row._id)" :disabled="editMode"></mdl-checkbox>
                         </td>
-                        <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                        <td @click="openEdit(index)" v-if="controls.edit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
                             <i class="fa fa-pencil"></i></td>
-                        <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
+                        <td @click="inquireRemove([index])" v-if="controls.remove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
                             <i class="fa fa-times"></i></td>
                         <td>{{num(index)}}<input name="_id" v-model="row._id" type="hidden"/></td>
-                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.sortType || cell.sortType!=='number'}">
+                        <td v-for="(cell,j) in lastOfGrid" v-if="cell.id && cell.colspan && !cell.hidden" :class="{'mdl-data-table__cell--non-numeric': !cell.sortType || cell.sortType!=='number'}">
                             <label>{{getValue({row, path: cell.id})}}</label>
                         </td>
-                        <template v-if="controlDates">
+                        <template v-if="controls.dates">
                             <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.createdAt | myDateTime}}</td>
                             <td class="mdl-data-table__cell--non-numeric" style="white-space: nowrap">{{row.updatedAt | myDateTime}}</td>
                         </template>
-                        <td @click="openEdit(index)" v-if="controlEdit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
+                        <td @click="openEdit(index)" v-if="controls.edit" data-tooltip="Редактировать" class="clickable tooltip text-center" width="43px">
                             <i class="fa fa-pencil"></i></td>
-                        <td @click="inquireRemove([index])" v-if="controlRemove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
+                        <td @click="inquireRemove([index])" v-if="controls.remove" data-tooltip="Удалить" class="clickable tooltip text-center" width="43px">
                             <i class="fa fa-times"></i></td>
                     </tr>
                     </tbody>
-                    <tfoot>
-                    <tr class="hidden">
-                        <td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>
-                        <td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>
-                    </tr>
-                    </tfoot>
+                    <!--<tfoot>-->
+                    <!--<tr class="hidden">-->
+                        <!--<td v-for="(cell,j) in structure.grid.last()" v-if="cell.id && cell.colspan && !cell.hidden"></td>-->
+                        <!--<td v-for="j in (controlEdit*2 + controlRemove*2 + controlDates*2 + 2)"></td>-->
+                    <!--</tr>-->
+                    <!--</tfoot>-->
                 </table>
             </div>
         </div>
         <div class="table-footer">
             <pagination class="bordered-bottom"/>
-            <actions :controlAdd="controlAdd" :controlRemove="controlRemove" :checks="checks" :isClosed="isClosed"></actions>
+            <actions :isClosed="isClosed"></actions>
         </div>
-        <mdl-dialog v-if="controlRemove" ref="removeModal" title="Удаление записей">
+        <mdl-dialog v-if="controls.remove" ref="removeModal" title="Удаление записей">
             <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
             <div slot="actions">
                 <mdl-button @click.native="$refs.removeModal.close">Отменить</mdl-button>
@@ -96,6 +79,7 @@
 </template>
 <script>
   import moment from 'moment';
+  import Header from '~components/smart-table/header';
   import Pagination from '~components/smart-table/pagination';
   import Actions from '~components/smart-table/actions';
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
@@ -103,8 +87,6 @@
   export default {
     data: function () {
       return {
-        checks: [],
-        checkAll: false,
         tfConf: {},
         test: "",
         tf: null,
@@ -113,35 +95,12 @@
     computed: {
       ...mapState('settings', ['settings']),
       ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'editRow', 'options', 'toRemove', 'editModal']),
-      ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'maxPage', 'editMode', 'num', 'page', 'limit']),
-      controlRemove() {
-        return this.options.remove === undefined || this.options.remove ? 1 : 0;
-      },
-      controlDates() {
-        return this.options.dates === undefined || this.options.dates ? 1 : 0;
-      },
-      controlAdd() {
-        return this.options.add === undefined || this.options.add ? 1 : 0;
-      },
-      controlEdit() {
-        return this.options.edit === undefined || this.options.edit ? 1 : 0;
-      },
+      ...mapGetters('table', ['count', 'editMode', 'controls', 'heading', 'trailing', 'lastOfGrid', 'dots', 'num', 'checked']),
+
       isClosed: function () {
 //                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
         return false;
       },
-      colspanFooter: function () {
-        return (this.controlEdit * 2) + (this.controlRemove * 3) + this.getColspan(this.structure.grid.last()) + (this.controlDates * 2) + 1;
-      },
-      copyRows: function () {
-        return clone(this.rows);
-      },
-      heading() {
-        return this.controlEdit + this.controlRemove * 2 + 1;
-      },
-      trailing() {
-        return this.controlDates * 2 + this.controlEdit + this.controlRemove;
-      }
       /*structedGrid() {
           let resArr = [];
           function addRec(arr, level = 1) {
@@ -163,28 +122,16 @@
       },*/
     },
     methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE']),
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
       ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'openEdit', 'cancelEdit']),
       ...mapActions('table', {storeRemoveRows: 'removeRows'}),
       ...mapActions(['notify']),
-
-      sortClass(id) {
-        return {
-          'mdl-data-table__header--sorted-ascending': this.sortBy === id && this.sortDirection === 1,
-          'mdl-data-table__header--sorted-descending': this.sortBy === id && this.sortDirection === -1,
-          'sortable': true,
-        }
+      toggleCheck(index) {
+        this.TOGGLE_CHECK(index);
       },
       removeClosed: function () {
 //                this.sel = clone(this.selSeed);
         return true;
-      },
-      getColspan: function (arr) {
-        let res = 0;
-        for (let cell of arr) {
-          res += cell.colspan;
-        }
-        return res;
       },
       getSelCnt: function (arr) {
         arr     = clone(arr);
@@ -261,55 +208,6 @@
           if (el) $(el).focus()
         }, 50);
       },
-      toggleCheck: function () {
-        // Кликнули по чб в строках
-        let checkNum;
-        if (this.count < this.page * this.limit) {
-          checkNum = this.rows.length - (this.page - 1) * this.limit;
-        } else {
-          checkNum = this.limit;
-        }
-
-        this.checkAll = this.checks.length === checkNum;
-      },
-      toggleCheckAll() {
-        // Кликнули по общему чб
-        this.checks = [];
-        if (this.checkAll) {
-          for (let i = (this.page - 1) * this.limit; i < this.rows.length && i < this.page * this.limit; i++) {
-            this.checks.push(i);
-          }
-        }
-      },
-      paginating() {
-        this.checks = [];
-      },
-      initGrid() {
-        let grid = this.structure.grid;
-        for (let i in grid) {
-          if (+i + 1 < grid.length) {
-            for (let cell of grid[i]) {
-              cell.orig = cell.colspan;
-            }
-            if (grid[i][0].title === "") {
-              grid[i][0].colspan += this.heading;
-            } else {
-              grid[i].unshift({title: "", colspan: this.heading})
-            }
-
-            if (grid[i].last().title === "") {
-              grid[i].last().colspan += this.trailing;
-            } else {
-              grid[i].push({title: "", colspan: this.trailing})
-            }
-          } else {
-            for (let j in grid[i]) {
-              grid[i][j].num = +JSON.parse(JSON.stringify(j));
-            }
-          }
-        }
-        this.SET_STRUCTURE({...this.structure, grid});
-      },
       // initTfConf() {
       //   let tfConf = {
       //     filters_row_index: this.grid.length + 1,
@@ -353,7 +251,7 @@
       console.log('smart-table created');
 
       window.appt = this;
-      this.watchCollection(['checks'], this.toggleCheck);
+      // this.watchCollection(['checks'], this.toggleCheck);
       // this.watchCollection(['rows'], () => this.$parent.rows = this.rows, {deep: true});
       // this.watchCollection(['tf.Mod.paging.currentPageNb'], this.paginating);
 //       this.watchCollection(['copyRows'], (newVal, oldVal) => {
@@ -404,7 +302,6 @@
       }
     },
     mounted: function () {
-      this.initGrid();
       Tablesaw.init();
       let $tCont = $('.table-container');
       if (this.$slots.editModal) {
@@ -501,6 +398,7 @@
       }
     },
     components: {
+      'table-header': Header,
       'pagination': Pagination,
       'actions': Actions,
     }

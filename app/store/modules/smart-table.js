@@ -24,6 +24,7 @@ export default {
     editModal: false,
     options: {},
     toRemove: [],
+    checks: [],
   },
   modules: {},
   mutations: {
@@ -81,11 +82,38 @@ export default {
     ['SET_REMOVE'](state, arr) {
       state.toRemove = arr;
     },
+    ['TOGGLE_CHECK'](state, id) {
+      let pos = state.checks.indexOf(id);
+      if (pos === -1) {
+        state.checks.push(id);
+      } else {
+        state.checks.splice(pos, 1);
+      }
+    },
+    ['TOGGLE_CHECK_ALL'](state) {
+      // Кликнули по общему чб
+      // Запоминаем сколько сейчас отмечено
+      let curChecked = state.checks.length;
+      // Всегда снимаем сначала все
+      state.checks = [];
+      if(curChecked !== state.rows.length) {
+        // Если не все были отмечены, отмечаем все
+        for (let row of state.rows) {
+          state.checks.push(row._id);
+        }
+      }
+    },
   },
   getters: {
+    checked: state => id => state.checks.indexOf(id) !== -1,
+    checkedAll(state) {
+      return state.checks.length === state.rows.length;
+    },
     dots(state) {
       return state.structure.dots;
     },
+    lastOfGrid: (state, getters) => getters.grid.last(),
+    grid: state => state.structure.grid,
     sortBy(state) {
       return Object.keys(state.query.sort)[0];
     },
@@ -107,6 +135,36 @@ export default {
     page: state => state.query.page,
     limit: state => state.query.limit,
     num: (state, getters) => index => (getters.page - 1) * getters.limit + index + 1,
+    controlRemove(state) {
+      return state.options.remove === undefined || state.options.remove ? 1 : 0;
+    },
+    controlDates(state) {
+      return state.options.dates === undefined || state.options.dates ? 1 : 0;
+    },
+    controlAdd(state) {
+      return state.options.add === undefined || state.options.add ? 1 : 0;
+    },
+    controlEdit(state) {
+      return state.options.edit === undefined || state.options.edit ? 1 : 0;
+    },
+    heading(state, getters) {
+      return getters.controlEdit + getters.controlRemove * 2 + 1;
+    },
+    trailing(state, getters) {
+      return getters.controlDates * 2 + getters.controlEdit + getters.controlRemove;
+    },
+    controls(state, getters) {
+      return {
+        add: getters.controlAdd,
+        edit: getters.controlEdit,
+        remove: getters.controlRemove,
+        dates: getters.controlDates,
+        checks: getters.controlRemove,
+      }
+    },
+    colspanFooter: function (state, getters) {
+      return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;
+    },
   },
   actions: {
     async reloadRows({commit, state}, query) {
@@ -118,7 +176,7 @@ export default {
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state}, {options, api, query, infoLoader, dataFetched, struct}) {
+    async loadData({commit, state, dispatch}, {options, api, query, infoLoader, dataFetched, struct, repairGrid}) {
       if (api) {
         commit('SET_API', api);
       }
@@ -145,7 +203,38 @@ export default {
       commit('SET_ALL', all);
       commit('SET_ROWS', data.rows);
       commit('SET_INFO', data.info);
+
+      if (repairGrid) {
+        await dispatch('repairGrid');
+      }
+
       commit('DATA_READY');
+    },
+    async repairGrid({state, dispatch, commit, getters}) {
+      let grid = state.structure.grid;
+      for (let i in grid) {
+        if (+i + 1 < grid.length) {
+          for (let cell of grid[i]) {
+            cell.orig = cell.colspan;
+          }
+          if (grid[i][0].title === "") {
+            grid[i][0].colspan += getters.heading;
+          } else {
+            grid[i].unshift({title: "", colspan: getters.heading})
+          }
+
+          if (grid[i].last().title === "") {
+            grid[i].last().colspan += getters.trailing;
+          } else {
+            grid[i].push({title: "", colspan: getters.trailing})
+          }
+        } else {
+          for (let j in grid[i]) {
+            grid[i][j].num = +JSON.parse(JSON.stringify(j));
+          }
+        }
+      }
+      commit('SET_STRUCTURE', {...state.structure, grid});
     },
     async setPage({state, dispatch}, page) {
       await dispatch('reloadRows', {...state.query, page});
