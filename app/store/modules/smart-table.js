@@ -24,86 +24,10 @@ export default {
     editModal: false,
     options: {},
     toRemove: [],
+    removeModal: false,
     checks: [],
   },
   modules: {},
-  mutations: {
-    ['SET_OPTIONS'](state, options) {
-      state.options = options;
-    },
-    ['SET_API'](state, api) {
-      state.api = api;
-    },
-    ['SET_STRUCTURE'](state, structure) {
-      state.structure = structure;
-    },
-    ['RELOAD_DATA'](state) {
-      state.loading = 1;
-    },
-    ['LOAD_DATA'](state) {
-      state.loading = 2;
-    },
-    ['DATA_READY'](state) {
-      state.loading = 0;
-    },
-    ['SET_ROWS'](state, rows) {
-      state.rows = rows;
-    },
-    ['SET_INFO'](state, info) {
-      state.info = info;
-    },
-    ['SET_ALL'](state, all) {
-      state.all = all;
-    },
-    ['UPDATE_QUERY'](state, query) {
-      state.query = query;
-    },
-    ['UPDATE_DEFAULT_QUERY'](state, defaultQuery) {
-      state.defaultQuery = clone(defaultQuery);
-    },
-    ['ADD_ROW'](state) {
-      state.editRow = clone(state.structure.defaultRow);
-    },
-    ['EDIT_ROW'](state, index) {
-      state.editRow = clone(state.rows[index]);
-    },
-    ['UPDATE_EDIT_ROW'](state, row) {
-      state.editRow = row;
-    },
-    ['RESET_EDIT_ROW'](state) {
-      state.editRow = null;
-    },
-    ['OPEN_EDIT_MODAL'](state) {
-      state.editModal = true;
-    },
-    ['CLOSE_EDIT_MODAL'](state) {
-      state.editModal = false;
-    },
-    ['SET_REMOVE'](state, arr) {
-      state.toRemove = arr;
-    },
-    ['TOGGLE_CHECK'](state, id) {
-      let pos = state.checks.indexOf(id);
-      if (pos === -1) {
-        state.checks.push(id);
-      } else {
-        state.checks.splice(pos, 1);
-      }
-    },
-    ['TOGGLE_CHECK_ALL'](state) {
-      // Кликнули по общему чб
-      // Запоминаем сколько сейчас отмечено
-      let curChecked = state.checks.length;
-      // Всегда снимаем сначала все
-      state.checks = [];
-      if(curChecked !== state.rows.length) {
-        // Если не все были отмечены, отмечаем все
-        for (let row of state.rows) {
-          state.checks.push(row._id);
-        }
-      }
-    },
-  },
   getters: {
     checked: state => id => state.checks.indexOf(id) !== -1,
     checkedAll(state) {
@@ -129,9 +53,7 @@ export default {
     sortDirection(state) {
       return Object.values(state.query.sort)[0];
     },
-    editMode(state) {
-      return state.editRow !== null;
-    },
+    getById: state => id => id ? state.rows.find(row => row._id === id) : undefined,
     page: state => state.query.page,
     limit: state => state.query.limit,
     num: (state, getters) => index => (getters.page - 1) * getters.limit + index + 1,
@@ -166,12 +88,108 @@ export default {
       return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;
     },
   },
+  mutations: {
+    ['SET_OPTIONS'](state, options) {
+      state.options = options;
+    },
+    ['SET_API'](state, api) {
+      state.api = api;
+    },
+    ['SET_STRUCTURE'](state, structure) {
+      state.structure = structure;
+    },
+    ['RELOAD_DATA'](state) {
+      state.loading = 1;
+    },
+    ['LOAD_DATA'](state) {
+      state.loading = 2;
+    },
+    ['DATA_READY'](state) {
+      state.loading = 0;
+    },
+    ['SET_ROWS'](state, rows) {
+      state.rows = rows;
+    },
+    ['SET_INFO'](state, info) {
+      state.info = info;
+    },
+    ['SET_ALL'](state, all) {
+      state.all = all;
+    },
+    ['UPDATE_QUERY'](state, query) {
+      state.query = query;
+    },
+    ['SET_PAGE'](state, page) {
+      state.query = {...state.query, page};
+      state.checks = [];
+    },
+    ['UPDATE_DEFAULT_QUERY'](state, defaultQuery) {
+      state.defaultQuery = clone(defaultQuery);
+    },
+    ['ADD_ROW'](state) {
+      state.editRow = clone(state.structure.defaultRow);
+    },
+    ['EDIT_ROW'](state, id) {
+      state.editRow = clone(state.rows.find(row => row._id === id));
+    },
+    ['UPDATE_EDIT_ROW'](state, row) {
+      state.editRow = row;
+    },
+    ['RESET_EDIT_ROW'](state) {
+      state.editRow = null;
+    },
+    ['OPEN_EDIT_MODAL'](state) {
+      state.editModal = true;
+    },
+    ['CLOSE_EDIT_MODAL'](state) {
+      state.editModal = false;
+    },
+    ['SET_REMOVE'](state, arr) {
+      state.toRemove = arr;
+    },
+    ['OPEN_REMOVE_MODAL'](state) {
+      state.removeModal = true;
+    },
+    ['CLOSE_REMOVE_MODAL'](state) {
+      state.removeModal = false;
+    },
+    ['SET_CHECKS'](state, checks) {
+      state.checks = checks;
+    },
+  },
   actions: {
-    async reloadRows({commit, state}, query) {
+    async toggleCheck({commit, state}, id) {
+      let checks = state.checks;
+      let pos = checks.indexOf(id);
+      if (pos === -1) {
+        checks.push(id);
+      } else {
+        checks.splice(pos, 1);
+      }
+      commit('SET_CHECKS', checks);
+    },
+    async toggleCheckAll({commit, state, getters}) {
+      // Кликнули по общему чб
+      // Запоминаем сколько сейчас отмечено
+      let checkedAll = getters.checkedAll;
+      // Всегда снимаем сначала все
+      let checks = [];
+      if(!checkedAll) {
+        // Если не все были отмечены, отмечаем все
+        for (let row of state.rows) {
+          checks.push(row._id);
+        }
+      }
+      commit('SET_CHECKS', checks);
+    },
+    async reloadRows({commit, state, dispatch}, query) {
       commit('UPDATE_QUERY', {...state.query, ...query});
       commit('RELOAD_DATA');
-      commit('SET_ROWS', await state.api.all(state.query));
+      await dispatch('loadRows');
       commit('DATA_READY');
+    },
+    async loadRows({state, commit}) {
+      commit('SET_ROWS', await state.api.all(state.query));
     },
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
@@ -236,8 +254,9 @@ export default {
       }
       commit('SET_STRUCTURE', {...state.structure, grid});
     },
-    async setPage({state, dispatch}, page) {
-      await dispatch('reloadRows', {...state.query, page});
+    async setPage({state, dispatch, commit}, page) {
+      commit('SET_PAGE', page);
+      await dispatch('reloadRows');
     },
     async toggleSort({state, dispatch, getters}, sortBy) {
       let sortDirection;
@@ -257,15 +276,17 @@ export default {
 
       await dispatch('setSort', {sortBy, sortDirection});
     },
-    async setSort({state, dispatch}, {sortBy, sortDirection}) {
+    async setSort({state, dispatch, commit}, {sortBy, sortDirection}) {
       let sort  = {[sortBy]: sortDirection};
       let page  = state.defaultQuery.page;
       let where = state.defaultQuery.where;
-      await dispatch('reloadRows', {...state.query, ...{sort, page, where}});
+      commit('SET_PAGE', page);
+      await dispatch('reloadRows', {...state.query, ...{sort, where}});
     },
-    async setLimit({state, dispatch}, limit) {
+    async setLimit({state, dispatch, commit}, limit) {
       let page = state.defaultQuery.page;
-      await dispatch('reloadRows', {...state.query, ...{limit, page}});
+      commit('SET_PAGE', page);
+      await dispatch('reloadRows', {...state.query, ...{limit}});
     },
     // async sanitize({state, dispatch}, item) {
     //   return item;
@@ -289,29 +310,38 @@ export default {
       if (insert) {
         // Переход на последнюю страницу
         // Учитываем, что кол-во записей на 1 больше
-        let lastPage = getters.maxPageByCount(getters.count + 1);
-        // Обновляем записи параллельно, т.к. общее число записей уже учтено
-        await Promise.all([
-          dispatch('loadAll'),
-          dispatch('setPage', lastPage), // Здесь же идет и обновление страницы
-        ]);
-      } else {
-        // Обновляем записи параллельно, т.к. количество записей не изменилось
-        await Promise.all([
-          dispatch('loadAll'),
-          dispatch('reloadRows'),
-        ]);
+        let page = getters.maxPageByCount(getters.count + 1);
+        commit('SET_PAGE', page);
       }
+      // Обновляем записи параллельно, т.к. общее число записей уже учтено
+      await Promise.all([
+        dispatch('loadAll'),
+        dispatch('loadRows'), // Здесь же идет и обновление страницы
+      ]);
       dispatch('notify', 'Сохранено', {root: true});
 
       commit('RESET_EDIT_ROW');
       commit('DATA_READY');
     },
-    async removeRows({state, dispatch, commit}) {
+    async openEdit({state, commit, getters}, id) {
+      let row = getters.getById(id);
+      if (row) {
+        commit('UPDATE_EDIT_ROW', clone(row));
+      } else {
+        commit('ADD_ROW');
+      }
+      commit('OPEN_EDIT_MODAL');
+    },
+    async cancelEdit({commit}) {
+      commit('CLOSE_EDIT_MODAL');
+      commit('RESET_EDIT_ROW');
+    },
+    async removeRows({state, dispatch, commit, getters}) {
       commit('RELOAD_DATA');
+      commit('CLOSE_REMOVE_MODAL');
 
       // Получаем функцию удаления - стандартную или кастомную
-      let removeFunc = state.options.removeRow ? state.options.removeRow : state.api.delete;
+      let removeFunc = state.options.removeRow ? state.options.removeRow : state.api.delete.bind(state.api);
 
       let $or = [];
       state.toRemove.forEach(_id => $or.push({_id}));
@@ -320,28 +350,25 @@ export default {
       let numDeleted = await removeFunc({$or}, true);
 
       // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
-      let page = Math.min(state.query.page, state.maxPageByCount(state.count - numDeleted));
+      let page = Math.min(getters.page, getters.maxPageByCount(getters.count - numDeleted));
 
       // Обновляем данные
+      commit('SET_PAGE', page);
       await Promise.all([
         dispatch('loadAll'),
-        dispatch('setPage', page), // Здесь же и идет обновление данных на странице
+        dispatch('loadRows'), // Здесь же и идет обновление данных на странице
       ]);
 
       commit('SET_REMOVE', []);
       commit('DATA_READY');
     },
-    async cancelEdit({commit}) {
-      commit('CLOSE_EDIT_MODAL');
-      commit('RESET_EDIT_ROW');
+    async openRemove({state, commit}, toRemove) {
+      commit('SET_REMOVE', toRemove);
+      commit('OPEN_REMOVE_MODAL');
     },
-    async openEdit({state, commit}, index) {
-      if (isNumeric(index) && state.rows[index]) {
-        commit('EDIT_ROW', index);
-      } else {
-        commit('ADD_ROW');
-      }
-      commit('OPEN_EDIT_MODAL');
+    async cancelRemove({commit}) {
+      commit('SET_REMOVE', []);
+      commit('CLOSE_REMOVE_MODAL');
     },
   }
 };

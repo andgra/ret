@@ -112,9 +112,9 @@ Vue.mixin({
       }
       return null;
     },
-    getValue({row, path}) {
+    getValue({row, path, lastOfGrid}) {
       let value   = getInObj(row, path);
-      let options = this.structure.grid.last().filter(item => {return item.id && item.id === path}).first();
+      let options = lastOfGrid.filter(item => {return item.id && item.id === path}).first();
       if (options) {
         if (options.type === 'interval') {
           value = getIntervalString(value)

@@ -1,7 +1,7 @@
 <template>
     <div class="actions">
-        <mdl-button :disabled="editMode" v-if="controls.add" @click.native="openEdit()" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
-        <mdl-button :disabled="editMode || checks.length===0" v-if="controls.remove" @click.native="$emit('inquireRemove')" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
+        <mdl-button :disabled="editModal" v-if="controls.add" @click.native="openEdit()" class="mdl-js-ripple-effect">Добавить запись</mdl-button>
+        <mdl-button :disabled="editModal || checks.length===0" v-if="controls.remove" @click.native="openRemove(checks)" class="mdl-js-ripple-effect">Удалить отмеченные</mdl-button>
         <mdl-button v-if="isClosed" @click.native="$emit('cancelClosed')" class="mdl-js-ripple-effect">Показать скрытые</mdl-button>
     </div>
 </template>
@@ -18,11 +18,11 @@
       },
     },
     computed: {
-      ...mapState('table', ['checks']),
-      ...mapGetters('table', ['editMode', 'controls']),
+      ...mapState('table', ['checks', 'editModal']),
+      ...mapGetters('table', ['controls']),
     },
     methods: {
-      ...mapActions('table', ['openEdit']),
+      ...mapActions('table', ['openEdit', 'openRemove']),
     },
   }
 </script>

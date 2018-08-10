@@ -67,7 +67,6 @@ class api {
 
   // Приведение типов перед добавлением в базу
   sanitize(item, dots) {
-    console.log(item, dots);
     for (let id in dots) {
       let node = dots[id];
       if (node.children && node.children.length) {

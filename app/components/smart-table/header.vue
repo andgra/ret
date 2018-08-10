@@ -5,7 +5,7 @@
     </tr>
     <tr class="center-all wide-all">
         <th v-if="controls.remove" class="mdl-th-padding text-center" width="67px">
-            <mdl-checkbox id="checkAll" :value="checkedAll" @change.native="toggleCheckAll" :disabled="editMode"></mdl-checkbox>
+            <mdl-checkbox id="checkAll" :value="checkedAll" @change.native="toggleCheckAll" :disabled="editModal"></mdl-checkbox>
         </th>
         <th v-if="controls.edit || controls.remove" :colspan="controls.edit+controls.remove" class="text-center" :width="(controls.edit*43+controls.remove*43)+'px'">Действия</th>
         <th scope="col" class="text-center" width="50px">№</th>
@@ -26,21 +26,18 @@
     name: "header",
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'editRow', 'options', 'toRemove', 'editModal', 'checks']),
-      ...mapGetters('table', ['sortBy', 'sortDirection', 'editMode', 'limit', 'controls', 'lastOfGrid', 'grid', 'checkedAll']),
+      ...mapState('table', ['editModal']),
+      ...mapGetters('table', ['sortBy', 'sortDirection', 'limit', 'controls', 'lastOfGrid', 'grid', 'checkedAll']),
 
     },
     methods: {
-      ...mapMutations('table', ['TOGGLE_CHECK_ALL']),
+      ...mapActions('table', ['toggleCheckAll']),
       sortClass(id) {
         return {
           'mdl-data-table__header--sorted-ascending': this.sortBy === id && this.sortDirection === 1,
           'mdl-data-table__header--sorted-descending': this.sortBy === id && this.sortDirection === -1,
           'sortable': true,
         }
-      },
-      toggleCheckAll() {
-        this.TOGGLE_CHECK_ALL();
       },
     },
   }
