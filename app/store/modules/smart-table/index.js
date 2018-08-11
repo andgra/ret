@@ -1,5 +1,6 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 import Structure from '~js/modules/structure'
+import filter from '~store/modules/smart-table/filter'
 
 let defaultQuery = {
   sort: {createdAt: 1},
@@ -10,6 +11,9 @@ let defaultQuery = {
 
 export default {
   namespaced: true,
+  modules: {
+    filter,
+  },
   state: {
     query: clone(defaultQuery),
     defaultQuery,
@@ -25,11 +29,7 @@ export default {
     toRemove: [],
     removeModal: false,
     checks: [],
-    filter: {
-      search: '',
-    }
   },
-  modules: {},
   getters: {
     checked: state => id => state.checks.indexOf(id) !== -1,
     checkedAll(state) {
@@ -85,15 +85,6 @@ export default {
         dates: getters.controlDates,
         checks: getters.controlRemove,
       }
-    },
-    optionsInAll: state => cellId => {
-      let options = new Set();
-      options.add('--');
-      for (let item of state.all) {
-        let value = getInObj(item, cellId);
-        options.add(value ? value : 'пусто');
-      }
-      return [...options];
     },
     colspanFooter: function (state, getters) {
       return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;

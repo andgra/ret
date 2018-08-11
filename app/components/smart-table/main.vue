@@ -8,7 +8,7 @@
         <div class="table-content">
             <div class="table-responsive after-actions">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
-                    <thead is="table-header"></thead>
+                    <thead is="table-header" v-on:show-filter="showFilter"></thead>
                     <tbody is="table-body"></tbody>
                     <!--<tfoot>-->
                     <!--<tr class="hidden">-->
@@ -51,11 +51,13 @@
             </div>
         </mdl-dialog>-->
         </slot>
+        <filter-popup v-if="filterPopup"></filter-popup>
     </div>
 
 
 </template>
 <script>
+  import FilterPopup from '~components/smart-table/filters/popup';
   import Header from '~components/smart-table/header';
   import Body from '~components/smart-table/body';
   import Pagination from '~components/smart-table/pagination';
@@ -71,6 +73,7 @@
     computed: {
       ...mapState('settings', ['settings']),
       ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'editRow', 'options', 'toRemove', 'editModal', 'removeModal']),
+      ...mapState('table/filter', {filterPopup: 'popup'}),
       ...mapGetters('table', ['count', 'controls', 'heading', 'trailing', 'lastOfGrid', 'dots', 'num', 'checked', 'grid']),
 
       isClosed: function () {
@@ -81,6 +84,7 @@
     methods: {
       ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
       ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'cancelEdit', 'removeRows', 'cancelRemove']),
+      ...mapActions('table/filter', ['openFilter', 'closeFilter']),
       ...mapActions(['notify']),
       removeClosed: function () {
 //                this.sel = clone(this.selSeed);
@@ -106,13 +110,22 @@
           $.proxy(this.options.onRemove, this)();
         }
       },
+      showFilter(id, e) {
+        let position = {
+          left: e.clientX,
+          top: e.clientY,
+        };
+        console.log(e);
+        this.openFilter({id, position});
+      },
     },
     created: function () {
       console.log('smart-table created');
 
       window.appt = this;
+      let $document = $(document);
 
-      $(document).on('keyup', e => {
+      $document.on('keyup', e => {
         if (this.editModal) {
           if (e.keyCode === 13 && ((e.target.type !== 'textarea' && !$(e.target).hasClass('ui-autocomplete-input'))
             || e.ctrlKey || e.altKey)) {
@@ -137,6 +150,15 @@
           }
         }
       });
+      $document.on('mouseup', e => {
+        if (this.filterPopup) {
+          // если открыто окно фильтра
+          if ($(e.target).closest('.filter-popup').length === 0) {
+            // и клик за пределы окна, закрываем окно фильтра
+            this.closeFilter();
+          }
+        }
+      });
 
       if (this.options.methods) {
         for (let name in this.options.methods) {
@@ -152,11 +174,11 @@
       Tablesaw.init();
       let $tCont = $('.table-container');
       if (this.$slots.editModal) {
-        let editModal = this.$slots.editModal[0].componentInstance;
-        this.$watch('editModal', newVal => newVal ? editModal.open() : editModal.close());
+        let editModalInst = this.$slots.editModal[0].componentInstance;
+        this.$watch('editModal', newVal => newVal ? editModalInst.open() : editModalInst.close());
       }
-      let removeModal = this.$refs.removeModal;
-      this.$watch('removeModal', newVal => newVal ? removeModal.open() : removeModal.close());
+      let removeModalInst = this.$refs.removeModal;
+      this.$watch('removeModal', newVal => newVal ? removeModalInst.open() : removeModalInst.close());
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
       $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
@@ -199,6 +221,7 @@
       'table-body': Body,
       'pagination': Pagination,
       'actions': Actions,
+      'filter-popup': FilterPopup,
     }
   }
 </script>
