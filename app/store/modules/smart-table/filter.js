@@ -7,6 +7,7 @@ export default {
     cellId: '',
     position: {left: 0, top: 0},
     popup: false,
+    checkedOptions: [],
   },
   modules: {},
   getters: {
@@ -33,6 +34,9 @@ export default {
     // ['SET_CHECKS'](state, checks) {
     //   state.checks = checks;
     // },
+    setCheckedOptions(state, checks) {
+      state.checkedOptions = checks;
+    },
     setSearch(state, search) {
       state.search = search;
     },

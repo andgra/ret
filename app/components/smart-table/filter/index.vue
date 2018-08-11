@@ -8,10 +8,10 @@
                 <div class="filter-popup__search-list">
                     <ul v-if="filterOptions.length">
                         <li>
-                            <label><input type="checkbox" :indeterminate="filterOptions"> Выделить все{{search ? ' результаты поиска' : ''}}</label>
+                            <label><input type="checkbox" @change="changedAll" :indeterminate.prop="isAllIndeterminate" :checked="isAllChecked"> Выделить все{{search ? ' результаты поиска' : ''}}</label>
                         </li>
                         <li v-for="val in filterOptions">
-                            <label><input type="checkbox" :value="val"> <span v-html="val"></span></label>
+                            <label><input type="checkbox" :value="val" v-model="checkedOptions"> <span v-html="val"></span></label>
                         </li>
                     </ul>
                     <div class="filter-popup__search-empty" v-else>Извините, значеня не найдены</div>
@@ -28,7 +28,7 @@
 <script>
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
   export default {
-    name: "popup",
+    name: "filter",
     computed: {
       ...mapState('table/filter', ['position']),
       ...mapGetters('table/filter', ['filterOptions']),
@@ -39,12 +39,32 @@
         set (value) {
           this.$store.commit('table/filter/setSearch', value)
         }
-      }
+      },
+      checkedOptions: {
+        get () {
+          return this.$store.state.table.filter.checkedOptions
+        },
+        set (value) {
+          this.$store.commit('table/filter/setCheckedOptions', value)
+        }
+      },
+      isAllIndeterminate() {
+        return this.checkedOptions.length && this.filterOptions.length !== this.checkedOptions.length;
+      },
+      isAllChecked() {
+        return this.filterOptions.length === this.checkedOptions.length;
+      },
     },
     methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
       ...mapActions('table/filter', ['applyFilter', 'closeFilter']),
       ...mapActions(['notify']),
+      changedAll() {
+        if (!this.checkedOptions.length || this.isAllIndeterminate) {
+          this.checkedOptions = this.filterOptions;
+        } else {
+          this.checkedOptions = [];
+        }
+      },
     },
     mounted() {
       $(this.$el).appendTo(this.$root.$el);

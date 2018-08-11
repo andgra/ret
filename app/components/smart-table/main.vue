@@ -57,7 +57,7 @@
 
 </template>
 <script>
-  import FilterPopup from '~components/smart-table/filters/popup';
+  import Filter from '~components/smart-table/filter';
   import Header from '~components/smart-table/header';
   import Body from '~components/smart-table/body';
   import Pagination from '~components/smart-table/pagination';
@@ -221,7 +221,7 @@
       'table-body': Body,
       'pagination': Pagination,
       'actions': Actions,
-      'filter-popup': FilterPopup,
+      'filter-popup': Filter,
     }
   }
 </script>
