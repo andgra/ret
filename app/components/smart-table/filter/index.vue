@@ -1,7 +1,14 @@
 <template>
     <div class="filter-popup" :style="{top: position.top + 'px', left: position.left + 'px'}">
         <div class="filter-popup__body">
-            <div class="filter-popup__sorting"></div>
+            <div class="filter-popup__sorting">
+                <div class="sort-option" @click="applySort(1)">
+                    <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i> Сортировать по возрастанию
+                </div>
+                <div class="sort-option" @click="applySort(-1)">
+                    <i class="fa fa-sort-alpha-desc" aria-hidden="true"></i> Сортировать по убыванию
+                </div>
+            </div>
             <div class="filter-popup__templates"></div>
             <div class="filter-popup__search">
                 <mdl-textfield floating-label="Поиск:" v-model="search" type="text" class="mdl-textfield--full-width"></mdl-textfield>
@@ -50,7 +57,7 @@
       },
     },
     methods: {
-      ...mapActions('table/filter', ['applyFilter', 'closeFilter']),
+      ...mapActions('table/filter', ['applyFilter', 'closeFilter', 'applySort']),
       ...mapActions(['notify']),
       changedAll() {
         if (!this.checkedOptions.length || this.isAllIndeterminate) {
@@ -75,6 +82,14 @@
         background: white;
         box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         border: 1px solid rgba(0,0,0,.2);
+        &__search, &__buttons {
+            border-top: 1px solid #e5e5e5;
+        }
+        &__sorting {
+        }
+        .sort-option {
+            cursor: pointer;
+        }
         &__search {
             &-list {
             }
@@ -86,9 +101,6 @@
         }
         &__body {
             padding: 15px;
-        }
-        &__buttons {
-            border-top: 1px solid #e5e5e5;
         }
     }
 </style>

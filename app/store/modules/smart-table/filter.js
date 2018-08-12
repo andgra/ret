@@ -12,6 +12,12 @@ export default {
     checkedOptions: [],
   },
   getters: {
+    sortBy(state, getters, rootState) {
+      return Object.keys(rootState.table.query.sort)[0];
+    },
+    sortDirection(state, getters, rootState) {
+      return Object.values(rootState.table.query.sort)[0];
+    },
     filterOptions: (state, getters, rootState) => {
       let options = new Set();
       let cellId = state.cellId;
@@ -34,6 +40,12 @@ export default {
     },
     isAllIndeterminate(state, getters) {
       return state.checkedOptions.length && !getters.isAllChecked;
+    },
+    isActionsActive: (state, getters) => cellId => {
+      return getters.isSortActive(cellId) || getters.isFilterActive(cellId)
+    },
+    isSortActive: (state, getters) => cellId => {
+      return getters.sortBy === cellId
     },
     isFilterActive: state => cellId => {
       return state.appliedFilters[cellId] && state.appliedFilters[cellId].length;
@@ -98,5 +110,27 @@ export default {
     async closeFilter({commit}) {
       commit('closePopup');
     },
+    async toggleSort({state, dispatch, getters, rootState}, sortBy) {
+      let sortDirection;
+      if (getters.sortBy === sortBy) {
+        if (getters.sortDirection === -1) {
+          // третий клик подряд
+          sortBy        = Object.keys(rootState.table.defaultQuery.sort)[0];
+          sortDirection = Object.values(rootState.table.defaultQuery.sort)[0];
+        } else {
+          // второй клик подряд
+          sortDirection = -1;
+        }
+      } else {
+        // первый клик по столбцу
+        sortDirection = 1;
+      }
+
+      await dispatch('table/setSort', {sortBy, sortDirection}, {root: true});
+    },
+    async applySort({state, commit, dispatch, getters}, sortDirection) {
+      commit('closePopup');
+      await dispatch('table/setSort', {sortBy: state.cellId, sortDirection}, {root: true});
+    }
   }
 };

@@ -41,17 +41,11 @@ export default {
     },
     lastOfGrid: (state, getters) => getters.grid.last(),
     grid: state => state.structure.grid,
-    sortBy(state) {
-      return Object.keys(state.query.sort)[0];
-    },
     maxPage(state) {
       return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
     },
     maxPageByCount: state => count => {
       return state.query.limit ? Math.ceil(count / state.query.limit) || 1 : 1;
-    },
-    sortDirection(state) {
-      return Object.values(state.query.sort)[0];
     },
     getById: state => id => id ? state.rows.find(row => row._id === id) : undefined,
     page: state => state.query.page,
@@ -269,24 +263,6 @@ export default {
     async setPage({state, dispatch, commit}, page) {
       commit('SET_PAGE', page);
       await dispatch('reloadRows');
-    },
-    async toggleSort({state, dispatch, getters}, sortBy) {
-      let sortDirection;
-      if (getters.sortBy === sortBy) {
-        if (getters.sortDirection === -1) {
-          // третий клик подряд
-          sortBy        = Object.keys(state.defaultQuery.sort)[0];
-          sortDirection = Object.values(state.defaultQuery.sort)[0];
-        } else {
-          // второй клик подряд
-          sortDirection = -1;
-        }
-      } else {
-        // первый клик по столбцу
-        sortDirection = 1;
-      }
-
-      await dispatch('setSort', {sortBy, sortDirection});
     },
     async setSort({state, dispatch, commit}, {sortBy, sortDirection}) {
       let sort = {[sortBy]: sortDirection};

@@ -204,13 +204,13 @@
         this.SET_STRUCTURE({...this.structure, grid});
       });
 
-      $tCont.on('click', '.sortable', e => {
-        let $th = $(e.target);
-        if (!$th.hasClass('sortable')) {
-          return false;
-        }
-        this.toggleSort($th.data('sort'));
-      });
+      // $tCont.on('click', '.sortable', e => {
+      //   let $th = $(e.target);
+      //   if (!$th.hasClass('sortable')) {
+      //     return false;
+      //   }
+      //   this.toggleSort($th.data('sort'));
+      // });
 
       if (this.options.mounted) {
         this.options.mounted.call(this);

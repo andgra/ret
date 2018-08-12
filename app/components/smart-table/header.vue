@@ -9,19 +9,17 @@
         </th>
         <th v-if="controls.edit || controls.remove" :colspan="controls.edit+controls.remove" class="text-center" :width="(controls.edit*43+controls.remove*43)+'px'">Действия</th>
         <th scope="col" class="text-center" width="50px">№</th>
-        <th v-for="(cell,i) in lastOfGrid" :colspan="cell.colspan" v-show="!cell.hidden" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :class="sortClass(cell.id)" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false">
+        <th v-for="(cell,i) in cols" :colspan="cell.colspan" v-show="!cell.hidden" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false">
             <span v-html="cell.title"></span>
-            <i class="fa fa-filter" @click="$emit('show-filter', cell.id, $event)" :class="{active: isFilterActive(cell.id)}"></i>
+            <filter-icon :cellId="cell.id" @show-filter="$emit('show-filter', cell.id, $event)"></filter-icon>
         </th>
-        <template v-if="controls.dates">
-            <th v-for="cell in datesGrid" :data-sort="cell.id" :class="sortClass(cell.id)" v-html="cell.title"></th>
-        </template>
         <th v-if="controls.edit || controls.remove" :colspan="controls.edit+controls.remove" class="text-center" :width="(controls.edit*43+controls.remove*43)+'px'">Действия</th>
     </tr>
     </thead>
 </template>
 
 <script>
+  import FilterIcon from '~components/smart-table/filter/icon'
   import {mapActions, mapGetters, mapState} from 'vuex';
 
   export default {
@@ -30,29 +28,35 @@
       ...mapState('settings', ['settings']),
       ...mapState('table', ['editModal']),
       ...mapGetters('table', ['sortBy', 'sortDirection', 'limit', 'controls', 'lastOfGrid', 'grid', 'checkedAll']),
-      ...mapGetters('table/filter', ['isFilterActive']),
       datesGrid() {
         return [
           {
             id: 'createdAt',
             title: 'Создан',
+            colspan: 1,
+            sortType: 'date',
           },
           {
             id: 'updatedAt',
             title: 'Изменен',
+            colspan: 1,
+            sortType: 'date',
           },
         ]
-      }
+      },
+      cols() {
+        let cols = this.lastOfGrid;
+        if (this.controls.dates) {
+          cols = [...cols, ...this.datesGrid]
+        }
+        return cols;
+      },
     },
     methods: {
       ...mapActions('table', ['toggleCheckAll']),
-      sortClass(id) {
-        return {
-          'mdl-data-table__header--sorted-ascending': this.sortBy === id && this.sortDirection === 1,
-          'mdl-data-table__header--sorted-descending': this.sortBy === id && this.sortDirection === -1,
-          'sortable': true,
-        }
-      },
+    },
+    components: {
+      'filter-icon': FilterIcon,
     },
   }
 </script>
