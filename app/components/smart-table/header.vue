@@ -11,7 +11,7 @@
         <th scope="col" class="text-center" width="50px">№</th>
         <th v-for="(cell,i) in lastOfGrid" :colspan="cell.colspan" v-show="!cell.hidden" scope="col" :data-tablesaw-priority="!cell.hidden ? 1 : false" :data-sort="cell.id" :class="sortClass(cell.id)" :width="cell.width?cell.width:false" :data-type="cell.sortType?cell.sortType:false">
             <span v-html="cell.title"></span>
-            <i class="fa fa-filter" @click="$emit('show-filter', cell.id, $event)"></i>
+            <i class="fa fa-filter" @click="$emit('show-filter', cell.id, $event)" :class="{active: isFilterActive(cell.id)}"></i>
         </th>
         <template v-if="controls.dates">
             <th v-for="cell in datesGrid" :data-sort="cell.id" :class="sortClass(cell.id)" v-html="cell.title"></th>
@@ -30,6 +30,7 @@
       ...mapState('settings', ['settings']),
       ...mapState('table', ['editModal']),
       ...mapGetters('table', ['sortBy', 'sortDirection', 'limit', 'controls', 'lastOfGrid', 'grid', 'checkedAll']),
+      ...mapGetters('table/filter', ['isFilterActive']),
       datesGrid() {
         return [
           {

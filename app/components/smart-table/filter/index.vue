@@ -31,7 +31,7 @@
     name: "filter",
     computed: {
       ...mapState('table/filter', ['position']),
-      ...mapGetters('table/filter', ['filterOptions']),
+      ...mapGetters('table/filter', ['filterOptions', 'isAllChecked', 'isAllIndeterminate']),
       search: {
         get () {
           return this.$store.state.table.filter.search
@@ -47,12 +47,6 @@
         set (value) {
           this.$store.commit('table/filter/setCheckedOptions', value)
         }
-      },
-      isAllIndeterminate() {
-        return this.checkedOptions.length && this.filterOptions.length !== this.checkedOptions.length;
-      },
-      isAllChecked() {
-        return this.filterOptions.length === this.checkedOptions.length;
       },
     },
     methods: {

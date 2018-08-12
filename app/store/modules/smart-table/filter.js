@@ -2,19 +2,16 @@
 
 export default {
   namespaced: true,
+  modules: {},
   state: {
     search: '',
     cellId: '',
     position: {left: 0, top: 0},
     popup: false,
+    appliedFilters: {},
     checkedOptions: [],
   },
-  modules: {},
   getters: {
-    // checked: state => id => state.checks.indexOf(id) !== -1,
-    // checkedAll(state) {
-    //   return state.checks.length === state.rows.length;
-    // },
     filterOptions: (state, getters, rootState) => {
       let options = new Set();
       let cellId = state.cellId;
@@ -29,11 +26,32 @@ export default {
       }
       return [...options];
     },
+    isAllChecked(state, getters) {
+      let maybeOptions = state.checkedOptions;
+      let allOptions = getters.filterOptions;
+      let checkedOptions = maybeOptions.filter(v => allOptions.indexOf(v) !== -1);
+      return checkedOptions.length === allOptions.length;
+    },
+    isAllIndeterminate(state, getters) {
+      return state.checkedOptions.length && !getters.isAllChecked;
+    },
+    isFilterActive: state => cellId => {
+      return state.appliedFilters[cellId] && state.appliedFilters[cellId].length;
+    },
   },
   mutations: {
-    // ['SET_CHECKS'](state, checks) {
-    //   state.checks = checks;
-    // },
+    setCurrentFilter(state) {
+      let currentFilters = state.appliedFilters;
+      if (!state.checkedOptions.length) {
+        delete(currentFilters[state.cellId]);
+      } else {
+        currentFilters = {...currentFilters, [state.cellId]: state.checkedOptions};
+      }
+      state.appliedFilters = currentFilters;
+    },
+    setAppliedFilters(state, appliedFilters) {
+      state.appliedFilters = appliedFilters;
+    },
     setCheckedOptions(state, checks) {
       state.checkedOptions = checks;
     },
@@ -50,40 +68,30 @@ export default {
       state.popup = true;
     },
     closePopup(state) {
-      state.popup = false;
+      state.popup = false; 
     },
   },
   actions: {
-    // async toggleCheck({commit, state}, id) {
-    //   let checks = state.checks;
-    //   let pos    = checks.indexOf(id);
-    //   if (pos === -1) {
-    //     checks.push(id);
-    //   } else {
-    //     checks.splice(pos, 1);
-    //   }
-    //   commit('SET_CHECKS', checks);
-    // },
-    // async toggleCheckAll({commit, state, getters}) {
-    //   // Кликнули по общему чб
-    //   // Запоминаем сколько сейчас отмечено
-    //   let checkedAll = getters.checkedAll;
-    //   // Всегда снимаем сначала все
-    //   let checks     = [];
-    //   if (!checkedAll) {
-    //     // Если не все были отмечены, отмечаем все
-    //     for (let row of state.rows) {
-    //       checks.push(row._id);
-    //     }
-    //   }
-    //   commit('SET_CHECKS', checks);
-    // },
-    async applyFilter({commit}) {
+    async applyFilter({commit, state, getters, dispatch}) {
       commit('closePopup');
+      if (getters.isAllChecked) {
+        // отмечены все, т.е. фильтр снимаем
+        commit('setCheckedOptions', []);
+      }
+      commit('setCurrentFilter');
+      // обновляем данные с учетом фильтров
+      await dispatch('table/setWhere', state.appliedFilters, {root: true});
     },
-    async openFilter({commit}, {id, position}) {
+    async openFilter({state, getters, commit}, {id, position}) {
       commit('setSearch', '');
       commit('setCellId', id);
+      let allOptions = getters.filterOptions;
+      let checkedOptions = clone(allOptions);
+      if (getters.isFilterActive(id)) {
+        let maybeOptions = state.appliedFilters[id];
+        checkedOptions = maybeOptions.filter(v => allOptions.indexOf(v) !== -1);
+      }
+      commit('setCheckedOptions', checkedOptions);
       commit('openPopup');
       commit('setPosition', position);
     },

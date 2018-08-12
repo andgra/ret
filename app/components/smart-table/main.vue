@@ -73,8 +73,9 @@
     computed: {
       ...mapState('settings', ['settings']),
       ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'editRow', 'options', 'toRemove', 'editModal', 'removeModal']),
+      ...mapState('table/filter', ['appliedFilters']),
       ...mapState('table/filter', {filterPopup: 'popup'}),
-      ...mapGetters('table', ['count', 'controls', 'heading', 'trailing', 'lastOfGrid', 'dots', 'num', 'checked', 'grid']),
+      ...mapGetters('table', ['controls', 'heading', 'trailing', 'lastOfGrid', 'dots', 'num', 'checked', 'grid']),
 
       isClosed: function () {
 //                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
@@ -83,7 +84,7 @@
     },
     methods: {
       ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
-      ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'cancelEdit', 'removeRows', 'cancelRemove']),
+      ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'cancelEdit', 'removeRows', 'cancelRemove', 'setWhere']),
       ...mapActions('table/filter', ['openFilter', 'closeFilter']),
       ...mapActions(['notify']),
       removeClosed: function () {
@@ -115,7 +116,6 @@
           left: e.clientX,
           top: e.clientY,
         };
-        console.log(e);
         this.openFilter({id, position});
       },
     },

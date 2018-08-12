@@ -18,6 +18,7 @@ export default {
     query: clone(defaultQuery),
     defaultQuery,
     rows: [],
+    count: 0,
     all: [],
     info: {},
     loading: 2,
@@ -43,11 +44,8 @@ export default {
     sortBy(state) {
       return Object.keys(state.query.sort)[0];
     },
-    count(state) {
-      return state.all.length;
-    },
-    maxPage(state, getters) {
-      return state.query.limit ? Math.ceil(getters.count / state.query.limit) || 1 : 1;
+    maxPage(state) {
+      return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
     },
     maxPageByCount: state => count => {
       return state.query.limit ? Math.ceil(count / state.query.limit) || 1 : 1;
@@ -94,6 +92,12 @@ export default {
     ['SET_OPTIONS'](state, options) {
       state.options = options;
     },
+    /**
+     *
+     * @param {ActionContext} [state]
+     * @param {api} api
+     * @constructor
+     */
     ['SET_API'](state, api) {
       state.api = api;
     },
@@ -111,6 +115,9 @@ export default {
     },
     ['SET_ROWS'](state, rows) {
       state.rows = rows;
+    },
+    ['SET_COUNT'](state, count) {
+      state.count = count;
     },
     ['SET_INFO'](state, info) {
       state.info = info;
@@ -192,6 +199,7 @@ export default {
     },
     async loadRows({state, commit}) {
       commit('SET_ROWS', await state.api.all(state.query));
+      commit('SET_COUNT', await state.api.count(state.query.where));
     },
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
@@ -208,10 +216,11 @@ export default {
       commit('LOAD_DATA');
 
       let infoPromise = infoLoader(state);
-      let all         = await state.api.all({...state.defaultQuery, limit: 0});
 
+      let all  = await state.api.all({...state.defaultQuery, limit: 0});
       let data = await Promise.allObject({
         rows: state.api.all(state.query),
+        count: state.api.count(state.query.where),
         info: infoPromise,
       });
 
@@ -222,6 +231,7 @@ export default {
       commit('SET_STRUCTURE', structure);
       commit('SET_ALL', all);
       commit('SET_ROWS', data.rows);
+      commit('SET_COUNT', data.count);
       commit('SET_INFO', data.info);
 
       if (repairGrid) {
@@ -279,16 +289,26 @@ export default {
       await dispatch('setSort', {sortBy, sortDirection});
     },
     async setSort({state, dispatch, commit}, {sortBy, sortDirection}) {
-      let sort  = {[sortBy]: sortDirection};
-      let page  = state.defaultQuery.page;
-      let where = state.defaultQuery.where;
+      let sort = {[sortBy]: sortDirection};
+      let page = state.defaultQuery.page;
       commit('SET_PAGE', page);
-      await dispatch('reloadRows', {...state.query, ...{sort, where}});
+      await dispatch('reloadRows', {...state.query, ...{sort}});
     },
     async setLimit({state, dispatch, commit}, limit) {
       let page = state.defaultQuery.page;
       commit('SET_PAGE', page);
       await dispatch('reloadRows', {...state.query, ...{limit}});
+    },
+    async setWhere({state, dispatch, commit}, filters) {
+      let page = state.defaultQuery.page;
+      commit('SET_PAGE', page);
+      let where = {};
+      for (let field in filters) {
+        if (filters.hasOwnProperty(field) && filters[field].length) {
+          where[field] = {$in: filters[field]};
+        }
+      }
+      await dispatch('reloadRows', {...state.query, ...{where}});
     },
     // async sanitize({state, dispatch}, item) {
     //   return item;
@@ -312,7 +332,7 @@ export default {
       if (insert) {
         // Переход на последнюю страницу
         // Учитываем, что кол-во записей на 1 больше
-        let page = getters.maxPageByCount(getters.count + 1);
+        let page = getters.maxPageByCount(state.count + 1);
         commit('SET_PAGE', page);
       }
       // Обновляем записи параллельно, т.к. общее число записей уже учтено
@@ -352,7 +372,7 @@ export default {
       let numDeleted = await removeFunc({$or}, true);
 
       // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
-      let page = Math.min(getters.page, getters.maxPageByCount(getters.count - numDeleted));
+      let page = Math.min(getters.page, getters.maxPageByCount(state.count - numDeleted));
 
       // Обновляем данные
       commit('SET_PAGE', page);
