@@ -80,7 +80,6 @@ class api {
       if(node.sortType) {
         parent[childPath] = cast(parent[childPath], node.sortType);
       }
-      console.log(item, parent[childPath]);
     }
     return item;
   }

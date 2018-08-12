@@ -8,7 +8,7 @@
         <div class="table-content">
             <div class="table-responsive after-actions">
                 <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
-                    <thead is="table-header" v-on:show-filter="showFilter"></thead>
+                    <thead is="table-header" @show-filter="showFilter"></thead>
                     <tbody is="table-body"></tbody>
                     <!--<tfoot>-->
                     <!--<tr class="hidden">-->
@@ -21,7 +21,7 @@
         </div>
         <div class="table-footer">
             <pagination class="bordered-bottom"/>
-            <actions :isClosed="isClosed"></actions>
+            <actions :isClosed="isClosed"/>
         </div>
         <mdl-dialog v-if="controls.remove" ref="removeModal" title="Удаление записей">
             <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
@@ -51,7 +51,7 @@
             </div>
         </mdl-dialog>-->
         </slot>
-        <filter-popup v-if="filterPopup"></filter-popup>
+        <filter-popup v-if="filterPopup"/>
     </div>
 
 
@@ -65,6 +65,13 @@
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
+    components: {
+      'table-header': Header,
+      'table-body': Body,
+      'pagination': Pagination,
+      'actions': Actions,
+      'filter-popup': Filter,
+    },
     data: function () {
       return {
         test: "",
@@ -80,43 +87,6 @@
       isClosed: function () {
 //                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
         return false;
-      },
-    },
-    methods: {
-      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
-      ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'cancelEdit', 'removeRows', 'cancelRemove', 'setWhere']),
-      ...mapActions('table/filter', ['openFilter', 'closeFilter']),
-      ...mapActions(['notify']),
-      removeClosed: function () {
-//                this.sel = clone(this.selSeed);
-        return true;
-      },
-      getSelCnt: function (arr) {
-        arr     = clone(arr);
-        let res = 0;
-        for (let i in arr) {
-          if (isArray(arr[i]) || isObject(arr[i])) {
-            res += this.getSelCnt(arr[i]);
-          } else {
-            res += arr[i];
-          }
-        }
-        return res;
-      },
-      selfRemoveRows: async function () {
-        await this.removeRows();
-        this.notify('Удалено');
-
-        if (this.options.onRemove) {
-          $.proxy(this.options.onRemove, this)();
-        }
-      },
-      showFilter(id, e) {
-        let position = {
-          left: e.clientX,
-          top: e.clientY,
-        };
-        this.openFilter({id, position});
       },
     },
     created: function () {
@@ -216,13 +186,43 @@
         this.options.mounted.call(this);
       }
     },
-    components: {
-      'table-header': Header,
-      'table-body': Body,
-      'pagination': Pagination,
-      'actions': Actions,
-      'filter-popup': Filter,
-    }
+    methods: {
+      ...mapMutations('table', ['ADD_ROW', 'EDIT_ROW', 'CLOSE_EDIT', 'SET_REMOVE', 'UPDATE_EDIT_ROW', 'SET_STRUCTURE', 'TOGGLE_CHECK']),
+      ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'saveEdit', 'cancelEdit', 'removeRows', 'cancelRemove', 'setWhere']),
+      ...mapActions('table/filter', ['openFilter', 'closeFilter']),
+      ...mapActions(['notify']),
+      removeClosed: function () {
+//                this.sel = clone(this.selSeed);
+        return true;
+      },
+      getSelCnt: function (arr) {
+        arr     = clone(arr);
+        let res = 0;
+        for (let i in arr) {
+          if (isArray(arr[i]) || isObject(arr[i])) {
+            res += this.getSelCnt(arr[i]);
+          } else {
+            res += arr[i];
+          }
+        }
+        return res;
+      },
+      selfRemoveRows: async function () {
+        await this.removeRows();
+        this.notify('Удалено');
+
+        if (this.options.onRemove) {
+          $.proxy(this.options.onRemove, this)();
+        }
+      },
+      showFilter(id, e) {
+        let position = {
+          left: e.clientX,
+          top: e.clientY,
+        };
+        this.openFilter({id, position});
+      },
+    },
   }
 </script>
 

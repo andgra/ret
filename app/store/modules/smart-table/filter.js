@@ -19,23 +19,38 @@ export default {
       return Object.values(rootState.table.query.sort)[0];
     },
     filterOptions: (state, getters, rootState) => {
-      let options = new Set();
+      let options = [];
+      let addedKeys = [];
       let cellId = state.cellId;
       // options.add('--');
       for (let item of rootState.table.all) {
-        let value = ('' + getInObj(item, cellId)).trim();
-        value = value !== '' ? value : '(Пустые)';
-        if (state.search !== '' && value.toLowerCase().indexOf(state.search.toLowerCase()) === -1) {
+        let value = getInObj(item, cellId);
+        // запоминаем исходное значение
+        let key = clone(value);
+        // если такое значение уже было добавлено, то идем дальше
+        if (addedKeys.indexOf(key) !== -1) {
           continue;
         }
-        options.add(value);
+        // если строка, то обрезаем от пробелов
+        value = ('' + value === value) ? ('' + value).trim() : value;
+        // если пустая строка, то заменяем на служебное слово
+        value = value !== '' ? value : '(Пустые)';
+        if (state.search !== '' && ('' + value).toLowerCase().indexOf(state.search.toLowerCase()) === -1) {
+          continue;
+        }
+        addedKeys.push(key);
+        options.push({key, value});
       }
-      return [...options];
+      options.sort((o1, o2) => (o1.value === o2.value ? 0 : o1.value < o2.value ? -1 : 1));
+      return options;
+    },
+    isFoundSomething(state, getters) {
+      return getters.filterOptions.length;
     },
     isAllChecked(state, getters) {
       let maybeOptions = state.checkedOptions;
-      let allOptions = getters.filterOptions;
-      let checkedOptions = maybeOptions.filter(v => allOptions.indexOf(v) !== -1);
+      let allOptions = getters.filterOptions.map(o => JSON.stringify(o.key));
+      let checkedOptions = maybeOptions.filter(v => allOptions.indexOf(JSON.stringify(v)) !== -1);
       return checkedOptions.length === allOptions.length;
     },
     isAllIndeterminate(state, getters) {
@@ -44,8 +59,11 @@ export default {
     isActionsActive: (state, getters) => cellId => {
       return getters.isSortActive(cellId) || getters.isFilterActive(cellId)
     },
-    isSortActive: (state, getters) => cellId => {
-      return getters.sortBy === cellId
+    isSortActive: (state, getters) => sortBy => {
+      return getters.sortBy === sortBy;
+    },
+    isCurrentDirection: (state, getters) => (sortDirection) => {
+      return getters.isSortActive(state.cellId) && getters.sortDirection === sortDirection;
     },
     isFilterActive: state => cellId => {
       return state.appliedFilters[cellId] && state.appliedFilters[cellId].length;
@@ -90,18 +108,37 @@ export default {
         // отмечены все, т.е. фильтр снимаем
         commit('setCheckedOptions', []);
       }
+      let oldFilterOptions = state.appliedFilters[state.cellId];
       commit('setCurrentFilter');
+      let newFilterOptions = state.appliedFilters[state.cellId];
       // обновляем данные с учетом фильтров
+      oldFilterOptions = oldFilterOptions !== undefined ? clone(oldFilterOptions).sort() : oldFilterOptions;
+      newFilterOptions = newFilterOptions !== undefined ? clone(newFilterOptions).sort() : newFilterOptions;
+      if (JSON.stringify(oldFilterOptions) !== JSON.stringify(newFilterOptions)) {
+        await dispatch('table/setWhere', state.appliedFilters, {root: true});
+      }
+    },
+    async resetFilter({commit, state, getters, dispatch}) {
+      commit('closePopup');
+      commit('setCheckedOptions', []);
+      commit('setCurrentFilter');
       await dispatch('table/setWhere', state.appliedFilters, {root: true});
     },
     async openFilter({state, getters, commit}, {id, position}) {
       commit('setSearch', '');
       commit('setCellId', id);
-      let allOptions = getters.filterOptions;
+      // установка выбранных значений
+      let allOptions = getters.filterOptions.map(o => o.key);
+      // по умолчанию все стоят
       let checkedOptions = clone(allOptions);
       if (getters.isFilterActive(id)) {
-        let maybeOptions = state.appliedFilters[id];
-        checkedOptions = maybeOptions.filter(v => allOptions.indexOf(v) !== -1);
+        // отсекаем те значения, которые уже выбраны ранее
+        let appliedOptions = state.appliedFilters[id];
+        // для сравнения сериализуем данные, чтобы процесс шел быстрее
+        allOptions = allOptions.map(key => JSON.stringify(key));
+        // сравниваем значения из памяти c возможными
+        let filteredOptions = appliedOptions.filter(v => allOptions.indexOf(JSON.stringify(v)) !== -1);
+        checkedOptions = filteredOptions.length ? filteredOptions : checkedOptions;
       }
       commit('setCheckedOptions', checkedOptions);
       commit('openPopup');
@@ -128,9 +165,14 @@ export default {
 
       await dispatch('table/setSort', {sortBy, sortDirection}, {root: true});
     },
-    async applySort({state, commit, dispatch, getters}, sortDirection) {
+    async applySort({state, commit, dispatch, getters, rootState}, sortDirection) {
       commit('closePopup');
-      await dispatch('table/setSort', {sortBy: state.cellId, sortDirection}, {root: true});
+      let sortBy = state.cellId;
+      if (getters.sortBy === sortBy && getters.sortDirection === sortDirection) {
+        sortBy        = Object.keys(rootState.table.defaultQuery.sort)[0];
+        sortDirection = Object.values(rootState.table.defaultQuery.sort)[0];
+      }
+      await dispatch('table/setSort', {sortBy, sortDirection}, {root: true});
     }
   }
 };
