@@ -11,7 +11,7 @@ import store from "~store";
 import {mapState, mapActions} from 'vuex';
 require('tablesaw/dist/tablesaw.jquery');
 
-if (env === 'development') {
+if (IS_DEVELOPMENT) {
   nwin.showDevTools();
 }
 /*nwin.moveTo(1000, 0);

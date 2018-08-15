@@ -1,4 +1,3 @@
-window.env = process.env.NODE_ENV ? process.env.NODE_ENV : 'production';
 import moment from 'moment';
 
 window.isNumeric = function (n) {
