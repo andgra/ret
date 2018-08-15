@@ -104,7 +104,6 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: path.relative(__dirname, './images/[name].[ext]?[hash]').replace('\\', '/'),
-          publicPath: '../',
         }
       },
       {
@@ -112,7 +111,6 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: path.relative(__dirname, './fonts/[name].[ext]?[hash]').replace('\\', '/'),
-          publicPath: '../',
         }
       }
     ],

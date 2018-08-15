@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "public/index.html",
-  "domain": "ret.dev",
+  "domain": "ret.test",
   "window": {
     "width": 8000,
     "height": 6000
