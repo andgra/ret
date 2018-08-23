@@ -24,9 +24,9 @@
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
-    name: "body",
     computed: {
-      ...mapState('table', ['rows', 'options', 'editModal']),
+      ...mapState('table', ['rows', 'options']),
+      ...mapState('table/edit', ['editModal']),
       ...mapGetters('table', ['controls', 'lastOfGrid', 'checked', 'num']),
       datesGrid() {
         return [
@@ -60,7 +60,9 @@
       },
     },
     methods: {
-      ...mapActions('table', ['toggleCheck', 'openEdit', 'openRemove']),
+      ...mapActions('table', ['toggleCheck']),
+      ...mapActions('table/edit', ['openEdit']),
+      ...mapActions('table/remove', ['openRemove']),
     },
   }
 </script>

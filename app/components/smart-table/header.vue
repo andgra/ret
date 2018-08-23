@@ -23,13 +23,12 @@
   import {mapActions, mapGetters, mapState} from 'vuex';
 
   export default {
-    name: "header",
     components: {
       'filter-icon': FilterIcon,
     },
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['editModal']),
+      ...mapState('table/edit', ['editModal']),
       ...mapGetters('table', ['sortBy', 'sortDirection', 'limit', 'controls', 'lastOfGrid', 'grid', 'checkedAll']),
       datesGrid() {
         return [

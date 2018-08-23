@@ -1,6 +1,8 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 import Structure from '~js/modules/structure'
 import filter from '~store/modules/smart-table/filter'
+import edit from '~store/modules/smart-table/edit'
+import remove from '~store/modules/smart-table/remove'
 
 let defaultQuery = {
   sort: {createdAt: 1},
@@ -13,6 +15,8 @@ export default {
   namespaced: true,
   modules: {
     filter,
+    edit,
+    remove,
   },
   state: {
     query: clone(defaultQuery),
@@ -24,11 +28,7 @@ export default {
     loading: 2,
     api: null,
     structure: null,
-    editRow: null,
-    editModal: false,
     options: {},
-    toRemove: [],
-    removeModal: false,
     checks: [],
   },
   getters: {
@@ -128,33 +128,6 @@ export default {
     },
     ['UPDATE_DEFAULT_QUERY'](state, defaultQuery) {
       state.defaultQuery = clone(defaultQuery);
-    },
-    ['ADD_ROW'](state) {
-      state.editRow = clone(state.structure.defaultRow);
-    },
-    ['EDIT_ROW'](state, id) {
-      state.editRow = clone(state.rows.find(row => row._id === id));
-    },
-    ['UPDATE_EDIT_ROW'](state, row) {
-      state.editRow = row;
-    },
-    ['RESET_EDIT_ROW'](state) {
-      state.editRow = null;
-    },
-    ['OPEN_EDIT_MODAL'](state) {
-      state.editModal = true;
-    },
-    ['CLOSE_EDIT_MODAL'](state) {
-      state.editModal = false;
-    },
-    ['SET_REMOVE'](state, arr) {
-      state.toRemove = arr;
-    },
-    ['OPEN_REMOVE_MODAL'](state) {
-      state.removeModal = true;
-    },
-    ['CLOSE_REMOVE_MODAL'](state) {
-      state.removeModal = false;
     },
     ['SET_CHECKS'](state, checks) {
       state.checks = checks;
@@ -289,84 +262,5 @@ export default {
     // async sanitize({state, dispatch}, item) {
     //   return item;
     // },
-    async saveEdit({state, dispatch, commit, getters}) {
-      commit('RELOAD_DATA');
-      commit('CLOSE_EDIT_MODAL');
-      let result;
-
-      // Добавляем или обновляем запись
-      let item = state.editRow;
-      delete item.index;
-      item = state.api.sanitize(item, getters.dots);
-      if (state.options.saveRow) {
-        result = await state.options.saveRow(item);
-      } else {
-        result = await state.api.updateOrCreate({_id: item._id}, item);
-      }
-      let {insert, doc} = result;
-
-      if (insert) {
-        // Переход на последнюю страницу
-        // Учитываем, что кол-во записей на 1 больше
-        let page = getters.maxPageByCount(state.count + 1);
-        commit('SET_PAGE', page);
-      }
-      // Обновляем записи параллельно, т.к. общее число записей уже учтено
-      await Promise.all([
-        dispatch('loadAll'),
-        dispatch('loadRows'), // Здесь же идет и обновление страницы
-      ]);
-      dispatch('notify', 'Сохранено', {root: true});
-
-      commit('RESET_EDIT_ROW');
-      commit('DATA_READY');
-    },
-    async openEdit({state, commit, getters}, id) {
-      let row = getters.getById(id);
-      if (row) {
-        commit('UPDATE_EDIT_ROW', clone(row));
-      } else {
-        commit('ADD_ROW');
-      }
-      commit('OPEN_EDIT_MODAL');
-    },
-    async cancelEdit({commit}) {
-      commit('CLOSE_EDIT_MODAL');
-      commit('RESET_EDIT_ROW');
-    },
-    async removeRows({state, dispatch, commit, getters}) {
-      commit('RELOAD_DATA');
-      commit('CLOSE_REMOVE_MODAL');
-
-      // Получаем функцию удаления - стандартную или кастомную
-      let removeFunc = state.options.removeRow ? state.options.removeRow : state.api.delete.bind(state.api);
-
-      let $or = [];
-      state.toRemove.forEach(_id => $or.push({_id}));
-
-      // Дожидаемся удаления всех строк
-      let numDeleted = await removeFunc({$or}, true);
-
-      // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
-      let page = Math.min(getters.page, getters.maxPageByCount(state.count - numDeleted));
-
-      // Обновляем данные
-      commit('SET_PAGE', page);
-      await Promise.all([
-        dispatch('loadAll'),
-        dispatch('loadRows'), // Здесь же и идет обновление данных на странице
-      ]);
-
-      commit('SET_REMOVE', []);
-      commit('DATA_READY');
-    },
-    async openRemove({state, commit}, toRemove) {
-      commit('SET_REMOVE', toRemove);
-      commit('OPEN_REMOVE_MODAL');
-    },
-    async cancelRemove({commit}) {
-      commit('SET_REMOVE', []);
-      commit('CLOSE_REMOVE_MODAL');
-    },
   }
 };

@@ -10,7 +10,6 @@
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
-    name: "actions",
     props: {
       isClosed: {
         type: Boolean,
@@ -18,11 +17,13 @@
       },
     },
     computed: {
-      ...mapState('table', ['checks', 'editModal']),
+      ...mapState('table', ['checks']),
+      ...mapState('table/edit', ['editModal']),
       ...mapGetters('table', ['controls']),
     },
     methods: {
-      ...mapActions('table', ['openEdit', 'openRemove']),
+      ...mapActions('table/edit', ['openEdit']),
+      ...mapActions('table/remove', ['openRemove']),
     },
   }
 </script>

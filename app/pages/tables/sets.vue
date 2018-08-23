@@ -49,22 +49,22 @@
                                 <mdl-textfield floating-label="наработка с начала эксплуатации (час.)'" v-model="editRow.elabor.elabor.total" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield floating-label="наработка до КР (час.)" v-model="editRow.elabor.elabor.before" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                                 <mdl-textfield floating-label="наработка после КР (час.)" v-model="editRow.elabor.elabor.after" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано ВСЕГО (лет)" :value="getValue({row: editRow, path: 'elabor.dev.total', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано до КР (лет)" :value="getValue({row: editRow, path: 'elabor.dev.before', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="отработано после КР (лет)" :value="getValue({row: editRow, path: 'elabor.dev.after', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано ВСЕГО (лет)" :value="getValue({row: editRow, path: 'elabor.dev.total', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано до КР (лет)" :value="getValue({row: editRow, path: 'elabor.dev.before', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="отработано после КР (лет)" :value="getValue({row: editRow, path: 'elabor.dev.after', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
                         <div class="form-group">
                             <p>Запас ресурса образца РЭТ</p>
                             <div class="form-indent">
-                                <mdl-textfield readonly="" floating-label="до КР (лет)" :value="getValue({row: editRow, path: 'stock.year.kr.num', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="getValue({row: editRow, path: 'stock.year.kr.per', lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (лет)" :value="getValue({row: editRow, path: 'stock.year.cancel.num', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="getValue({row: editRow, path: 'stock.year.cancel.per', lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (час)" :value="getValue({row: editRow, path: 'stock.hour.kr.num', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="getValue({row: editRow, path: 'stock.hour.kr.per', lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (час)" :value="getValue({row: editRow, path: 'stock.hour.cancel.num', lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="getValue({row: editRow, path: 'stock.hour.cancel.per', lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (лет)" :value="getValue({row: editRow, path: 'stock.year.kr.num', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="getValue({row: editRow, path: 'stock.year.kr.per', cols: lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (лет)" :value="getValue({row: editRow, path: 'stock.year.cancel.num', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="getValue({row: editRow, path: 'stock.year.cancel.per', cols: lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (час)" :value="getValue({row: editRow, path: 'stock.hour.kr.num', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до КР (%)" :value="getValue({row: editRow, path: 'stock.hour.kr.per', cols: lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (час)" :value="getValue({row: editRow, path: 'stock.hour.cancel.num', cols: lastOfGrid})" type="number" class="mdl-textfield--full-width"></mdl-textfield>
+                                <mdl-textfield readonly="" floating-label="до списания (%)" :value="getValue({row: editRow, path: 'stock.hour.cancel.per', cols: lastOfGrid})" type="text" class="mdl-textfield--full-width"></mdl-textfield>
                             </div>
                         </div>
                     </form>
@@ -342,12 +342,14 @@
   export default {
     computed: {
       ...mapState('settings', {settings: 'options'}),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options', 'editRow', 'structure', 'editModal']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options', 'structure']),
+      ...mapState('table/edit', ['editRow', 'editModal']),
       ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'lastOfGrid']),
     },
     methods: {
-      ...mapMutations('table', ['UPDATE_EDIT_ROW']),
-      ...mapActions('table', ['loadData', 'saveEdit', 'cancelEdit']),
+      ...mapMutations('table/edit', ['UPDATE_EDIT_ROW']),
+      ...mapActions('table', ['loadData']),
+      ...mapActions('table/edit', ['saveEdit', 'cancelEdit']),
       async dataFetched({data, all}) {
         data.info.place = [...new Set(all.map(o => (JSON.stringify({value: o.place}))))].map(s => JSON.parse(s));
       },

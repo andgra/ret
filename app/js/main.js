@@ -36,4 +36,4 @@ let app = new Vue({
   }
 }).$mount('#app');
 
-window.appa = app;
+window.vm = app;
