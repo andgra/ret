@@ -1,19 +1,15 @@
-let webpack               = require('webpack');
-let path                  = require('path');
+let webpack                = require('webpack');
+let path                   = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-let CopyWebpackPlugin     = require('copy-webpack-plugin');
-let WebpackNotifierPlugin = require('webpack-notifier');
-const { VueLoaderPlugin } = require('vue-loader')
+let CopyWebpackPlugin      = require('copy-webpack-plugin');
+let WebpackNotifierPlugin  = require('webpack-notifier');
+const {VueLoaderPlugin}    = require('vue-loader');
 
 const {
         NODE_ENV = 'development'
       } = process.env;
 
 const IS_DEVELOPMENT = NODE_ENV === 'development';
-
-const extractSass = new MiniCssExtractPlugin({
-  filename: "css/main.css",
-});
 
 const babelLoader = {
   loader: 'babel-loader',
@@ -28,17 +24,24 @@ module.exports = {
   devtool: IS_DEVELOPMENT ? 'eval-cheap-module-source-map' : false,
   mode: NODE_ENV,
   entry: [
-    './app/js/main.js'
+    './app/js/main.js',
+    './app/assets/sass/main.scss',
   ],
   output: {
-    filename: 'js/app.js',
-    path: path.resolve(__dirname, 'public')
+    filename: 'bundle/[name].js',
+    path: path.resolve(__dirname, 'public'),
+    publicPath: '/public/',
   },
   plugins: [
     new CopyWebpackPlugin([
       {from: './app/static', to: './'},
+      {from: './node_modules/material-design-lite/material.min.js', to: './bundle/mdl.js'},
+      {from: './node_modules/tablesaw/dist/tablesaw.jquery.js', to: './bundle/tablesaw.js'},
     ]),
-    extractSass,
+    new MiniCssExtractPlugin({
+      filename: "bundle/[name].css",
+      chunkFilename: "bundle/[id].css"
+    }),
     new VueLoaderPlugin(),
     new WebpackNotifierPlugin({title: 'Webpack', alwaysNotify: true}),
     new webpack.DefinePlugin({
@@ -66,6 +69,14 @@ module.exports = {
     exprContextCritical: false,
     rules: [
       {
+        test: /\.(css|scss)/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader',
+        ]
+      },
+      /*{
         test: /\.scss$/,
         use: [
           IS_DEVELOPMENT ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -78,7 +89,7 @@ module.exports = {
         use: {
           loader: 'css-loader',
         }
-      },
+      },*/
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,

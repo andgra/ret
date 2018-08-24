@@ -1,30 +1,12 @@
 import Vue from 'vue/dist/vue'
 import VueMdl from 'vue-mdl';
-import DateTimePicker from "~components/datetimepicker.vue";
-import 'mdl-selectfield/dist/mdl-selectfield';
-
-import MdlSelect from "~components/select.vue";
-import 'jquery-ui/ui/widgets/autocomplete';
-
-import MdlAutocomplete from "~components/autocomplete.vue";
-import IntervalPicker from "~components/intervalpicker.vue";
 import filters from '~js/modules/filters';
-import SmartTable from '~components/smart-table/main.vue';
-import Loading from '~components/loading.vue';
 
 import moment from 'moment';
 
 Vue.config.debug = true;
 
 Vue.use(VueMdl);
-
-Vue.component('DateTimePicker', DateTimePicker);
-
-Vue.component('mdl-select', MdlSelect);
-
-Vue.component('mdl-autocomplete', MdlAutocomplete);
-
-Vue.component('IntervalPicker', IntervalPicker);
 
 Vue.filter('NaN', filters.NaN);
 Vue.filter('per', filters.per);
@@ -39,34 +21,6 @@ Vue.mixin({
   methods: {
     watchCollection(arr, cb, options) {
       arr.forEach((val) => this.$watch(val, cb, options))
-    }
-  }
-});
-
-Vue.directive('deep-model', {
-  bind(el, binding, vnode) {
-    let onUpdate = e => {
-      new Function('obj', 'v', `obj.${binding.value} = v`)(vnode.context.$data, e.target.value);
-    };
-    el.addEventListener('input', onUpdate);
-    el.addEventListener('change', onUpdate);
-    if (el.type === 'hidden') {
-      el.addEventListener('change', () => alert(1));
-    }
-  },
-  unbind(el) {
-    el.removeEventListener('input');
-    el.removeEventListener('change');
-  },
-  inserted(el, binding, vnode) {
-    el.value = new Function('obj', `return obj.${binding.value}`)(vnode.context.$data);
-  },
-  update(el, binding, vnode) {
-    el.value = new Function('obj', `return obj.${binding.value}`)(vnode.context.$data);
-    if (el.value) {
-      $(el).closest('.mdl-textfield').addClass('is-dirty');
-    } else {
-      $(el).closest('.mdl-textfield').removeClass('is-dirty');
     }
   }
 });
@@ -134,10 +88,6 @@ Vue.mixin({
     }
   }
 });
-
-Vue.component('smart-table', SmartTable);
-
-Vue.component('loading', Loading);
 
 // Регистрируем глобальную пользовательскую директиву `v-focus`
 Vue.directive('focus', {

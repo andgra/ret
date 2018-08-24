@@ -1,6 +1,4 @@
 require('babel-polyfill');
-import '~assets/sass/main.scss';
-import "material-design-lite";
 import '~js/bootstrap/jquery';
 import '~js/bootstrap/helpers';
 import {nwin} from '~js/modules/nw';
@@ -9,7 +7,6 @@ import Vue from '~js/modules/vue';
 import router from '~js/routes';
 import store from "~store";
 import {mapState, mapActions} from 'vuex';
-require('tablesaw/dist/tablesaw.jquery');
 
 if (IS_DEVELOPMENT) {
   nwin.showDevTools();
