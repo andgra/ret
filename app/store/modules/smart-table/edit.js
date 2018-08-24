@@ -45,8 +45,8 @@ export default {
       }
       // Обновляем записи параллельно, т.к. общее число записей уже учтено
       await Promise.all([
-        dispatch('loadAll', null, {root: true}),
-        dispatch('loadRows', null, {root: true}), // Здесь же идет и обновление страницы
+        dispatch('table/loadAll', null, {root: true}),
+        dispatch('table/loadRows', null, {root: true}), // Здесь же идет и обновление страницы
       ]);
       dispatch('notify', 'Сохранено', {root: true});
 

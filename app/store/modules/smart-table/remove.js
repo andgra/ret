@@ -39,8 +39,8 @@ export default {
       // Обновляем данные
       commit('SET_PAGE', page, {root: true});
       await Promise.all([
-        dispatch('loadAll', null, {root: true}),
-        dispatch('loadRows', null, {root: true}), // Здесь же и идет обновление данных на странице
+        dispatch('table/loadAll', null, {root: true}),
+        dispatch('table/loadRows', null, {root: true}), // Здесь же и идет обновление данных на странице
       ]);
 
       commit('SET_REMOVE', []);
