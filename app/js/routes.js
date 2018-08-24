@@ -17,10 +17,10 @@ import Settings from '~pages/settings/main.vue';
 // import DictType from '~pages/dictionaries/type.vue';
 // import DictRepair from '~pages/dictionaries/repair.vue';
 //
-import SetsEdit from '~pages/tables/sets.vue';
+import SetsTable from '~pages/tables/sets.vue';
 // import DefectsEdit from '~pages/tables/defects.vue';
-// import WorksEdit from '~pages/tables/works.vue';
-// import OverrunEdit from '~pages/tables/overrun.vue';
+// import WorksTable from '~pages/tables/works.vue';
+import OverrunTable from '~pages/tables/overrun.vue';
 //
 // import DefectsPrint from '~pages/print/defects.vue';
 // import WorksPrint from '~pages/print/works.vue';
@@ -39,7 +39,8 @@ const routes = [
     path: '', component: LayoutTable,
     children: [
       {path: '/settings', component: Settings},
-      {path: '/sets/edit', component: SetsEdit},
+      {path: '/tables/sets', component: SetsTable},
+      {path: '/tables/overrun', component: OverrunTable},
     ],
   },
   // {path: '/print', component: Print, meta: {layout: 'appLayout'}},
@@ -72,7 +73,7 @@ const router = new VueRouter({
 // if (getRequests()['route']) {
 //   router.replace({path: getRequests()['route'], redirect: '/'});
 // } else {
-router.replace({path: '/sets/edit', redirect: '/'});
+router.replace({path: '/tables/sets', redirect: '/'});
 // }
 
 // 3. Создаём и монтируем корневой экземпляр Vue нашего приложения.

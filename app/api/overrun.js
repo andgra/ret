@@ -1,5 +1,6 @@
 import api from '~api';
-import {overrunTable} from '~js/db';
+import db from '~js/db';
+let {overrunTable} = db;
 
 class overrun extends api {
   constructor() {

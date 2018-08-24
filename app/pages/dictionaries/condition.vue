@@ -18,8 +18,8 @@
 </template>
 
 <script>
-    import EditedTable from '../common/EditedTable.vue';
-    import dictionary from 'models/dictionary';
+    // import EditedTable from '../common/EditedTable.vue';
+    import dictionary from '~api/dictionary';
 
     let struct =
         [

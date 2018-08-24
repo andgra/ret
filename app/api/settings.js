@@ -1,5 +1,6 @@
 import api from '~api';
-import {settingsTable} from '~js/db';
+import db from '~js/db';
+let {settingsTable} = db;
 
 class settings extends api {
   constructor() {

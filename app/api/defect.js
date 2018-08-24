@@ -1,5 +1,6 @@
 import api from '~api';
-import {defectTable} from '~js/db';
+import db from '~js/db';
+let {defectTable} = db;
 
 class defect extends api {
   constructor() {

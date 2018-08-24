@@ -1,5 +1,6 @@
 import api from '~api';
-import {setTable} from '~js/db';
+import db from '~js/db';
+let {setTable} = db;
 
 class set extends api {
   constructor() {

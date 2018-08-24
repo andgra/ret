@@ -21,7 +21,7 @@ const babelLoader = {
 
 module.exports = {
   // context: path.join(__dirname, 'app'),
-  devtool: IS_DEVELOPMENT ? 'eval-cheap-module-source-map' : false,
+  devtool: IS_DEVELOPMENT ? 'eval-cheap-module-source-map' : '',
   mode: NODE_ENV,
   entry: [
     './app/js/main.js',

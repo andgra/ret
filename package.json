@@ -78,7 +78,7 @@
       "icon.*"
     ],
     "win": {
-      "icon": "icon.ico"
+      "icon": "public/images/icon.ico"
     },
     "nwVersion": "0.14.7"
   }

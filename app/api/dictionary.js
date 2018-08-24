@@ -1,5 +1,6 @@
 import api from '~api';
-import {dictionaryTable} from '~js/db';
+import db from '~js/db';
+let {dictionaryTable} = db;
 
 class dictionary extends api {
   constructor() {

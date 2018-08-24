@@ -1,5 +1,6 @@
 import api from '~api';
-import {workTable} from '~js/db';
+import db from '~js/db';
+let {workTable} = db;
 
 class work extends api{
     constructor() {
