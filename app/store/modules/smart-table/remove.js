@@ -6,6 +6,10 @@ export default {
     toRemove: [],
     removeModal: false,
   },
+  getters: {
+    tablePage: (state, getters, rootState, rootGetters) => rootGetters['table/page'],
+    maxTablePageByCount: (state, getters, rootState, rootGetters) => rootGetters['table/maxPageByCount'],
+  },
   mutations: {
     ['SET_REMOVE'](state, arr) {
       state.toRemove = arr;
@@ -18,7 +22,7 @@ export default {
     },
   },
   actions: {
-    async removeRows({state, dispatch, commit, rootGetters, rootState}) {
+    async removeRows({state, dispatch, commit, rootState, getters}) {
       commit('RELOAD_DATA', null, {root: true});
       commit('CLOSE_REMOVE_MODAL');
 
@@ -34,7 +38,7 @@ export default {
       let numDeleted = await removeFunc({$or}, true);
 
       // Если текущая страница не пропадает после удаления строк, то оставляем её, иначе - последняя страница
-      let page = Math.min(rootGetters['table/page'], rootGetters['table/maxPageByCount'](rootState.table.count - numDeleted));
+      let page = Math.min(getters.tablePage, getters.maxTablePageByCount(rootState.table.count - numDeleted));
 
       // Обновляем данные
       commit('SET_PAGE', page, {root: true});
