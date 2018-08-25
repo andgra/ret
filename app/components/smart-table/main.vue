@@ -3,7 +3,10 @@
     <loading v-show="loading > 0" :background="true"></loading>
     <div class="table-header">
       <slot name="header"></slot>
-      <actions :isClosed="isClosed" class="bordered-top"></actions>
+      <div class="bordered-top" :style="{position: 'relative'}">
+        <actions :isClosed="isClosed" class="pull-left"></actions>
+        <cols-toggler class="pull-right"></cols-toggler>
+      </div>
     </div>
     <div class="table-content">
       <div class="table-responsive after-actions">
@@ -35,6 +38,7 @@
 </template>
 <script>
   import Filter from '~components/smart-table/filter';
+  import ColsToggler from '~components/smart-table/cols-toggler';
   import Header from '~components/smart-table/header';
   import EditForm from '~components/smart-table/edit-form';
   import Body from '~components/smart-table/body';
@@ -49,6 +53,7 @@
       'pagination': Pagination,
       'actions': Actions,
       'filter-popup': Filter,
+      'cols-toggler': ColsToggler,
       'edit-form': EditForm,
     },
     data: function () {

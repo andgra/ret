@@ -68,6 +68,8 @@
   import SmartTable from '~components/smart-table/main.vue';
   import EditFormWrapper from '~components/smart-table/edit-form/wrapper';
   import EditFormFields from '~components/smart-table/edit-form/fields';
+  import ColsTogglerWrapper from '~components/smart-table/cols-toggler/wrapper';
+  import ColsTogglerItem from '~components/smart-table/cols-toggler/item';
   import Loading from '~components/loading.vue';
   import DateTimePicker from "~components/datetimepicker.vue";
   import MdlSelect from "~components/select.vue";
@@ -78,6 +80,8 @@
   Vue.component('smart-table', SmartTable);
   Vue.component('edit-form-wrapper', EditFormWrapper);
   Vue.component('edit-form-fields', EditFormFields);
+  Vue.component('cols-toggler-wrapper', ColsTogglerWrapper);
+  Vue.component('cols-toggler-item', ColsTogglerItem);
   Vue.component('loading', Loading);
 
   Vue.component('DateTimePicker', DateTimePicker);
