@@ -20,7 +20,6 @@ let output = {};
 for (let t of tables) {
   Object.defineProperty(output, t.name, {
     get: function () {
-      console.log(t.name);
       if (t.cached === undefined) {
         t.cached = loadTable(t.file);
       }
