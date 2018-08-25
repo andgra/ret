@@ -69,13 +69,12 @@
       "dependencies"
     ],
     "excludes": [
-      "src/**/*",
+      "app/**/*",
       "database/**/*",
       "node_modules/**/*",
       "package-lock.json",
       "webpack.*",
-      "gulpfile.js",
-      "icon.*"
+      "gulpfile.js"
     ],
     "win": {
       "icon": "public/images/icon.ico"

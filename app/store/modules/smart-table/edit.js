@@ -7,7 +7,7 @@ export default {
     editModal: false,
   },
   getters: {
-    tableDots: (state, getters, rootState, rootGetters) => rootGetters['table/page'],
+    tableDots: (state, getters, rootState, rootGetters) => rootGetters['table/dots'],
     getRowById: (state, getters, rootState, rootGetters) => rootGetters['table/getById'],
     maxTablePageByCount: (state, getters, rootState, rootGetters) => rootGetters['table/maxPageByCount'],
   },

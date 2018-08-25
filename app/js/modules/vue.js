@@ -32,6 +32,7 @@ window.getColspan = Vue.getColspan = arr => {
   }
   return res;
 };
+console.log(Vue);
 
 window.getInterval = Vue.getInterval = function (d1, d2) {
   d1 = moment(d1);
@@ -55,10 +56,14 @@ window.getIntervalString = Vue.getIntervalString = function (mins) {
   }
   return result;
 };
-Vue.getInObj = getInObj;
+// Vue.getInObj = getInObj;
 Vue.recValue = recValue;
 Vue.mixin({
   methods: {
+    formattedTitle(title) {
+      return title.replace(/\<br\>/, ' ').replace('\s+', ' ');
+    },
+    getInObj: getInObj,
     getItems(path) {
       let items = getInObj(this.info, path);
       if (items) {

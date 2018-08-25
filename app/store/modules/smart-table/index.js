@@ -41,6 +41,7 @@ export default {
     },
     lastOfGrid: (state, getters) => getters.grid.last(),
     grid: state => state.structure.grid,
+    struct: state => state.structure.struct,
     maxPage(state) {
       return state.query.limit ? Math.ceil(state.count / state.query.limit) || 1 : 1;
     },

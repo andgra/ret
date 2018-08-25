@@ -66,6 +66,8 @@
   import {nwin} from '~js/modules/nw'
   import Vue from '~js/modules/vue';
   import SmartTable from '~components/smart-table/main.vue';
+  import EditFormWrapper from '~components/smart-table/edit-form/wrapper';
+  import EditFormFields from '~components/smart-table/edit-form/fields';
   import Loading from '~components/loading.vue';
   import DateTimePicker from "~components/datetimepicker.vue";
   import MdlSelect from "~components/select.vue";
@@ -74,6 +76,8 @@
   import 'mdl-selectfield/dist/mdl-selectfield';
 
   Vue.component('smart-table', SmartTable);
+  Vue.component('edit-form-wrapper', EditFormWrapper);
+  Vue.component('edit-form-fields', EditFormFields);
   Vue.component('loading', Loading);
 
   Vue.component('DateTimePicker', DateTimePicker);
