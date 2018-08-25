@@ -16,6 +16,7 @@ export default class Structure {
 
   start() {
     this.setRowSeed();
+    this.setFullIds();
     this.setUnited();
     this.setGrid();
     this.setDicts();
@@ -39,6 +40,21 @@ export default class Structure {
 
     this.defaultRow     = getSeed({children: this.struct});
     this.defaultRow._id = "";
+  }
+
+  setFullIds() {
+    let dotNodes = (nodes, parent = '') => {
+      parent = parent ? parent + '.' : '';
+      for (let node of nodes) {
+        node.fullId = parent + node.id;
+        if (node.children && node.children.length) {
+          node.children = dotNodes(node.children, node.fullId);
+        }
+      }
+      return nodes;
+    };
+
+    this.struct = dotNodes(this.struct);
   }
 
   setDicts() {
@@ -231,6 +247,7 @@ export default class Structure {
       curArr  = clone(nextArr);
       nextArr = [];
     }
+
     this.grid = resArr;
   }
 
@@ -246,6 +263,7 @@ export default class Structure {
       }
       return res
     };
-    this.dots   = dotsRec(this.struct);
+
+    this.dots = dotsRec(this.struct);
   }
 }

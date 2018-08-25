@@ -1,10 +1,12 @@
 <template>
-
-  <div class="form-group">
-    <p v-html="formattedTitle(node.title)"></p>
-    <div class="form-indent">
-      <edit-form-fields :nodes="node.children" :parent="nodeId(node)"></edit-form-fields>
+  <div>
+    <div class="form-group" v-if="node.title">
+      <p v-html="formattedTitle(node.title)"></p>
+      <div class="form-indent">
+        <edit-form-fields :nodes="node.children"></edit-form-fields>
+      </div>
     </div>
+    <edit-form-fields :nodes="node.children" v-else></edit-form-fields>
   </div>
 </template>
 
@@ -17,14 +19,8 @@
         type: Object,
         required: true,
       },
-      parent: {
-        type: String,
-        default: '',
-      },
     },
     methods: {
-      nodeHasChildren(node) { return node.children && node.children.length },
-      nodeId(node) { return (this.parent ? this.parent + '.' : '') + node.id },
     },
   }
 </script>
