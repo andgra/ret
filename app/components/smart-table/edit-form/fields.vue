@@ -57,9 +57,6 @@
         required: true,
       },
     },
-    data() {
-      return {}
-    },
     computed: {
       ...mapState('table', ['info']),
       ...mapState('table/edit', ['editRow', 'editModal']),

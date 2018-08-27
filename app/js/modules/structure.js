@@ -54,7 +54,7 @@ export default class Structure {
       return nodes;
     };
 
-    this.struct = dotNodes(this.struct);
+    this.struct = dotNodes(clone(this.struct));
   }
 
   setDicts() {
@@ -264,6 +264,6 @@ export default class Structure {
       return res
     };
 
-    this.dots = dotsRec(this.struct);
+    this.dots = dotsRec(clone(this.struct));
   }
 }

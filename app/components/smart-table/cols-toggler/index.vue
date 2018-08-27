@@ -4,7 +4,6 @@
       <i class="fa fa-lg" aria-hidden="true" :class="iconClass"></i>
     </span>
     <div class="cols-toggler-popup" v-if="popupIsActive">
-      adfasdfasdf<br>fdsfdsf<p>asfsdf</p>
       <cols-toggler-wrapper :items="struct"></cols-toggler-wrapper>
     </div>
   </div>
@@ -89,6 +88,9 @@
       border-radius: .2em;
       border-top-right-radius: 0;
       z-index: 10001;
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
   }
 </style>

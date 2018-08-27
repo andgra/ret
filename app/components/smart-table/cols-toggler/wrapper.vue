@@ -1,5 +1,9 @@
 <template>
-  
+  <div>
+    <div v-for="item in visibleItems">
+      <cols-toggler-item :item="item"></cols-toggler-item>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -7,12 +11,13 @@
     name: "cols-toggler-wrapper",
     props: {
       items: {
-
+        type: Array,
+        required: true,
       },
     },
-    data() {
-      return {}
-    }
+    computed: {
+      visibleItems() { return this.items.filter(i => (!i.hidden || i.edit)) },
+    },
   }
 </script>
 

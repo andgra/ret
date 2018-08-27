@@ -32,7 +32,6 @@ window.getColspan = Vue.getColspan = arr => {
   }
   return res;
 };
-console.log(Vue);
 
 window.getInterval = Vue.getInterval = function (d1, d2) {
   d1 = moment(d1);
