@@ -11,9 +11,8 @@ const store = {
     }
   },
   actions: {
-    async fetchSettings(context) {
-      context.commit('gotSettings', await settings.all());
-      console.log(context)
+    async fetchSettings({commit}) {
+      commit('gotSettings', await settings.all());
     }
   },
 };

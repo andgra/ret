@@ -1,8 +1,8 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 import Structure from '~js/modules/structure'
-import filter from '~store/modules/smart-table/filter'
-import edit from '~store/modules/smart-table/edit'
-import remove from '~store/modules/smart-table/remove'
+import filter from '~store/modules/table/filter'
+import edit from '~store/modules/table/edit'
+import remove from '~store/modules/table/remove'
 
 let defaultQuery = {
   sort: {createdAt: 1},

@@ -1,6 +1,6 @@
 import Vue from '~js/modules/vue'
 import Vuex from 'vuex'
-import table from '~store/modules/smart-table'
+import table from '~store/modules/table'
 import settings from '~store/modules/settings'
 
 Vue.use(Vuex);
