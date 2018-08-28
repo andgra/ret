@@ -27,7 +27,7 @@ export default {
     info: {},
     loading: 2,
     api: null,
-    structure: null,
+    structure: new Structure([], false),
     options: {},
     checks: [],
   },

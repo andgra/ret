@@ -27,8 +27,10 @@ Vue.mixin({
 
 window.getColspan = Vue.getColspan = arr => {
   let res = 0;
-  for (let cell of arr) {
-    res += cell.colspan;
+  if (arr !== undefined) {
+    for (let cell of arr) {
+      res += cell.colspan;
+    }
   }
   return res;
 };

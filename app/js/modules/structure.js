@@ -2,8 +2,8 @@ export default class Structure {
   constructor(struct, start = true) {
     this.struct     = struct;
     this.defaultRow = {};
-    this.united     = {};
-    this.grid       = {};
+    this.united     = [];
+    this.grid       = [];
     this.originGrid = {};
     this.dicts      = {};
     this.dots       = {};
