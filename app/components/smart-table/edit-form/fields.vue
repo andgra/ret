@@ -61,7 +61,7 @@
       ...mapState('table', ['info']),
       ...mapState('table/edit', ['editRow', 'editModal']),
       ...mapGetters('table', ['lastOfGrid']),
-      visibleNodes() { return this.nodes.filter(n => (!n.hidden || n.edit)) }
+      visibleNodes() { return this.nodes.filter(n => (n.edit)) }
     },
     methods: {
       nodeHasChildren(node) { return node.children && node.children.length },

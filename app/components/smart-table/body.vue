@@ -56,7 +56,7 @@
         return cols;
       },
       visibleCols() {
-        return this.cols.filter(cell => (cell.id && cell.colspan && !cell.hidden));
+        return this.lastOfGrid.filter(cell => (cell.id && cell.colspan && !cell.hidden));
       },
     },
     methods: {

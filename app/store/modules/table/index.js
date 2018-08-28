@@ -3,6 +3,7 @@ import Structure from '~js/modules/structure'
 import filter from '~store/modules/table/filter'
 import edit from '~store/modules/table/edit'
 import remove from '~store/modules/table/remove'
+// import structure from '~store/modules/table/structure'
 
 let defaultQuery = {
   sort: {createdAt: 1},
@@ -17,6 +18,7 @@ export default {
     filter,
     edit,
     remove,
+    // structure,
   },
   state: {
     query: clone(defaultQuery),
@@ -172,7 +174,7 @@ export default {
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state, dispatch}, {options, api, query, infoLoader, dataFetched, struct, repairGrid}) {
+    async loadData({commit, state, dispatch, getters}, {options, api, query, infoLoader, dataFetched, struct, repairGrid}) {
       if (api) {
         commit('SET_API', api);
       }
@@ -191,6 +193,28 @@ export default {
         count: state.api.count(state.query.where),
         info: infoPromise,
       });
+
+      if (getters.controls.dates) {
+        let datesGrid = [
+          {
+            id: 'createdAt',
+            title: 'Создан',
+            type: 'datetime',
+            sortType: 'date',
+            style: {whiteSpace: 'nowrap'},
+            edit: false,
+          },
+          {
+            id: 'updatedAt',
+            title: 'Изменен',
+            type: 'datetime',
+            sortType: 'date',
+            style: {whiteSpace: 'nowrap'},
+            edit: false,
+          },
+        ];
+        struct        = [...struct, ...datesGrid];
+      }
 
       let structure = new Structure(struct);
 
@@ -211,10 +235,13 @@ export default {
     async repairGrid({state, dispatch, commit, getters}) {
       let grid = state.structure.grid;
       for (let i in grid) {
+        let beforeColspan = 0;
+        for (let cell of grid[i]) {
+          cell.orig = cell.colspan;
+          cell.beforeColspan = beforeColspan;
+          beforeColspan += cell.orig;
+        }
         if (+i + 1 < grid.length) {
-          for (let cell of grid[i]) {
-            cell.orig = cell.colspan;
-          }
           if (grid[i][0].title === "") {
             grid[i][0].colspan += getters.heading;
           } else {
@@ -226,10 +253,13 @@ export default {
           } else {
             grid[i].push({title: "", colspan: getters.trailing})
           }
-        } else {
-          for (let j in grid[i]) {
-            grid[i][j].num = +JSON.parse(JSON.stringify(j));
-          }
+          // } else {
+          //   for (let j in grid[i]) {
+          //     grid[i][j].num = +JSON.parse(JSON.stringify(j));
+          //   }
+        }
+        for (let cell of grid[i]) {
+          cell.fullColspan = cell.colspan;
         }
       }
       commit('SET_STRUCTURE', {...state.structure, grid});
@@ -260,8 +290,48 @@ export default {
       }
       await dispatch('reloadRows', {...state.query, ...{where}});
     },
-    // async sanitize({state, dispatch}, item) {
-    //   return item;
-    // },
+    async toggleCol({state, dispatch, commit, rootState, getters}, {id, checked}) {
+      let change = checked ? 1 : -1;
+      let grid   = clone(state.structure.grid);
+
+      let {rowNum, cell} = findInGrid(grid, id);
+      let foundCell = cell;
+
+      if (foundCell) {
+        // ширина ячеек до нужной
+        let before = foundCell.beforeColspan;
+        // ширина ячеек до и вместе с нужной
+        let after  = before + foundCell.fullColspan;
+
+        foundCell.colspan = checked ? foundCell.fullColspan : 0;
+
+        // родители -> строка раньше найденной
+        for (let j = 0; j < rowNum; j++) {
+          let row = grid[j];
+          // идем с конца и ищем первую ячейку с отступом слева как у найденной или меньше
+          for (let i = row.length - 1; i >= 0; i--) {
+            let cell = row[i];
+            if (cell.beforeColspan <= before) {
+              // найден нужный родитель
+              cell.colspan += foundCell.fullColspan * change;
+              break;
+            }
+          }
+        }
+        // потомки -> строка позже найденной
+        for (let j = rowNum + 1; j < grid.length; j++) {
+          let row = grid[j];
+          // идем с начала и при нахождении всех отступов в границах найденной помечаем как нужные
+          for (let i = row.length - 1; i >= 0; i--) {
+            let cell = row[i];
+            if (cell.beforeColspan >= before && cell.beforeColspan < after) {
+              // найден нужный потомок
+              cell.colspan = checked ? cell.fullColspan : 0;
+            }
+          }
+        }
+      }
+      commit('SET_STRUCTURE', {...state.structure, grid});
+    }
   }
 };

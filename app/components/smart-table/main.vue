@@ -127,7 +127,7 @@
       }
     },
     mounted: function () {
-      Tablesaw.init();
+      // Tablesaw.init();
       let $tCont = $('.table-container');
 
       let editModalInst = this.$slots.editModal ? this.$slots.editModal[0].componentInstance : this.$refs.editModal.$children[0];
@@ -137,28 +137,28 @@
       this.$watch('removeModal', newVal => newVal ? removeModalInst.open() : removeModalInst.close());
 //            $tCont.find('.mdl-textfield').addClass('is-dirty');
 
-      $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
-        let th         = $(e.target).data("tablesaw-header");
-        let id         = $(th).data('sort');
-        let change     = e.target.checked ? 1 : -1;
-        let grid       = this.grid;
-        let targetCell = this.lastOfGrid.find(item => (item.id === id));
-        console.log(th, id, change, targetCell, clone(this.lastOfGrid));
-        targetCell.colspan += change;
-        for (let i in grid) {
-          if (Number(i) + 1 < grid.length) {
-            let cnt = 0;
-            for (let cell of grid[i]) {
-              cnt += cell.orig;
-              if (targetCell.num < cnt) {
-                cell.colspan += change;
-                break;
-              }
-            }
-          }
-        }
-        this.SET_STRUCTURE({...this.structure, grid});
-      });
+      // $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
+      //   let th         = $(e.target).data("tablesaw-header");
+      //   let id         = $(th).data('sort');
+      //   let change     = e.target.checked ? 1 : -1;
+      //   let grid       = this.grid;
+      //   let targetCell = this.lastOfGrid.find(item => (item.id === id));
+      //   console.log(th, id, change, targetCell, clone(this.lastOfGrid));
+      //   targetCell.colspan += change;
+      //   for (let i in grid) {
+      //     if (Number(i) + 1 < grid.length) {
+      //       let cnt = 0;
+      //       for (let cell of grid[i]) {
+      //         cnt += cell.orig;
+      //         if (targetCell.num < cnt) {
+      //           cell.colspan += change;
+      //           break;
+      //         }
+      //       }
+      //     }
+      //   }
+      //   this.SET_STRUCTURE({...this.structure, grid});
+      // });
 
       // $tCont.on('click', '.sortable', e => {
       //   let $th = $(e.target);

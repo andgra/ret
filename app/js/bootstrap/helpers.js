@@ -164,3 +164,19 @@ window.delay = function (t) {
     setTimeout(resolve, t);
   });
 };
+
+window.findInGrid = function(grid, id) {
+  let rowNum; // номер найденной строки
+  let foundCell; // найденная ячейка
+  for (let j = 0; j < grid.length; j++) {
+    let row = grid[j];
+    for (let i = 0; i < row.length; i++) {
+      let cell = row[i];
+      if (cell.fullId === id) {
+        rowNum = j;
+        foundCell = cell;
+      }
+    }
+  }
+  return {rowNum, cell: foundCell};
+};

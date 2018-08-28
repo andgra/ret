@@ -16,7 +16,7 @@
       },
     },
     computed: {
-      visibleItems() { return this.items.filter(i => (!i.hidden || i.edit)) },
+      visibleItems() { return this.items.filter(i => (!i.hidden)) },
     },
   }
 </script>
