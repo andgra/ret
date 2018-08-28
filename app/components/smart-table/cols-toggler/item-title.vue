@@ -22,16 +22,16 @@
       ...mapGetters('table', ['grid']),
       checkedCol: {
         get () {
-          return this.cellInGrid.colspan === this.cellInGrid.fullColspan;
+          return this.cell.colspan === this.cell.fullColspan;
         },
         set (value) {
           this.toggleCol({id: this.item.fullId, checked: value})
         }
       },
       checkedIndeterminate() {
-        return this.cellInGrid.colspan > 0 && this.cellInGrid.colspan < this.cellInGrid.fullColspan;
+        return this.cell.colspan > 0 && this.cell.colspan < this.cell.fullColspan;
       },
-      cellInGrid() {
+      cell() {
         let {cell} = findInGrid(this.grid, this.item.fullId);
         return cell;
       },
