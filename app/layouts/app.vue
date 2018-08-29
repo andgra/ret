@@ -47,10 +47,10 @@
             Таблицы
           </button>
           <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="tables-menu">
-            <router-link tag="li" to="/sets/edit" class="mdl-menu__item">Таблица сводных данных</router-link>
-            <router-link tag="li" to="/defects/edit" class="mdl-menu__item">Справка по состоянию РЭТ</router-link>
-            <router-link tag="li" to="/works/edit" class="mdl-menu__item">Таблица контроля работ представителей промышленности</router-link>
-            <router-link tag="li" to="/overrun/edit" class="mdl-menu__item">Перерасход РЭТ</router-link>
+            <router-link tag="li" to="/tables/sets" class="mdl-menu__item">Таблица сводных данных</router-link>
+            <router-link tag="li" to="/tables/defects" class="mdl-menu__item">Справка по состоянию РЭТ</router-link>
+            <router-link tag="li" to="/tables/works" class="mdl-menu__item">Таблица контроля работ представителей промышленности</router-link>
+            <router-link tag="li" to="/tables/overrun" class="mdl-menu__item">Перерасход РЭТ</router-link>
           </ul>
         </nav>
       </div>
@@ -63,7 +63,6 @@
   </div>
 </template>
 <script>
-  import {nwin} from '~js/modules/nw'
   import Vue from '~js/modules/vue';
   import SmartTable from '~components/smart-table/main.vue';
   import EditFormWrapper from '~components/smart-table/edit-form/wrapper';
@@ -94,6 +93,9 @@
     created() {
       this.$store.commit('SET_SNACKBAR_EMITTER', this.$root);
       $('#app-loading').children().removeClass('is-active');
-    }
+    },
+    mounted() {
+      componentHandler.upgradeElements(document.getElementsByClassName('mdl-js-menu'));
+    },
   }
 </script>

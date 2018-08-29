@@ -73,7 +73,8 @@ const router = new VueRouter({
 // if (getRequests()['route']) {
 //   router.replace({path: getRequests()['route'], redirect: '/'});
 // } else {
-router.replace({path: '/tables/sets', redirect: '/'});
+// router.replace({path: '/tables/sets', redirect: '/'});
+router.replace({path: '/settings', redirect: '/'});
 // }
 
 // 3. Создаём и монтируем корневой экземпляр Vue нашего приложения.
