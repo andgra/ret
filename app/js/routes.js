@@ -10,6 +10,7 @@ Vue.config.productionTip = false;
 
 import LayoutTable from '~layouts/app.vue';
 import Settings from '~pages/settings/main.vue';
+import Seeds from '~pages/dev/seeds.vue';
 // import Print from '~pages/settings/print.vue';
 // import DictCondition from '~pages/dictionaries/condition.vue';
 // import DictObj from '~pages/dictionaries/obj.vue';
@@ -37,11 +38,13 @@ import OverrunTable from '~pages/tables/overrun.vue';
 const routes = [
   {
     path: '', component: LayoutTable,
-    children: [
+    children: [...[
       {path: '/settings', component: Settings},
       {path: '/tables/sets', component: SetsTable},
       {path: '/tables/overrun', component: OverrunTable},
-    ],
+    ], ...(IS_DEVELOPMENT ? [
+      {path: '/dev/seeds', component: Seeds},
+    ] : [])],
   },
   // {path: '/print', component: Print, meta: {layout: 'appLayout'}},
   //

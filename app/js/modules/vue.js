@@ -60,6 +60,11 @@ window.getIntervalString = Vue.getIntervalString = function (mins) {
 // Vue.getInObj = getInObj;
 Vue.recValue = recValue;
 Vue.mixin({
+  computed: {
+    isDevelopment() {
+      return IS_DEVELOPMENT;
+    }
+  },
   methods: {
     formattedTitle(title) {
       return title.replace(/\<br\>/, ' ').replace('\s+', ' ');

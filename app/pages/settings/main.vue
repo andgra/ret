@@ -17,13 +17,13 @@
                 <mdl-button primary="" raised="" @click.native="saveSettings()">Сохранить</mdl-button>
             </div>
         </form>
-        <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
     </div>
 </template>
 
 <script>
   import settings from '~api/settings';
   import moment from 'moment';
+  import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
     data() {
@@ -37,11 +37,12 @@
       }
     },
     methods: {
+      ...mapActions(['notify']),
       async saveSettings() {
         await settings.saveAll(this.settings);
-        this.$root.$emit('msgSent', {message: 'Сохранено'});
+        this.notify('Сохранено');
         return false;
-      }
+      },
     },
     async created() {
       this.settings = await settings.all();

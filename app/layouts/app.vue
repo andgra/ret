@@ -12,6 +12,15 @@
           <!-- используйте компонент router-link для создания ссылок -->
           <!-- входной параметр `to` определяет путь для перехода -->
           <!-- `<router-link>` по умолчанию преобразуется в тег `<a>` -->
+          <template v-if="isDevelopment">
+
+            <button id="dev-menu" class="mdl-button mdl-js-button mdl-button--white">
+              Меню разработчика
+            </button>
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="dev-menu">
+              <router-link tag="li" to="/dev/seeds" class="mdl-menu__item">Наполнение базы</router-link>
+            </ul>
+          </template>
           <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/settings">Настройки</router-link>
           <button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
             Печать
