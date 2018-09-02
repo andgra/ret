@@ -84,6 +84,24 @@ export default {
     colspanFooter: function (state, getters) {
       return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;
     },
+    entireColspan: function (state, getters) {
+      let entireColspan = 0;
+      for (let row of getters.grid) {
+        for (let cell of row) {
+          entireColspan += cell.colspan;
+        }
+      }
+      return entireColspan;
+    },
+    entireFullColspan: function (state, getters) {
+      let entireFullColspan = 0;
+      for (let row of getters.grid) {
+        for (let cell of row) {
+          entireFullColspan += cell.fullColspan;
+        }
+      }
+      return entireFullColspan;
+    },
   },
   mutations: {
     ['SET_OPTIONS'](state, options) {
@@ -332,6 +350,15 @@ export default {
         }
       }
       commit('SET_STRUCTURE', {...state.structure, grid});
-    }
+    },
+    async toggleAllCols({state, dispatch, commit, rootState, getters}, checked) {
+      let grid   = clone(state.structure.grid);
+      for (let row of grid) {
+        for (let cell of row) {
+          cell.colspan = checked ? cell.fullColspan : 0;
+        }
+      }
+      commit('SET_STRUCTURE', {...state.structure, grid});
+    },
   }
 };
