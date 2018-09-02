@@ -6,14 +6,18 @@ const store = {
     options: null
   },
   mutations: {
-    gotSettings(state, settings) {
+    setSettings(state, settings) {
       state.options = settings
-    }
+    },
   },
   actions: {
     async fetchSettings({commit}) {
-      commit('gotSettings', await settings.all());
-    }
+      commit('setSettings', await settings.all());
+    },
+    async saveSettings({commit, state}, options) {
+      await settings.saveAll(options);
+      commit('setSettings', {...state.options, ...options});
+    },
   },
 };
 

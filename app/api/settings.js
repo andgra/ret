@@ -28,7 +28,9 @@ class settings extends api {
 
   async saveAll(obj) {
     for (let key in obj) {
-      this.updateOrCreate({key}, {key, value: obj[key]});
+      if (obj.hasOwnProperty(key)) {
+        this.updateOrCreate({key}, {key, value: obj[key]});
+      }
     }
   }
 

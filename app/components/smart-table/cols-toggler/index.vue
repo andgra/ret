@@ -4,7 +4,10 @@
       <i class="fa fa-lg" aria-hidden="true" :class="iconClass"></i>
     </span>
         <div class="cols-toggler-popup" v-if="popupIsActive">
-            <div>
+            <div class="cols-toggler-popup-actions bordered-bottom text-right">
+                <mdl-button colored="" raised @click.native="rememberColspanClick">Запомнить</mdl-button>
+            </div>
+            <div class="cols-toggler-popup-cols">
                 <item-all/>
                 <div class="form-indent">
                     <cols-toggler-wrapper :items="struct"></cols-toggler-wrapper>
@@ -58,7 +61,11 @@
       });
     },
     methods: {
-      // ...mapActions('table/edit', ['saveEdit', 'cancelEdit']),
+      ...mapActions('table', ['rememberColspan']),
+      async rememberColspanClick() {
+        await this.rememberColspan();
+        this.popupIsActive = false;
+      }
     },
   }
 </script>
@@ -98,9 +105,14 @@
             border-radius: .2em;
             border-top-right-radius: 0;
             z-index: 10001;
-            max-height: 500px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            &-actions {
+                padding-bottom: 10px;
+            }
+            &-cols {
+                max-height: 450px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
         }
     }
 </style>

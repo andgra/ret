@@ -3,6 +3,7 @@ import Structure from '~js/modules/structure'
 import filter from '~store/modules/table/filter'
 import edit from '~store/modules/table/edit'
 import remove from '~store/modules/table/remove'
+import path from 'path'
 // import structure from '~store/modules/table/structure'
 
 let defaultQuery = {
@@ -81,10 +82,7 @@ export default {
         checks: getters.controlRemove,
       }
     },
-    colspanFooter: function (state, getters) {
-      return (getters.controlEdit * 2) + (getters.controlRemove * 3) + getColspan(getters.lastOfGrid) + (getters.controlDates * 2) + 1;
-    },
-    entireColspan: function (state, getters) {
+    entireColspan(state, getters) {
       let entireColspan = 0;
       for (let row of getters.grid) {
         for (let cell of row) {
@@ -93,7 +91,7 @@ export default {
       }
       return entireColspan;
     },
-    entireFullColspan: function (state, getters) {
+    entireFullColspan(state, getters) {
       let entireFullColspan = 0;
       for (let row of getters.grid) {
         for (let cell of row) {
@@ -102,6 +100,20 @@ export default {
       }
       return entireFullColspan;
     },
+    apiName(state) {
+      return state.api ? path.basename(state.api.table.filename, '.json') : null;
+    },
+    apiCols(state, getters) {
+      let dots = getters.dots;
+      let apiCols = [];
+      for (let id in dots) {
+        if (dots.hasOwnProperty(id)) {
+          let {fullId, hidden} = dots[id];
+          apiCols.push({fullId, hidden});
+        }
+      }
+      return apiCols;
+    }
   },
   mutations: {
     ['SET_OPTIONS'](state, options) {
@@ -192,10 +204,9 @@ export default {
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state, dispatch, getters}, {options, api, query, infoLoader, dataFetched, struct, repairGrid}) {
-      if (api) {
-        commit('SET_API', api);
-      }
+    async loadData({commit, state, dispatch, getters}, {options, api, query, infoLoader, dataFetched, struct}) {
+      commit('SET_API', api);
+
       if (options) {
         commit('SET_OPTIONS', options);
       }
@@ -231,10 +242,12 @@ export default {
             edit: false,
           },
         ];
-        struct        = [...struct, ...datesGrid];
+
+        struct = [...struct, ...datesGrid];
       }
 
       let structure = new Structure(struct);
+
 
       await dataFetched({all, data, state, commit, structure});
 
@@ -244,18 +257,33 @@ export default {
       commit('SET_COUNT', data.count);
       commit('SET_INFO', data.info);
 
-      if (repairGrid) {
-        await dispatch('repairGrid');
-      }
+      await dispatch('repairGrid');
 
       commit('DATA_READY');
     },
-    async repairGrid({state, dispatch, commit, getters}) {
+    async repairGrid({state, dispatch, commit, getters, rootState}) {
       let grid = state.structure.grid;
+      // достаем из базы сохраненные скрытые столбцы
+      let apiGrid, dbGrid, dbCols;
+      let settings = rootState.settings.options;
+      if ((dbGrid = settings.grid) && dbGrid[getters.apiName]) {
+        // проверяем на валидность
+        if ((dbCols = settings.cols) && dbCols[getters.apiName]
+          && JSON.stringify(dbCols[getters.apiName]) !== JSON.stringify(getters.apiCols)
+        ) {
+          // grid не валиден
+          delete(dbGrid[getters.apiName]);
+          await dispatch('settings/saveSettings', {grid: dbGrid}, {root: true});
+
+        } else {
+          // grid валиден
+          apiGrid = dbGrid[getters.apiName];
+        }
+      }
       for (let i in grid) {
         let beforeColspan = 0;
         for (let cell of grid[i]) {
-          cell.orig = cell.colspan;
+          cell.orig          = cell.colspan;
           cell.beforeColspan = beforeColspan;
           beforeColspan += cell.orig;
         }
@@ -271,15 +299,20 @@ export default {
           } else {
             grid[i].push({title: "", colspan: getters.trailing})
           }
-          // } else {
-          //   for (let j in grid[i]) {
-          //     grid[i][j].num = +JSON.parse(JSON.stringify(j));
-          //   }
         }
         for (let cell of grid[i]) {
           cell.fullColspan = cell.colspan;
         }
+        // применяем запомненные colspan
+        if (apiGrid) {
+          let dbRow = apiGrid[i];
+          for (let j in dbRow) {
+            grid[i][j].colspan = dbRow[j];
+          }
+        }
       }
+
+
       commit('SET_STRUCTURE', {...state.structure, grid});
     },
     async setPage({state, dispatch, commit}, page) {
@@ -313,7 +346,7 @@ export default {
       let grid   = clone(state.structure.grid);
 
       let {rowNum, cell} = findInGrid(grid, id);
-      let foundCell = cell;
+      let foundCell      = cell;
 
       if (foundCell) {
         // ширина ячеек до нужной
@@ -352,13 +385,29 @@ export default {
       commit('SET_STRUCTURE', {...state.structure, grid});
     },
     async toggleAllCols({state, dispatch, commit, rootState, getters}, checked) {
-      let grid   = clone(state.structure.grid);
+      let grid = clone(state.structure.grid);
       for (let row of grid) {
         for (let cell of row) {
           cell.colspan = checked ? cell.fullColspan : 0;
         }
       }
       commit('SET_STRUCTURE', {...state.structure, grid});
+    },
+    async rememberColspan({state, dispatch, commit, rootState, getters}) {
+      // сохраняем grid с colspan (state)
+      let grid = rootState.settings.options.grid ? rootState.settings.options.grid : {};
+
+      grid[getters.apiName] = getters.grid.map(row => row.map(({colspan}) => (colspan)));
+
+      // также сохраняем dots для определения валидности grid'а
+      let cols = rootState.settings.options.cols ? rootState.settings.options.cols : {};
+
+
+
+      cols[getters.apiName] = getters.apiCols;
+
+      await dispatch('settings/saveSettings', {grid, cols}, {root: true});
+      await dispatch('notify', 'Сохранено', {root: true});
     },
   }
 };
