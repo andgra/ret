@@ -35,8 +35,7 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       {from: './app/static', to: './'},
-      {from: './node_modules/material-design-lite/material.min.js', to: './bundle/mdl.js'},
-      {from: './node_modules/tablesaw/dist/tablesaw.jquery.js', to: './bundle/tablesaw.js'},
+      {from: './node_modules/material-design-lite/material.js', to: './bundle/mdl.js'},
     ]),
     new MiniCssExtractPlugin({
       filename: "bundle/[name].css",
