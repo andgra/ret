@@ -60,7 +60,7 @@
     computed: {
       ...mapState('table', ['info']),
       ...mapState('table/edit', ['editRow', 'editModal']),
-      ...mapGetters('table', ['lastOfGrid']),
+      ...mapGetters('table/structure', ['lastOfGrid']),
       visibleNodes() { return this.nodes.filter(n => (n.edit)) }
     },
     methods: {

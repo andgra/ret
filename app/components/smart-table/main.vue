@@ -4,7 +4,7 @@
     <div class="table-header">
       <slot name="header"></slot>
       <div class="bordered-top" :style="{position: 'relative'}">
-        <actions :isClosed="isClosed" class="pull-left"></actions>
+        <actions class="pull-left"></actions>
         <cols-toggler class="pull-right"></cols-toggler>
       </div>
     </div>
@@ -18,7 +18,7 @@
     </div>
     <div class="table-footer">
       <pagination class="bordered-bottom"/>
-      <actions :isClosed="isClosed"/>
+      <actions/>
     </div>
     <mdl-dialog v-if="controls.remove" ref="removeModal" title="Удаление записей">
       <p>Вы действительно хотите удалить {{toRemove.length!==1?'выбранные записи':'выбранную запись'}}?</p>
@@ -63,17 +63,14 @@
     },
     computed: {
       ...mapState('settings', ['settings']),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'structure', 'options']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options']),
       ...mapState('table/filter', ['appliedFilters']),
       ...mapState('table/filter', {filterPopup: 'popup'}),
+      ...mapState('table/structure', {structure: 'instance'}),
       ...mapState('table/edit', ['editRow', 'editModal']),
       ...mapState('table/remove', ['toRemove', 'removeModal']),
-      ...mapGetters('table', ['controls', 'heading', 'trailing', 'lastOfGrid', 'dots', 'num', 'checked', 'grid']),
-
-      isClosed: function () {
-//                return this.getSelCnt(this.sel) !== this.getSelCnt(this.selSeed)
-        return false;
-      },
+      ...mapGetters('table', ['controls', 'heading', 'trailing', 'num', 'checked']),
+      ...mapGetters('table/structure', ['lastOfGrid', 'dots', 'grid']),
     },
     created: function () {
       console.log('smart-table created');
@@ -127,62 +124,22 @@
       }
     },
     mounted: function () {
-      // Tablesaw.init();
-      let $tCont = $('.table-container');
-
       let editModalInst = this.$slots.editModal ? this.$slots.editModal[0].componentInstance : this.$refs.editModal.$children[0];
       this.$watch('editModal', newVal => newVal ? editModalInst.open() : editModalInst.close());
 
       let removeModalInst = this.$refs.removeModal;
       this.$watch('removeModal', newVal => newVal ? removeModalInst.open() : removeModalInst.close());
-//            $tCont.find('.mdl-textfield').addClass('is-dirty');
-
-      // $tCont.on('change', '.tablesaw-columntoggle-popup input[type="checkbox"]', (e, tablesaw) => {
-      //   let th         = $(e.target).data("tablesaw-header");
-      //   let id         = $(th).data('sort');
-      //   let change     = e.target.checked ? 1 : -1;
-      //   let grid       = this.grid;
-      //   let targetCell = this.lastOfGrid.find(item => (item.id === id));
-      //   console.log(th, id, change, targetCell, clone(this.lastOfGrid));
-      //   targetCell.colspan += change;
-      //   for (let i in grid) {
-      //     if (Number(i) + 1 < grid.length) {
-      //       let cnt = 0;
-      //       for (let cell of grid[i]) {
-      //         cnt += cell.orig;
-      //         if (targetCell.num < cnt) {
-      //           cell.colspan += change;
-      //           break;
-      //         }
-      //       }
-      //     }
-      //   }
-      //   this.SET_STRUCTURE({...this.structure, grid});
-      // });
-
-      // $tCont.on('click', '.sortable', e => {
-      //   let $th = $(e.target);
-      //   if (!$th.hasClass('sortable')) {
-      //     return false;
-      //   }
-      //   this.toggleSort($th.data('sort'));
-      // });
 
       if (this.options.mounted) {
         this.options.mounted.call(this);
       }
     },
     methods: {
-      ...mapMutations('table', ['SET_STRUCTURE']),
       ...mapActions('table', ['setPage', 'toggleSort', 'setLimit', 'setWhere']),
       ...mapActions('table/edit', ['saveEdit', 'cancelEdit']),
       ...mapActions('table/remove', ['removeRows', 'cancelRemove']),
       ...mapActions('table/filter', ['openFilter', 'closeFilter']),
       ...mapActions(['notify']),
-      removeClosed: function () {
-//                this.sel = clone(this.selSeed);
-        return true;
-      },
       getSelCnt: function (arr) {
         arr     = clone(arr);
         let res = 0;

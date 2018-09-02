@@ -19,7 +19,7 @@
       },
     },
     computed: {
-      ...mapGetters('table', ['grid']),
+      ...mapGetters('table/structure', ['grid']),
       checkedCol: {
         get () {
           return this.cell.colspan === this.cell.fullColspan;
@@ -37,7 +37,7 @@
       },
     },
     methods: {
-      ...mapActions('table', ['toggleCol']),
+      ...mapActions('table/structure', ['toggleCol']),
     },
   }
 </script>

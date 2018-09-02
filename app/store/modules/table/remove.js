@@ -23,7 +23,7 @@ export default {
   },
   actions: {
     async removeRows({state, dispatch, commit, rootState, getters}) {
-      commit('RELOAD_DATA', null, {root: true});
+      commit('table/RELOAD_DATA', null, {root: true});
       commit('CLOSE_REMOVE_MODAL');
 
       // Получаем функцию удаления - стандартную или кастомную
@@ -41,14 +41,14 @@ export default {
       let page = Math.min(getters.tablePage, getters.maxTablePageByCount(rootState.table.count - numDeleted));
 
       // Обновляем данные
-      commit('SET_PAGE', page, {root: true});
+      commit('table/SET_PAGE', page, {root: true});
       await Promise.all([
         dispatch('table/loadAll', null, {root: true}),
         dispatch('table/loadRows', null, {root: true}), // Здесь же и идет обновление данных на странице
       ]);
 
       commit('SET_REMOVE', []);
-      commit('DATA_READY', null, {root: true});
+      commit('table/DATA_READY', null, {root: true});
     },
     async openRemove({state, commit}, toRemove) {
       commit('SET_REMOVE', toRemove);

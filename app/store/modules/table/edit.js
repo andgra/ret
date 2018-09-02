@@ -7,7 +7,7 @@ export default {
     editModal: false,
   },
   getters: {
-    tableDots: (state, getters, rootState, rootGetters) => rootGetters['table/dots'],
+    dots: (state, getters, rootState, rootGetters) => rootGetters['table/structure/dots'],
     getRowById: (state, getters, rootState, rootGetters) => rootGetters['table/getById'],
     maxTablePageByCount: (state, getters, rootState, rootGetters) => rootGetters['table/maxPageByCount'],
   },
@@ -27,14 +27,14 @@ export default {
   },
   actions: {
     async saveEdit({state, dispatch, commit, rootState, getters}) {
-      commit('RELOAD_DATA', null, {root: true});
+      commit('table/RELOAD_DATA', null, {root: true});
       commit('CLOSE_EDIT_MODAL');
       let result;
 
       // Добавляем или обновляем запись
       let item = state.editRow;
       delete item.index;
-      item = rootState.table.api.sanitize(item, getters.tableDots);
+      item = rootState.table.api.sanitize(item, getters.dots);
       if (rootState.table.options.saveRow) {
         result = await rootState.table.options.saveRow(item);
       } else {
@@ -46,7 +46,7 @@ export default {
         // Переход на последнюю страницу
         // Учитываем, что кол-во записей на 1 больше
         let page = getters.maxTablePageByCount(rootState.table.count + 1);
-        commit('SET_PAGE', page, {root: true});
+        commit('table/SET_PAGE', page, {root: true});
       }
       // Обновляем записи параллельно, т.к. общее число записей уже учтено
       await Promise.all([
@@ -56,11 +56,11 @@ export default {
       dispatch('notify', 'Сохранено', {root: true});
 
       commit('RESET_EDIT_ROW');
-      commit('DATA_READY', null, {root: true});
+      commit('table/DATA_READY', null, {root: true});
     },
     async openEdit({commit, getters, rootState}, id) {
       let row = getters.getRowById(id);
-      row = row ? row : rootState.table.structure.defaultRow;
+      row = row ? row : rootState.table.structure.instance.defaultRow;
       commit('UPDATE_EDIT_ROW', clone(row));
       commit('OPEN_EDIT_MODAL');
     },

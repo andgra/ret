@@ -27,34 +27,8 @@
     computed: {
       ...mapState('table', ['rows', 'options']),
       ...mapState('table/edit', ['editModal']),
-      ...mapGetters('table', ['controls', 'lastOfGrid', 'checked', 'num']),
-      datesGrid() {
-        return [
-          {
-            id: 'createdAt',
-            title: 'Создан',
-            colspan: 1,
-            type: 'datetime',
-            sortType: 'date',
-            style: {whiteSpace: 'nowrap'},
-          },
-          {
-            id: 'updatedAt',
-            title: 'Изменен',
-            colspan: 1,
-            type: 'datetime',
-            sortType: 'date',
-            style: {whiteSpace: 'nowrap'},
-          },
-        ]
-      },
-      cols() {
-        let cols = this.lastOfGrid;
-        if (this.controls.dates) {
-          cols = [...cols, ...this.datesGrid]
-        }
-        return cols;
-      },
+      ...mapGetters('table', ['controls', 'checked', 'num']),
+      ...mapGetters('table/structure', ['lastOfGrid']),
       visibleCols() {
         return this.lastOfGrid.filter(cell => (cell.id && cell.colspan && !cell.hidden));
       },

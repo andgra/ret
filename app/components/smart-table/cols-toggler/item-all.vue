@@ -13,7 +13,7 @@
   export default {
     name: "cols-toggler-item-all",
     computed: {
-      ...mapGetters('table', ['grid', 'entireColspan', 'entireFullColspan']),
+      ...mapGetters('table/structure', ['grid', 'entireColspan', 'entireFullColspan']),
       checkedAll: {
         get () {
           return this.entireColspan === this.entireFullColspan;
@@ -27,7 +27,7 @@
       },
     },
     methods: {
-      ...mapActions('table', ['toggleAllCols']),
+      ...mapActions('table/structure', ['toggleAllCols']),
     },
   }
 </script>

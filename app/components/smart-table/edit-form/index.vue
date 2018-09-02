@@ -20,7 +20,7 @@
     },
     computed: {
       ...mapState('table/edit', ['editRow', 'editModal']),
-      ...mapGetters('table', ['struct']),
+      ...mapGetters('table/structure', ['struct']),
     },
     methods: {
       ...mapActions('table/edit', ['saveEdit', 'cancelEdit']),

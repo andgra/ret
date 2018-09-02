@@ -31,8 +31,7 @@
       }
     },
     computed: {
-      // ...mapState('table/edit', ['editRow', 'editModal']),
-      ...mapGetters('table', ['struct']),
+      ...mapGetters('table/structure', ['struct']),
       iconClass() {
         return {
           'fa-caret-down': !this.popupIsActive,
@@ -61,7 +60,7 @@
       });
     },
     methods: {
-      ...mapActions('table', ['rememberColspan']),
+      ...mapActions('table/structure', ['rememberColspan']),
       async rememberColspanClick() {
         await this.rememberColspan();
         this.popupIsActive = false;

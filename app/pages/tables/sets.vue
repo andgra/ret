@@ -342,9 +342,10 @@
   export default {
     computed: {
       ...mapState('settings', {settings: 'options'}),
-      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options', 'structure']),
+      ...mapState('table', ['query', 'rows', 'info', 'loading', 'api', 'options']),
       ...mapState('table/edit', ['editRow', 'editModal']),
-      ...mapGetters('table', ['count', 'sortBy', 'sortDirection', 'lastOfGrid']),
+      ...mapGetters('table', ['count', 'sortBy', 'sortDirection']),
+      ...mapGetters('table/structure', ['lastOfGrid']),
     },
     methods: {
       ...mapMutations('table/edit', ['UPDATE_EDIT_ROW']),

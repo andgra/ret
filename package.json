@@ -53,8 +53,6 @@
     "pug": "^2.0.0-rc.4",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.22.1",
-    "tablefilter": "^0.6.11",
-    "tablesaw": "^3.0.6",
     "vue-loader": "^15.3.0",
     "vue-template-compiler": "^2.5.5",
     "webpack": "^4.16.5",
