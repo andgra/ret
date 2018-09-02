@@ -66,6 +66,15 @@ Vue.mixin({
     }
   },
   methods: {
+    updateByDots(obj, path, value) {
+      let pathArr   = path.split('.');
+      let childPath = pathArr.pop();
+      let parent    = getInObj(obj, pathArr.join('.'));
+
+      parent[childPath] = value;
+
+      return obj;
+    },
     formattedTitle(title) {
       return title.replace(/\<br\>/, ' ').replace('\s+', ' ');
     },

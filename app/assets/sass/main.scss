@@ -215,3 +215,7 @@ input:focus {
   top: 0;
   left: 0;
 }
+
+.mdl-spinner:not(.is-upgraded).is-active:after {
+  content: "Загрузка...";
+}

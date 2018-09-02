@@ -13,7 +13,7 @@
 <script>
 
   export default {
-    name: 'form-wrapper',
+    name: 'edit-form-wrapper',
     props: {
       node: {
         type: Object,

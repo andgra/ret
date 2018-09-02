@@ -15,9 +15,6 @@
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
   export default {
-    data() {
-      return {}
-    },
     computed: {
       ...mapState('table/edit', ['editRow', 'editModal']),
       ...mapGetters('table/structure', ['struct']),

@@ -12,23 +12,23 @@ export default {
     maxTablePageByCount: (state, getters, rootState, rootGetters) => rootGetters['table/maxPageByCount'],
   },
   mutations: {
-    ['UPDATE_EDIT_ROW'](state, row) {
+    ['updateEditRow'](state, row) {
       state.editRow = row;
     },
-    ['RESET_EDIT_ROW'](state) {
+    ['resetEditRow'](state) {
       state.editRow = null;
     },
-    ['OPEN_EDIT_MODAL'](state) {
+    ['openEditModal'](state) {
       state.editModal = true;
     },
-    ['CLOSE_EDIT_MODAL'](state) {
+    ['closeEditModal'](state) {
       state.editModal = false;
     },
   },
   actions: {
     async saveEdit({state, dispatch, commit, rootState, getters}) {
       commit('table/RELOAD_DATA', null, {root: true});
-      commit('CLOSE_EDIT_MODAL');
+      commit('closeEditModal');
       let result;
 
       // Добавляем или обновляем запись
@@ -55,18 +55,18 @@ export default {
       ]);
       dispatch('notify', 'Сохранено', {root: true});
 
-      commit('RESET_EDIT_ROW');
+      commit('resetEditRow');
       commit('table/DATA_READY', null, {root: true});
     },
     async openEdit({commit, getters, rootState}, id) {
       let row = getters.getRowById(id);
       row = row ? row : rootState.table.structure.instance.defaultRow;
-      commit('UPDATE_EDIT_ROW', clone(row));
-      commit('OPEN_EDIT_MODAL');
+      commit('updateEditRow', clone(row));
+      commit('openEditModal');
     },
     async cancelEdit({commit}) {
-      commit('CLOSE_EDIT_MODAL');
-      commit('RESET_EDIT_ROW');
+      commit('closeEditModal');
+      commit('resetEditRow');
     },
   }
 };
