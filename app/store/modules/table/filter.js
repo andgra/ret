@@ -35,23 +35,32 @@ export default {
         value = ('' + value === value) ? ('' + value).trim() : value;
         // если пустая строка, то заменяем на служебное слово
         value = value !== '' ? value : '(Пустые)';
-        if (state.search !== '' && ('' + value).toLowerCase().indexOf(state.search.toLowerCase()) === -1) {
-          continue;
-        }
+        // if (state.search !== '' && ('' + value).toLowerCase().indexOf(state.search.toLowerCase()) === -1) {
+        //   continue;
+        // }
         addedKeys.push(key);
         options.push({key, value});
       }
       options.sort((o1, o2) => (o1.value === o2.value ? 0 : o1.value < o2.value ? -1 : 1));
       return options;
     },
+    searchedOptions: (state, getters) => {
+      if (state.search === '') {
+        return getters.filterOptions;
+      }
+      return getters.filterOptions.filter(option => (('' + option.value).toLowerCase().indexOf(state.search.toLowerCase()) !== -1));
+    },
     isFoundSomething(state, getters) {
       return getters.filterOptions.length;
     },
     isAllChecked(state, getters) {
       let maybeOptions = state.checkedOptions;
-      let allOptions = getters.filterOptions.map(o => JSON.stringify(o.key));
+      let allOptions = getters.searchedOptions.map(o => JSON.stringify(o.key));
       let checkedOptions = maybeOptions.filter(v => allOptions.indexOf(JSON.stringify(v)) !== -1);
       return checkedOptions.length === allOptions.length;
+    },
+    isCheckedWholeOptions(state, getters) {
+      return JSON.stringify(getters.searchedOptions) === JSON.stringify(getters.filterOptions);
     },
     isAllIndeterminate(state, getters) {
       return state.checkedOptions.length && !getters.isAllChecked;
@@ -75,7 +84,7 @@ export default {
       if (!state.checkedOptions.length) {
         delete(currentFilters[state.cellId]);
       } else {
-        currentFilters = {...currentFilters, [state.cellId]: state.checkedOptions};
+        currentFilters[state.cellId] = state.checkedOptions;
       }
       state.appliedFilters = currentFilters;
     },
@@ -104,7 +113,7 @@ export default {
   actions: {
     async applyFilter({commit, state, getters, dispatch}) {
       commit('closePopup');
-      if (getters.isAllChecked) {
+      if (getters.isCheckedWholeOptions) {
         // отмечены все, т.е. фильтр снимаем
         commit('setCheckedOptions', []);
       }

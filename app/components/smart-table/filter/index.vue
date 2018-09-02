@@ -26,7 +26,7 @@
                         <li>
                             <label><input type="checkbox" v-model="checkedAll" :indeterminate.prop="isAllIndeterminate"> Выделить все{{search ? ' результаты поиска' : ''}}</label>
                         </li>
-                        <li v-for="option in filterOptions" :key="option.key">
+                        <li v-for="option in searchedOptions" :key="option.key">
                             <label><input type="checkbox" :value="option.key" v-model="checkedOptions"> <span v-html="option.value"></span></label>
                         </li>
                     </ul>
@@ -47,13 +47,14 @@
     name: "filter",
     computed: {
       ...mapState('table/filter', ['position', 'cellId']),
-      ...mapGetters('table/filter', ['filterOptions', 'isAllChecked', 'isAllIndeterminate', 'isFoundSomething', 'isCurrentDirection', 'isFilterActive']),
+      ...mapGetters('table/filter', ['searchedOptions', 'isAllChecked', 'isAllIndeterminate', 'isFoundSomething', 'isCurrentDirection', 'isFilterActive']),
       search: {
         get () {
           return this.$store.state.table.filter.search
         },
         set (value) {
           this.$store.commit('table/filter/setSearch', value)
+          this.checkedAll = true;
         }
       },
       checkedAll: {
@@ -61,8 +62,8 @@
           return this.isAllChecked
         },
         set (value) {
-          if (!this.checkedOptions.length || this.isAllIndeterminate) {
-            this.checkedOptions = this.filterOptions.map(o => o.key);
+          if (value) {
+            this.checkedOptions = this.searchedOptions.map(o => o.key);
           } else {
             this.checkedOptions = [];
           }
