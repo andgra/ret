@@ -4,18 +4,20 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 let CopyWebpackPlugin      = require('copy-webpack-plugin');
 let WebpackNotifierPlugin  = require('webpack-notifier');
 const {VueLoaderPlugin}    = require('vue-loader');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const {
         NODE_ENV = 'development'
       } = process.env;
 
 const IS_DEVELOPMENT = NODE_ENV === 'development';
+const IS_ANALYZE     = process.argv.indexOf('--analyze') !== -1;
 
 const babelLoader = {
   loader: 'babel-loader',
   options: {
     presets: [["es2015", {modules: false}]],
-    plugins: ["syntax-async-functions", "transform-object-rest-spread", "transform-regenerator"]
+    plugins: ["syntax-async-functions", "transform-object-rest-spread", "transform-regenerator", 'lodash']
   }
 };
 
@@ -23,16 +25,24 @@ module.exports = {
   // context: path.join(__dirname, 'app'),
   devtool: IS_DEVELOPMENT ? 'eval-cheap-module-source-map' : '',
   mode: NODE_ENV,
-  entry: [
-    './app/js/main.js',
-    './app/assets/sass/main.scss',
-  ],
+  entry: {
+    main: './app/entry/main.js',
+    print: './app/entry/print.js',
+  },
   output: {
     filename: 'bundle/[name].js',
     path: path.resolve(__dirname, 'public'),
     publicPath: '/public/',
   },
   plugins: [
+    ...(IS_ANALYZE ? [new BundleAnalyzerPlugin()] : []),
+    new webpack.ContextReplacementPlugin(/^\.\/locale$/, context => {
+      if (!/moment/.test(context.context)) { return }
+      Object.assign(context, {
+        // include only RU
+        regExp: /^\.\/ru.*$/,
+      });
+    }),
     new CopyWebpackPlugin([
       {from: './app/static', to: './'},
       {from: './node_modules/material-design-lite/material.js', to: './bundle/mdl.js'},
@@ -52,7 +62,7 @@ module.exports = {
     alias: {
       '/': path.resolve(__dirname, ''),
       '@': path.resolve(__dirname, 'app'),
-      '~assets': path.resolve(__dirname, 'app/assets/'),
+      '~sass': path.resolve(__dirname, 'app/sass/'),
       '~components': path.resolve(__dirname, 'app/components/'),
       '~mixins': path.resolve(__dirname, 'app/mixins/'),
       '~js': path.resolve(__dirname, 'app/js'),
@@ -75,20 +85,6 @@ module.exports = {
           'sass-loader',
         ]
       },
-      /*{
-        test: /\.scss$/,
-        use: [
-          IS_DEVELOPMENT ? 'style-loader' : MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.css$/,
-        use: {
-          loader: 'css-loader',
-        }
-      },*/
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,

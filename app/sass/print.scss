@@ -1,0 +1,27 @@
+.print-table {
+  font-size: 0.8em;
+  width: 100%;
+  border-collapse: collapse;
+  th {
+    padding: 8px;
+  }
+  td {
+    padding: 5px;
+  }
+}
+
+.compressed-table {
+  td, th {
+    line-height: 1.1em;
+    padding: 4px;
+  }
+}
+
+.border-all-cells {
+  td, th {
+    border: 1px solid black;
+  }
+  th {
+    position: static;
+  }
+}

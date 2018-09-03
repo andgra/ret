@@ -1,4 +1,5 @@
 require('babel-polyfill');
+import '~sass/main.scss';
 import '~js/bootstrap/jquery';
 import '~js/bootstrap/helpers';
 import {nwin} from '~js/modules/nw';

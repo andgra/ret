@@ -13,8 +13,6 @@
 @import '~jquery-datetimepicker/jquery.datetimepicker.css';
 @import '~mdl-selectfield/dist/mdl-selectfield.css';
 @import 'edited-table';
-@import 'tablefilter/tablefilter.css';
-@import 'tablefilter/themes/mytheme/mytheme.css';
 
 body {
   background-color: #e9e9e9;
@@ -71,25 +69,6 @@ body {
 
 .margin-bot {
   margin-bottom: 20px;
-}
-
-.print-table {
-  font-size: 0.8em;
-  width: 100%;
-  border-collapse: collapse;
-  th {
-    padding: 8px;
-  }
-  td {
-    padding: 5px;
-  }
-}
-
-.compressed-table {
-  td, th {
-    line-height: 1.1em;
-    padding: 4px;
-  }
 }
 
 .smaller-all {

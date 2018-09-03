@@ -1,6 +1,8 @@
 import Vue from 'vue/dist/vue'
 import VueMdl from 'vue-mdl';
 import filters from '~js/modules/filters';
+// import {openPdf, printContent} from '~js/modules/print';
+import printMixins from '~mixins/print';
 
 import moment from 'moment';
 
@@ -66,6 +68,12 @@ Vue.mixin({
     }
   },
   methods: {
+    // links
+    // openPdf,
+    // printContent,
+    getInObj,
+    // mixins
+    ...printMixins,
     updateByDots(obj, path, value) {
       let pathArr   = path.split('.');
       let childPath = pathArr.pop();
@@ -78,9 +86,8 @@ Vue.mixin({
     formattedTitle(title) {
       return title.replace(/\<br\>/, ' ').replace('\s+', ' ');
     },
-    getInObj: getInObj,
-    getItems(path) {
-      let items = getInObj(this.info, path);
+    getItems(info, path) {
+      let items = getInObj(info, path);
       if (items) {
         return items.map(item => (item.value));
       }

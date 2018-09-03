@@ -26,12 +26,12 @@
             Печать
           </button>
           <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
-            <li class="mdl-menu__item" onclick="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
-            <li class="mdl-menu__item" onclick="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
-            <li class="mdl-menu__item" onclick="openPdf('/results/print')">Итоги эксплуатации</li>
-            <li class="mdl-menu__item" onclick="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
-            <li class="mdl-menu__item" onclick="openPdf('/resources/print')">Ресурс</li>
-            <li class="mdl-menu__item" onclick="openPdf('/overrun/print')">Перерасход</li>
+            <li class="mdl-menu__item" @click="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
+            <li class="mdl-menu__item" @click="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
+            <li class="mdl-menu__item" @click="openPdf('/results/print')">Итоги эксплуатации</li>
+            <li class="mdl-menu__item" @click="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
+            <li class="mdl-menu__item" @click="openPdf('/resources/print')">Ресурс</li>
+            <li class="mdl-menu__item" @click="openPdf('overrun-table')">Перерасход</li>
           </ul>
           <!--<router-link tag="button" class="mdl-button mdl-js-button mdl-button&#45;&#45;white" to="/print">Печать</router-link>-->
           <!--<button id="settings-menu" class="mdl-button mdl-js-button mdl-button--white">
@@ -68,6 +68,8 @@
       <!-- отображение компонента, для которого совпал путь -->
       <router-view></router-view>
     </main>
+    <component v-if="printSlot" :is="printSlot" v-show="false"></component>
+    <!--<span v-html="'<script>alert(1);</script>'"></span>-->
     <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
   </div>
 </template>
@@ -85,6 +87,9 @@
   import IntervalPicker from "~components/intervalpicker.vue";
   import 'mdl-selectfield/dist/mdl-selectfield';
 
+  // таблицы на печать
+  import print from '~js/modules/print';
+
   Vue.component('smart-table', SmartTable);
   Vue.component('edit-form-wrapper', EditFormWrapper);
   Vue.component('edit-form-fields', EditFormFields);
@@ -97,14 +102,27 @@
   Vue.component('mdl-autocomplete', MdlAutocomplete);
   Vue.component('IntervalPicker', IntervalPicker);
 
+
   export default {
     name: 'appLayout', // id of the layout, use "CamelCase" for compound words,
+    data() {
+      return {
+        printSlot: null,
+      };
+    },
     created() {
       this.$store.commit('SET_SNACKBAR_EMITTER', this.$root);
       $('#app-loading').children().removeClass('is-active');
     },
     mounted() {
       componentHandler.upgradeElements(document.getElementsByClassName('mdl-js-menu'));
+    },
+    methods: {
+      openPdf(name) {
+        // прогрузить в слот таблицу
+        Vue.component(name, print[name]);
+        this.printSlot = name;
+      },
     },
   }
 </script>
