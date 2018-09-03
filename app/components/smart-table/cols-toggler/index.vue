@@ -1,8 +1,8 @@
 <template>
     <div class="cols-toggler">
-    <span class="cols-toggler-icon" @click="popupIsActive = !popupIsActive" :style="iconStyle">
-      <i class="fa fa-lg" aria-hidden="true" :class="iconClass"></i>
-    </span>
+        <span class="cols-toggler-icon" @click="togglePopup" :style="iconStyle">
+          <i class="fa fa-lg" aria-hidden="true" :class="iconClass"></i>
+        </span>
         <div class="cols-toggler-popup" v-if="popupIsActive">
             <div class="cols-toggler-popup-actions bordered-bottom text-right">
                 <mdl-button colored="" raised @click.native="rememberColspanClick">Запомнить</mdl-button>
@@ -19,7 +19,7 @@
 
 <script>
   import ItemAll from '~components/smart-table/cols-toggler/item-all';
-  import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
+  import {mapActions, mapGetters} from 'vuex';
 
   export default {
     components: {
@@ -64,7 +64,15 @@
       async rememberColspanClick() {
         await this.rememberColspan();
         this.popupIsActive = false;
-      }
+      },
+      togglePopup(e) {
+        e.preventDefault();
+        this.popupIsActive = !this.popupIsActive;
+        if (window.getSelection)
+          window.getSelection().removeAllRanges();
+        else if (document.selection)
+          document.selection.empty();
+      },
     },
   }
 </script>
