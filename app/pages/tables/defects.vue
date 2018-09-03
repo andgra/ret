@@ -119,11 +119,6 @@
         },
         components: {EditedTable},
         methods: {
-            getInterval(d1, d2) {
-                d1 = moment(d1);
-                d2 = moment(d2);
-                return d1.diff(d2, 'minutes');
-            },
             updateStats() {
                 let stats = {}
                 for(let obj of this.objDict) {

@@ -45,6 +45,7 @@
   import Pagination from '~components/smart-table/pagination';
   import Actions from '~components/smart-table/actions';
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
+  import {isArray, isObject, clone} from '~js/helpers';
 
   export default {
     components: {

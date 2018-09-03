@@ -1,10 +1,11 @@
 import moment from 'moment';
+import Vue from "vue/dist/vue";
 
-window.isNumeric = function (n) {
+let isNumeric = function (n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-window.getInObj = function (obj, path, cloneRes = false) {
+let getInObj = function (obj, path, cloneRes = false) {
   let res = cloneRes ? clone(obj) : obj;
   if (path === "") return res;
   path = path.split('.');
@@ -17,7 +18,7 @@ window.getInObj = function (obj, path, cloneRes = false) {
   return res;
 };
 
-window.cast = function (value, type) {
+let cast = function (value, type) {
   switch (type) {
     case 'number':
       value = +value;
@@ -36,7 +37,7 @@ window.cast = function (value, type) {
 };
 
 
-window.getRequests = function () {
+let getRequests = function () {
   let s1 = location.search.substring(1, location.search.length).split('&'),
       r  = {}, s2, i;
   for (i = 0; i < s1.length; i += 1) {
@@ -47,23 +48,17 @@ window.getRequests = function () {
 };
 
 
-// const asset = function (path) {
-//   return window.__dirname + '/public/' + path;
-// };
-// const asset_src = function (path) {
-//   return window.__dirname + '/src/' + path;
-// };
 
 
-window.compareNumbers = function (a, b) {
+let compareNumbers = function (a, b) {
   return a - b;
 };
 
-window.isArray = function (v) {
+let isArray = function (v) {
   return v instanceof Array;
 };
 
-window.isObject = function (mixed_var) {
+let isObject = function (mixed_var) {
   if (mixed_var instanceof Array) {
     return false;
   } else {
@@ -71,16 +66,12 @@ window.isObject = function (mixed_var) {
   }
 };
 
-window.isFunction = function (functionToCheck) {
+let isFunction = function (functionToCheck) {
   let getType = {};
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 };
 
-window.compareNumbers = function (a, b) {
-  return a - b;
-};
-
-window.recValue = function (arr, value) {
+let recValue = function (arr, value) {
   arr = clone(arr);
   for (let i in arr) {
     if (isArray(arr[i]) || isObject(arr[i])) {
@@ -92,17 +83,8 @@ window.recValue = function (arr, value) {
   return arr;
 };
 
-Object.defineProperty(Array.prototype, 'last', {
-  enumerable: false,
-  value: function () { return this[this.length - 1]; }
-});
 
-Object.defineProperty(Array.prototype, 'first', {
-  enumerable: false,
-  value: function () { return this[0]; }
-});
-
-window.clone = (item) => {
+let clone = (item) => {
   if (!item) { return item; } // null, undefined values check
 
   var types = [Number, String, Boolean],
@@ -153,19 +135,15 @@ window.clone = (item) => {
   return result;
 };
 
-Number.prototype.round = function (places) {
-  places = Math.pow(10, places);
-  return Math.round(this * places) / places;
-};
 
 
-window.delay = function (t) {
+let delay = function (t) {
   return new Promise(function (resolve) {
     setTimeout(resolve, t);
   });
 };
 
-window.findInGrid = function(grid, id) {
+let findInGrid = function(grid, id) {
   let rowNum; // номер найденной строки
   let foundCell; // найденная ячейка
   for (let j = 0; j < grid.length; j++) {
@@ -180,3 +158,7 @@ window.findInGrid = function(grid, id) {
   }
   return {rowNum, cell: foundCell};
 };
+
+
+export {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recValue, clone, delay, findInGrid};
+export default {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recValue, clone, delay, findInGrid};

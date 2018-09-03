@@ -1,4 +1,5 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
+import {clone} from '~js/helpers';
 
 export default {
   namespaced: true,

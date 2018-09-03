@@ -1,6 +1,7 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
 
 import Structure from "~js/modules/structure";
+import {findInGrid, clone} from '~js/helpers';
 
 export default {
   namespaced: true,

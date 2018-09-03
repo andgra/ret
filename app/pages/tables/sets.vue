@@ -85,6 +85,7 @@
   import dictionary from '~api/dictionary';
   import moment from 'moment';
   import filters from '~js/modules/filters';
+  import {isObject, clone} from '~js/helpers';
 
   let struct =
         [

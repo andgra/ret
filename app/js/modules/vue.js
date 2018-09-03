@@ -5,6 +5,7 @@ import filters from '~js/modules/filters';
 import printMixins from '~mixins/print';
 
 import moment from 'moment';
+import {getInObj, recValue} from '~js/helpers';
 
 Vue.config.debug = true;
 
@@ -19,48 +20,7 @@ Vue.filter('myDate', filters.myDate);
 Vue.filter('myDateTime', filters.myDateTime);
 Vue.filter('myInterval', filters.myInterval);
 
-Vue.mixin({
-  methods: {
-    watchCollection(arr, cb, options) {
-      arr.forEach((val) => this.$watch(val, cb, options))
-    }
-  }
-});
 
-window.getColspan = Vue.getColspan = arr => {
-  let res = 0;
-  if (arr !== undefined) {
-    for (let cell of arr) {
-      res += cell.colspan;
-    }
-  }
-  return res;
-};
-
-window.getInterval = Vue.getInterval = function (d1, d2) {
-  d1 = moment(d1);
-  d2 = moment(d2);
-  return d1.diff(d2, 'minutes');
-};
-window.getIntervalString = Vue.getIntervalString = function (mins) {
-  let data     = {};
-  data.days    = Math.floor(Math.floor(mins / 60) / 24);
-  data.hours   = Math.floor((mins) / 60) - data.days * 24;
-  data.minutes = mins - (data.hours + data.days * 24) * 60;
-  let result   = '';
-  if (data.days && data.days > 0) {
-    result += data.days + ' сут';
-  }
-  if (data.hours && data.hours > 0) {
-    result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
-  }
-  if (data.minutes && data.minutes > 0) {
-    result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
-  }
-  return result;
-};
-// Vue.getInObj = getInObj;
-Vue.recValue = recValue;
 Vue.mixin({
   computed: {
     isDevelopment() {
@@ -72,8 +32,43 @@ Vue.mixin({
     // openPdf,
     // printContent,
     getInObj,
+    recValue,
     // mixins
     ...printMixins,
+    watchCollection(arr, cb, options) {
+      arr.forEach((val) => this.$watch(val, cb, options))
+    },
+    getIntervalString(mins) {
+      let data     = {};
+      data.days    = Math.floor(Math.floor(mins / 60) / 24);
+      data.hours   = Math.floor((mins) / 60) - data.days * 24;
+      data.minutes = mins - (data.hours + data.days * 24) * 60;
+      let result   = '';
+      if (data.days && data.days > 0) {
+        result += data.days + ' сут';
+      }
+      if (data.hours && data.hours > 0) {
+        result = result + ((result.length > 0) ? ' ' : '') + data.hours + ' час';
+      }
+      if (data.minutes && data.minutes > 0) {
+        result = result + ((result.length > 0) ? ' ' : '') + data.minutes + ' мин';
+      }
+      return result;
+    },
+    getInterval(d1, d2) {
+      d1 = moment(d1);
+      d2 = moment(d2);
+      return d1.diff(d2, 'minutes');
+    },
+    getColspan(arr){
+      let res = 0;
+      if (arr !== undefined) {
+        for (let cell of arr) {
+          res += cell.colspan;
+        }
+      }
+      return res;
+    },
     updateByDots(obj, path, value) {
       let pathArr   = path.split('.');
       let childPath = pathArr.pop();

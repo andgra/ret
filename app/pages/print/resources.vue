@@ -68,6 +68,7 @@
 <script>
     import set from 'models/set';
     import dictionary from 'models/dictionary';
+    import {clone} from '~js/helpers';
 
 
     export default {

@@ -4,6 +4,7 @@ import filter from '~store/modules/table/filter'
 import edit from '~store/modules/table/edit'
 import remove from '~store/modules/table/remove'
 import structure from '~store/modules/table/structure'
+import {clone} from '~js/helpers';
 
 let defaultQuery = {
   sort: {createdAt: 1},

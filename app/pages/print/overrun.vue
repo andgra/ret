@@ -161,7 +161,7 @@
     },
     created() {
       this.setRows().then(() => {
-        this.printElement(this.pdf_name, this.$el);
+        this.$emit('printReady', {name: this.pdf_name, el: this.$el})
       });
     }
   };

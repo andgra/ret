@@ -68,7 +68,7 @@
       <!-- отображение компонента, для которого совпал путь -->
       <router-view></router-view>
     </main>
-    <component v-if="printSlot" :is="printSlot" v-show="false"></component>
+    <component v-if="printSlot" :is="printSlot" @printReady="printReady" v-show="false"></component>
     <!--<span v-html="'<script>alert(1);</script>'"></span>-->
     <mdl-snackbar display-on="msgSent" class="mdl-snackbar_padding"></mdl-snackbar>
   </div>
@@ -122,6 +122,10 @@
         // прогрузить в слот таблицу
         Vue.component(name, print[name]);
         this.printSlot = name;
+      },
+      printReady({name, el}) {
+        this.printElement(name, el);
+        this.printSlot = null;
       },
     },
   }

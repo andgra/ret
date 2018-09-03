@@ -106,11 +106,6 @@
             },
         },
         methods: {
-            getInterval(d1, d2) {
-                d1 = moment(d1);
-                d2 = moment(d2);
-                return d1.diff(d2, 'minutes');
-            },
             updateStat() {
                 this.statAsu0 = this.rows.filter(function (item) {
                     return item.ret === 'asu' && item.obj === '00000';

@@ -33,9 +33,6 @@ import {template} from 'lodash'
 import moment from 'moment'
 moment.locale('ru');
 
-if (getRequests()['route']) {
-  console.log(template);
-}
 // 1. Определение путей
 // Каждый путь должен указывать на компонент
 // "Компонентом" может быть как созданный через `Vue.extend()`

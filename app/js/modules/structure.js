@@ -1,3 +1,5 @@
+import {clone} from '~js/helpers';
+
 export default class Structure {
   constructor(struct, start = true) {
     this.struct     = struct;

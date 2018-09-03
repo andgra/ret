@@ -1,3 +1,5 @@
+import {cast, getInObj, clone} from '~js/helpers';
+
 class api {
   constructor() {
     this.table = 'db';

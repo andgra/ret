@@ -1,7 +1,6 @@
 require('babel-polyfill');
 import '~sass/main.scss';
-import '~js/bootstrap/jquery';
-import '~js/bootstrap/helpers';
+import '~js/global';
 import {nwin} from '~js/modules/nw';
 import Promise from '~js/modules/promise';
 import Vue from '~js/modules/vue';

@@ -1,4 +1,5 @@
 import moment from 'moment'
+import {isNumeric} from '~js/helpers';
 
 export default {
   NaN: value => (isNaN(value) ? 0 : value),
