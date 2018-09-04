@@ -1,53 +1,43 @@
 <template>
     <div class="table-container">
-        <EditedTable :options="options" :inRows="rows">
-            <template slot="editModal" slot-scope="props">
-                <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
-                    <form class="editing-form" action="#" onsubmit="return false;">
-                        <input name="_id" v-model="props.editingRow._id" type="hidden"/>
-                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Значение" v-model="props.editingRow.value"></mdl-textfield>
-                    </form>
-                    <div slot="actions">
-                        <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
-                        <mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>
-                    </div>
-                </mdl-dialog>
+        <smart-table v-if="loading < 2">
+            <template slot="header">
+                <h4 class="table-title">Категории РЭТ</h4>
             </template>
-        </EditedTable>
+        </smart-table>
+        <loading v-else></loading>
     </div>
 </template>
 
 <script>
-    import EditedTable from '../common/EditedTable.vue';
-    import dictionary from 'models/dictionary';
+  import {mapActions, mapState} from 'vuex';
+  import dictionary from '~api/dictionary';
 
-    let struct =
+  let struct =
         [
-            {id: "value", title: "Значение", type: 'text', default: ""},
+          {id: "value", title: "Значение", type: 'text', default: ""},
 //            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
-    ];
+      ];
 
-    let options = {
+  export default {
+    computed: {
+      ...mapState('table', ['rows', 'info', 'loading']),
+    },
+    methods: {
+      ...mapActions('table', ['loadData']),
+    },
+    async created() {
+
+      await this.loadData({
+        api: dictionary,
         struct,
-        title: 'Категории РЭТ',
-        async setRows() {
-            this.rows = (await dictionary.getDict('ret'));
+        query: {
+          where: {dict: 'ret'},
         },
-        async saveRow(item) {
-            return await dictionary.saveToDict('ret', {_id: item._id}, item);
+        options: {
+          dates: false,
         },
-        async removeRow(id) {
-            await dictionary.delete(id);
-        }
-    };
-
-    export default {
-        data() {
-            return {
-                options,
-                rows: [],
-            }
-        },
-        components: {EditedTable}
-    };
+      });
+    },
+  };
 </script>

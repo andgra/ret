@@ -13,7 +13,7 @@
             </tr>
             <tr class="center-all">
                 <th>РЭТ, из них:</th>
-                <th>{{stats.total?stats.total.total:''}}</th>
+                <td>{{stats.total?stats.total.total:''}}</td>
                 <template v-for="obj in objDict">
                     <td>{{stats[obj.value].total}}</td>
                 </template>
@@ -60,80 +60,77 @@
 
 
 <script>
-    import defect from 'models/defect';
-    import dictionary from 'models/dictionary';
+  import defect from '~api/defect';
+  import dictionary from '~api/dictionary';
 
 
-    export default {
-        data() {
-            return {
-                rows: [],
-                objDict: [],
-                retDict: [],
-                stats: {},
-                pdf_name: 'defects',
-            }
-        },
-        methods: {
-            async setRows() {
-                let awaited = await Promise.all([
-                    defect.getPrint(),
-                    dictionary.getDict('ret', {'sort': {'value': 1}}),
-                    dictionary.getDict('obj', {'sort': {'value': 1}}),
-                ]);
-                let rows = awaited[0];
-                let retDict = awaited[1];
-                let objDict = awaited[2];
-                console.log(rows);
+  export default {
+    data() {
+      return {
+        rows: [],
+        objDict: [],
+        retDict: [],
+        stats: {},
+        pdf_name: 'Состояние РЭТ',
+      }
+    },
+    methods: {
+      async setRows() {
+        let awaited = await Promise.all([
+          defect.getPrint(),
+          dictionary.getDict('ret', {'sort': {'value': 1}}),
+          dictionary.getDict('obj', {'sort': {'value': 1}}),
+        ]);
+        let rows    = awaited[0];
+        let retDict = awaited[1];
+        let objDict = awaited[2];
+        console.log(rows);
 
-                let stats = {}
-                for(let obj of objDict) {
-                    stats[obj.value] = {total: 0};
-                    for(let ret of retDict) {
-                        stats[obj.value][ret.value] = 0;
-                    }
-                }
-                stats['total'] = {total: 0};
-                for(let ret of retDict) {
-                    stats['total'][ret.value] = 0;
-                }
-
-
-
-                for(let i in objDict) {
-                    let obj = objDict[i].value;
-                    for(let j in retDict) {
-                        let ret = retDict[j].value;
-                        stats[obj][ret] = rows.filter(function (item) {
-                            return item.obj === obj && item.ret === ret;
-                        }).length;
-                        stats[obj].total += stats[obj][ret];
-                    }
-                }
-
-                for(let j in retDict) {
-                    let ret = retDict[j].value;
-                    stats['total'][ret] = 0;
-                    for(let i in objDict) {
-                        let obj = objDict[i].value;
-                        stats['total'][ret] += stats[obj][ret];
-                    }
-                    stats['total'].total += stats['total'][ret];
-                }
-
-                console.log(stats);
-
-                this.stats = stats;
-                this.retDict = retDict;
-                this.objDict = objDict;
-                this.rows = rows;
-
-
-                printContent(this.pdf_name, true);
-            }
-        },
-        created() {
-            this.setRows();
+        let stats = {}
+        for (let obj of objDict) {
+          stats[obj.value] = {total: 0};
+          for (let ret of retDict) {
+            stats[obj.value][ret.value] = 0;
+          }
         }
-    };
+        stats['total'] = {total: 0};
+        for (let ret of retDict) {
+          stats['total'][ret.value] = 0;
+        }
+
+
+        for (let i in objDict) {
+          let obj = objDict[i].value;
+          for (let j in retDict) {
+            let ret         = retDict[j].value;
+            stats[obj][ret] = rows.filter(function (item) {
+              return item.obj === obj && item.ret === ret;
+            }).length;
+            stats[obj].total += stats[obj][ret];
+          }
+        }
+
+        for (let j in retDict) {
+          let ret             = retDict[j].value;
+          stats['total'][ret] = 0;
+          for (let i in objDict) {
+            let obj = objDict[i].value;
+            stats['total'][ret] += stats[obj][ret];
+          }
+          stats['total'].total += stats['total'][ret];
+        }
+
+        console.log(stats);
+
+        this.stats   = stats;
+        this.retDict = retDict;
+        this.objDict = objDict;
+        this.rows    = rows;
+      },
+    },
+    async created() {
+      await this.setRows();
+      this.printDataReady();
+    }
+  };
 </script>

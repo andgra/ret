@@ -1,81 +1,62 @@
 <template>
     <div class="table-container">
-        <EditedTable :options="options" :inRows="rows">
-            <template slot="editModal" slot-scope="props">
-                <mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">
-                    <form class="editing-form" action="#" onsubmit="return false;">
-                        <input name="_id" v-model="props.editingRow._id" type="hidden"/>
-                        <mdl-textfield class="mdl-textfield--full-width" floating-label="Значение" v-model="props.editingRow.value"></mdl-textfield>
-                        <div class="form-group">
-                            <p>Установленный ресурс РЭТ</p>
-                            <div class="form-indent">
-                                <mdl-textfield floating-label="ресурс до КР (час.)" v-model="props.editingRow.est.res.kr" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="ресурс до списания (час.)" v-model="props.editingRow.est.res.cancel" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="срок службы до КР (лет)" v-model="props.editingRow.est.life.kr" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                                <mdl-textfield floating-label="срок службы до списания (лет)" v-model="props.editingRow.est.life.cancel" type="number" class="mdl-textfield--full-width"></mdl-textfield>
-                            </div>
-                        </div>
-                    </form>
-                    <div slot="actions">
-                        <mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>
-                        <mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>
-                    </div>
-                </mdl-dialog>
+        <smart-table v-if="loading < 2">
+            <template slot="header">
+                <h4 class="table-title">Типы РЭТ</h4>
             </template>
-        </EditedTable>
+        </smart-table>
+        <loading v-else></loading>
     </div>
 </template>
 
 <script>
-    import EditedTable from '../common/EditedTable.vue';
-    import dictionary from 'models/dictionary';
+  import {mapActions, mapState} from 'vuex';
+  import dictionary from '~api/dictionary';
 
-    let struct =
+  let struct =
         [
-            {id: "value", title: "Значение", type: 'text', default: ""},
-            {
-                id: "est", title: "Установленный ресурс РЭТ", children:
-                [
-                    {
-                        id: "res", title: "", children:
-                        [
-                            {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                        ]
-                    },
-                    {
-                        id: "life", title: "", children:
-                        [
-                            {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                            {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                        ]
-                    }
-                ]
-            },
-            //            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
-    ];
+          {id: "value", title: "Значение", type: 'text', default: ""},
+          {
+            id: "est", title: "Установленный ресурс РЭТ", children:
+              [
+                {
+                  id: "res", title: "", children:
+                    [
+                      {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                      {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                    ]
+                },
+                {
+                  id: "life", title: "", children:
+                    [
+                      {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                      {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                    ]
+                }
+              ]
+          },
+          //            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
+        ];
 
-    let options = {
+  export default {
+    computed: {
+      ...mapState('table', ['rows', 'info', 'loading']),
+    },
+    methods: {
+      ...mapActions('table', ['loadData']),
+    },
+    async created() {
+
+      await this.loadData({
+        api: dictionary,
         struct,
-        title: 'Типы РЭТ',
-        async setRows() {
-            this.rows = (await dictionary.getDict('type'));
+        query: {
+          where: {dict: 'type'},
         },
-        async saveRow(item) {
-            return await dictionary.saveToDict('type', {_id: item._id}, item);
+        options: {
+          dates: false,
         },
-        async removeRow(id) {
-            await dictionary.delete(id);
-        }
-    };
-
-    export default {
-        data() {
-            return {
-                options,
-                rows: [],
-            }
-        },
-        components: {EditedTable}
-    };
+      });
+    },
+  };
 </script>

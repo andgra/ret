@@ -32,6 +32,8 @@ export default {
     api: null,
     options: {},
     checks: [],
+    fetchMethod: null,
+    countMethod: null,
   },
   getters: {
     checked: state => id => state.checks.indexOf(id) !== -1,
@@ -85,6 +87,12 @@ export default {
      */
     ['SET_API'](state, api) {
       state.api = api;
+    },
+    ['SET_FETCH_METHOD'](state, fetchMethod) {
+      state.fetchMethod = fetchMethod;
+    },
+    ['SET_COUNT_METHOD'](state, countMethod) {
+      state.fetchMethod = countMethod;
     },
     ['RELOAD_DATA'](state) {
       state.loading = 1;
@@ -159,8 +167,16 @@ export default {
     async loadAll({state, commit}) {
       commit('SET_ALL', await state.api.all({...state.defaultQuery, limit: 0}));
     },
-    async loadData({commit, state, dispatch, getters}, {options, api, query, infoLoader, dataFetched, struct}) {
+    async loadData({commit, state, dispatch, getters}, {options, api, query, infoLoader, dataFetched, struct, fetchMethod, countMethod}) {
       commit('SET_API', api);
+
+      if (fetchMethod) {
+        commit('SET_FETCH_METHOD', fetchMethod);
+      }
+
+      if (countMethod) {
+        commit('SET_COUNT_METHOD', countMethod);
+      }
 
       if (options) {
         commit('SET_OPTIONS', options);
@@ -215,7 +231,7 @@ export default {
     async setWhere({state, dispatch, commit}, filters) {
       let page = state.defaultQuery.page;
       commit('SET_PAGE', page);
-      let where = {};
+      let where = clone(state.defaultQuery.where);
       for (let field in filters) {
         if (filters.hasOwnProperty(field) && filters[field].length) {
           where[field] = {$in: filters[field]};

@@ -80,4 +80,7 @@ export default {
       printHtml(name, html, landscape).then(() => resolve()).catch(err => reject(err));
     });
   },
+  printDataReady() {
+    setTimeout(() => this.$emit('printReady', {name: this.pdf_name, el: this.$el}), 0);
+  },
 }

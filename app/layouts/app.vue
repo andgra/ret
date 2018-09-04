@@ -26,11 +26,11 @@
             Печать
           </button>
           <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="print-menu">
-            <li class="mdl-menu__item" @click="openPdf('/defects/print')">Справка по состоянию РЭТ</li>
-            <li class="mdl-menu__item" @click="openPdf('/works/print')">Таблица контроля работ представителей промышленности</li>
-            <li class="mdl-menu__item" @click="openPdf('/results/print')">Итоги эксплуатации</li>
-            <li class="mdl-menu__item" @click="openPdf('/operations/print')">Справка по срокам эксплатуации</li>
-            <li class="mdl-menu__item" @click="openPdf('/resources/print')">Ресурс</li>
+            <li class="mdl-menu__item" @click="openPdf('defects-table')">Справка по состоянию РЭТ</li>
+            <li class="mdl-menu__item" @click="openPdf('works-table')">Таблица контроля работ представителей промышленности</li>
+            <li class="mdl-menu__item" @click="openPdf('results-table')">Итоги эксплуатации</li>
+            <li class="mdl-menu__item" @click="openPdf('operations-table')">Справка по срокам эксплатуации</li>
+            <li class="mdl-menu__item" @click="openPdf('resources-table')">Ресурс</li>
             <li class="mdl-menu__item" @click="openPdf('overrun-table')">Перерасход</li>
           </ul>
           <!--<router-link tag="button" class="mdl-button mdl-js-button mdl-button&#45;&#45;white" to="/print">Печать</router-link>-->

@@ -34,32 +34,33 @@
 </template>
 
 <script>
-    import work from 'models/work';
-    import dictionary from 'models/dictionary';
+  import work from '~api/work';
 
 
-    export default {
-        data() {
-            return {
-                rows: [],
-                pdf_name: 'works',
+  export default {
+    data() {
+      return {
+        rows: [],
+        pdf_name: 'works',
+      }
+    },
+    methods: {
+      async setRows() {
+        let awaited = await Promise.all([
+          work.all({
+            $where: function () {
+              return !this.departure || this.departure==="";
             }
-        },
-        methods: {
-            async setRows() {
-                let awaited = await Promise.all([
-                    work.getPrint(),
-                ]);
-                let rows = awaited[0];
-                console.log(rows);
-                this.rows = rows;
-
-
-                printContent(this.pdf_name, true);
-            }
-        },
-        created() {
-            this.setRows();
-        }
-    };
+          }),
+        ]);
+        let rows    = awaited[0];
+        console.log(rows);
+        this.rows = rows;
+      }
+    },
+    async created() {
+      await this.setRows();
+      this.printDataReady();
+    }
+  };
 </script>

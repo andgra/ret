@@ -48,7 +48,7 @@
         objDict: [],
         retDict: [],
         stats: {},
-        pdf_name: 'overrun',
+        pdf_name: 'Перерасход',
       }
     },
     computed: {
@@ -81,11 +81,11 @@
         return [...this.rows, this.total];
       }
     },
-    methods: {},
+    methods: {
+    },
     async created() {
       this.rows = await overrun.generateData();
-
-      setTimeout(() => this.$emit('printReady', {name: this.pdf_name, el: this.$el}), 0);
+      this.printDataReady();
     }
   };
 </script>
