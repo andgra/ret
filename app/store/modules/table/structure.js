@@ -49,6 +49,9 @@ export default {
       }
       return entireFullColspan;
     },
+    apiName(state, getters, rootState, rootGetters) {
+      return rootGetters['table/apiName'];
+    },
   },
   mutations: {
     ['SET_STRUCTURE'](state, structure) {
