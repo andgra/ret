@@ -71,11 +71,11 @@ let isFunction = function (functionToCheck) {
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 };
 
-let recValue = function (arr, value) {
+let recSetValue = function (arr, value) {
   arr = clone(arr);
   for (let i in arr) {
     if (isArray(arr[i]) || isObject(arr[i])) {
-      arr[i] = recValue(arr[i], value);
+      arr[i] = recSetValue(arr[i], value);
     } else {
       arr[i] = value;
     }
@@ -160,5 +160,5 @@ let findInGrid = function(grid, id) {
 };
 
 
-export {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recValue, clone, delay, findInGrid};
-export default {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recValue, clone, delay, findInGrid};
+export {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recSetValue, clone, delay, findInGrid};
+export default {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recSetValue, clone, delay, findInGrid};

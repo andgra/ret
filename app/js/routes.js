@@ -20,7 +20,7 @@ import Seeds from '~pages/dev/seeds.vue';
 //
 import SetsTable from '~pages/tables/sets.vue';
 // import DefectsEdit from '~pages/tables/defects.vue';
-// import WorksTable from '~pages/tables/works.vue';
+import WorksTable from '~pages/tables/works.vue';
 import OverrunTable from '~pages/tables/overrun.vue';
 //
 // import DefectsPrint from '~pages/print/defects.vue';
@@ -44,6 +44,7 @@ const routes = [
     children: [...[
       {path: '/settings', component: Settings},
       {path: '/tables/sets', component: SetsTable},
+      {path: '/tables/works', component: WorksTable},
       {path: '/tables/overrun', component: OverrunTable},
     ], ...(IS_DEVELOPMENT ? [
       {path: '/dev/seeds', component: Seeds},

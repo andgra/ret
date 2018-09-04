@@ -335,11 +335,6 @@
         ];
 
 
-  let options = {
-    async created() {
-    },
-  };
-
   export default {
     computed: {
       ...mapState('settings', {settings: 'options'}),
@@ -382,8 +377,6 @@
         infoLoader: this.getInfo,
         dataFetched: this.dataFetched,
         struct,
-        options,
-        repairGrid: true,
       }).then(() => {
         for (let row of this.$store.state.table.all) {
           set.update(row)

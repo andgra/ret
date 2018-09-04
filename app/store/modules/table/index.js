@@ -179,7 +179,9 @@ export default {
       });
 
 
-      await dataFetched({all, data, state, commit});
+      if (dataFetched) {
+        await dataFetched({all, data, state, commit});
+      }
 
       await dispatch('table/structure/initStructure', struct, {root: true});
 

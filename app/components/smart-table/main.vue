@@ -9,12 +9,12 @@
       </div>
     </div>
     <div class="table-content">
-      <div class="table-responsive after-actions">
-        <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp border-all-cells edited-table">
+      <!--<div class="table-responsive after-actions">-->
+        <table id="table" data-tablesaw-mode="columntoggle" ref="table" class="mdl-data-table mdl-js-data-table border-all-cells edited-table">
           <thead is="table-header" @show-filter="showFilter"></thead>
           <tbody is="table-body"></tbody>
         </table>
-      </div>
+      <!--</div>-->
     </div>
     <div class="table-footer">
       <pagination class="bordered-bottom"/>

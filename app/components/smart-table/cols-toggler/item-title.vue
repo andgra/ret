@@ -9,6 +9,7 @@
 
 <script>
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
+  import {findInGrid} from '~js/helpers';
 
   export default {
     name: "cols-toggler-item-title",
