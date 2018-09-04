@@ -1,5 +1,5 @@
 import moment from "moment";
-import {getInObj} from "~js/helpers";
+import {getInObj, isObject} from "~js/helpers";
 
 export default {
   getIntervalString(mins) {
@@ -28,12 +28,18 @@ export default {
     let value   = getInObj(row, path);
     let options = cols.filter(item => {return item.id && item.id === path}).first();
     if (options) {
+      value = value === undefined && options.default !== undefined ? options.default : value;
       if (options.type === 'interval') {
         value = this.getIntervalString(value)
-      } else if (options.type === 'datetime') {
-        value = moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
-      } else if (options.type === 'date') {
-        value = moment(value).isValid() ? moment(value).format('DD.MM.YYYY') : '';
+      } else if (options.type === 'datetime' || options.type === 'date' || options.type === 'time') {
+        if (value) {
+          value = moment(value);
+          let isDate = options.type.indexOf('date') !== -1;
+          let isTime = options.type.indexOf('time') !== -1;
+          let format = (isDate ? 'DD.MM.YYYY' : '') + (isDate && isTime ? ' ' : '') + (isTime ? 'HH:mm' : '');
+          value = value.isValid() ? value.format(format) : '';
+        }
+
       } else if (options.cb) {
         value = options.cb(value, row);
       }

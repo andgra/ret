@@ -22,11 +22,11 @@ async function sanitizeDefects() {
           },
           {id: "type", title: "Тип РЭТ", type: 'autocomplete', default: "", filterType: "select"},
           {id: "zav", title: "зав. №", type: 'text', default: ""},
-          {id: "failure", title: "дата и время <br>отказа", type: 'datetime', default: ""},
+          {id: "failure", title: "дата и время <br>отказа", type: 'datetime', default: "", sortType: 'date'},
           {id: "faulty", title: "неисправная <br>система", type: 'text', default: ""},
           {id: "measures", title: "принимаемые меры", type: 'text', default: ""},
-          {id: "recovery", title: "дата и время <br>восстановления", type: 'datetime', default: ""},
-          {id: "zip", title: "Время доставки <br>ЗИП", type: 'interval', default: 0, width: 150},
+          {id: "recovery", title: "дата и время <br>восстановления", type: 'datetime', default: "", sortType: 'date'},
+          {id: "zip", title: "Время доставки <br>ЗИП", type: 'interval', default: 0, width: 150, sortType: 'number'},
         ];
 
   let structure = new Structure(struct);
@@ -48,13 +48,13 @@ async function sanitizeWorks() {
 //            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", filterType: "select"},
         {id: "type", title: "Тип РЭТ", type: 'autocomplete', default: "", filterType: "select"},
         {id: "zav", title: "зав. №", type: 'text', default: ""},
-        {id: "arrival", title: "Дата прибытия", type: 'date', default: ""},
+        {id: "arrival", title: "Дата прибытия", type: 'date', default: "", sortType: 'date'},
         {id: "title", title: "Наименование работ, <br>обслуживаемая система <br>ВВСТ", type: 'text', default: ""},
         {id: "factory", title: "Предприятие <br>промышленности", type: 'text', default: ""},
-        {id: "people", title: "Кол-во <br>чел.", type: 'number', default: 0},
+        {id: "people", title: "Кол-во <br>чел.", type: 'number', default: 0, sortType: 'number'},
         {id: "senior", title: "Старший бригады <br>ФИО, моб. тел.", type: 'text', default: ""},
         {id: "envoy", title: "Представитель от <br>в/ч (подразделения)", type: 'text', default: ""},
-        {id: "departure", title: "Дата <br>убытия", type: 'date', default: ""},
+        {id: "departure", title: "Дата <br>убытия", type: 'date', default: "", sortType: 'date'},
       ];
 
   let structure = new Structure(struct);

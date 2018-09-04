@@ -30,7 +30,8 @@ let cast = function (value, type) {
       value = '' + value;
       break;
     case 'date':
-      value = moment(value);
+      let momented = moment(value);
+      value = momented.isValid() ? momented.toDate() : '';
       break;
   }
   return value;
@@ -173,6 +174,8 @@ function sanitize(item, dots) {
     path.pop();
     let parentPath = path.join('.');
     let parent     = getInObj(item, clone(parentPath));
+    // недостающие поля дополняем
+    parent[childPath] = parent[childPath] === undefined && node.default !== undefined ? node.default : parent[childPath];
     if (node.ignoreDb) {
       delete(parent[childPath]);
     } else if (node.sortType) {
