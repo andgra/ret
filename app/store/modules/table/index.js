@@ -169,7 +169,12 @@ export default {
       commit('UPDATE_QUERY', state.defaultQuery);
       commit('LOAD_DATA');
 
-      let infoPromise = infoLoader(state);
+      let infoPromise;
+      if (infoLoader) {
+        infoPromise = infoLoader(state);
+      } else {
+        infoPromise = new Promise((resolve, reject) => resolve({}));
+      }
 
       let all  = await state.api.all({...state.defaultQuery, limit: 0});
       let data = await Promise.allObject({

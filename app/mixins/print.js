@@ -38,7 +38,7 @@ function printHtml(name, content, landscape = false) {
             winPdf.maximize();
             // чистим временную папку и закрываем окно с html контентом
             fs.rmRf(dir);
-            winHtml.close();
+            IS_DEVELOPMENT ? winHtml.show() : winHtml.close();
             resolve();
           });
 
@@ -46,7 +46,7 @@ function printHtml(name, content, landscape = false) {
       });
     });
   });
-};
+}
 
 function applyLayout(name, content) {
   return `

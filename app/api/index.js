@@ -1,4 +1,4 @@
-import {cast, getInObj, clone} from '~js/helpers';
+import {cast, getInObj, clone, isObject} from '~js/helpers';
 
 class api {
   constructor() {
