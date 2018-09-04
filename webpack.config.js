@@ -5,6 +5,7 @@ let CopyWebpackPlugin      = require('copy-webpack-plugin');
 let WebpackNotifierPlugin  = require('webpack-notifier');
 const {VueLoaderPlugin}    = require('vue-loader');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const Buffer               = require('Buffer').Buffer;
 
 const {
         NODE_ENV = 'development'
@@ -46,6 +47,14 @@ module.exports = {
     new CopyWebpackPlugin([
       {from: './app/static', to: './'},
       {from: './node_modules/material-design-lite/material.js', to: './bundle/mdl.js'},
+      {
+        from: './app/migrations',
+        to: './migrations',
+        transform: (content) => {
+          content = Buffer.alloc(0);
+          return content;
+        }
+      },
     ]),
     new MiniCssExtractPlugin({
       filename: "bundle/[name].css",

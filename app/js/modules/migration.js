@@ -9,7 +9,7 @@ import {ngui} from '~js/modules/nw';
  * @returns {Array}
  */
 function getMigrations() {
-  let normalizedPath = path.join(ngui.__dirname, "/app/migrations");
+  let normalizedPath = path.join(ngui.__dirname, "/public/migrations");
   let migrations = [];
 
   fs.readdirSync(normalizedPath).forEach(function(file) {
