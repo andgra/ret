@@ -21,7 +21,7 @@
               <router-link tag="li" to="/dev/seeds" class="mdl-menu__item">Наполнение базы</router-link>
             </ul>
           </template>
-          <router-link tag="button" class="mdl-button mdl-js-button mdl-button--white" to="/settings">Настройки</router-link>
+          <!--<router-link tag="button" class="mdl-button mdl-js-button mdl-button&#45;&#45;white" to="/settings">Настройки</router-link>-->
           <button id="print-menu" class="mdl-button mdl-js-button mdl-button--white">
             Печать
           </button>
