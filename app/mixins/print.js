@@ -81,6 +81,6 @@ export default {
     });
   },
   printDataReady() {
-    setTimeout(() => this.$emit('printReady', {name: this.pdf_name, el: this.$el}), 0);
+    this.$nextTick(() => this.$emit('printReady', {name: this.pdf_name, el: this.$el}));
   },
 }

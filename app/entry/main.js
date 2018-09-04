@@ -11,8 +11,7 @@ import {mapState, mapActions} from 'vuex';
 if (IS_DEVELOPMENT) {
   nwin.showDevTools();
 }
-/*nwin.moveTo(1000, 0);
-nwin.width(800);*/
+
 window.Promise = Promise;
 
 console.log('core loaded');

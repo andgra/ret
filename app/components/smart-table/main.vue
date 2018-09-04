@@ -164,8 +164,18 @@
       showFilter(id, e) {
         let position = {
           left: e.clientX,
-          top: e.clientY,
+          top: e.clientY + 5,
         };
+        // двигаем popup так, чтобы он не вылезал за правый край экрана
+        let $el = $(this.$el);
+        let popupWidth = 400;
+        let popupMarginRight = 5;
+        let containerRightBorder = $el.offset().left + $el.width();
+        let popupRightBorder = position.left + popupWidth + popupMarginRight;
+        if (popupRightBorder > containerRightBorder) {
+          position.left = containerRightBorder - popupWidth - popupMarginRight;
+        }
+
         this.openFilter({id, position});
       },
     },

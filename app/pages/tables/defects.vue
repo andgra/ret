@@ -35,30 +35,6 @@
             </template>
         </smart-table>
         <loading v-else></loading>
-        <!--<EditedTable :options="options" :inRows="rows">-->
-        <!--<template slot="editModal" slot-scope="props">-->
-        <!--<mdl-dialog ref="editModal" :title="props.editingRow._id?'Редактирование записи':'Добавление записи'" :noFocusTrap="true">-->
-        <!--<form class="editing-form" action="#" onsubmit="return false;">-->
-        <!--<input name="_id" v-model="props.editingRow._id" type="hidden"/>-->
-        <!--<mdl-textfield floating-label="цвет заливки" v-model="props.editingRow.backgroundColor" type="color" class="mdl-textfield&#45;&#45;full-width"></mdl-textfield>-->
-        <!--<mdl-autocomplete label="в/ч" v-model="props.editingRow.obj" :options="props.dicts.obj" :strict="true" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
-        <!--<mdl-textfield class="mdl-textfield&#45;&#45;full-width" floating-label="дислокация" v-model="props.editingRow.place"></mdl-textfield>-->
-        <!--<mdl-select class="mdl-textfield&#45;&#45;full-width" id="editingRet" label="РЭТ" v-model="props.editingRow.ret" :options="props.dicts.ret"></mdl-select>-->
-        <!--<mdl-autocomplete id="editingTypeReq" label="тип РЭТ" v-model="props.editingRow.type" :options="props.dicts.type" class="mdl-textfield&#45;&#45;full-width"></mdl-autocomplete>-->
-        <!--<mdl-textfield class="mdl-textfield&#45;&#45;full-width" floating-label="зав. №" v-model="props.editingRow.zav"></mdl-textfield>-->
-        <!--<DateTimePicker class="mdl-textfield&#45;&#45;full-width" v-model="props.editingRow.failure" label="Дата и время отказа"></DateTimePicker>-->
-        <!--<mdl-textfield class="mdl-textfield&#45;&#45;full-width" floating-label="Неисправная система" v-model="props.editingRow.faulty"></mdl-textfield>-->
-        <!--<mdl-textfield class="mdl-textfield&#45;&#45;full-width" floating-label="Принимаемые меры" v-model="props.editingRow.measures" rows="4" :textarea="true"></mdl-textfield>-->
-        <!--<DateTimePicker class="mdl-textfield&#45;&#45;full-width" v-model="props.editingRow.recovery" label="Дата и время восстановления"></DateTimePicker>-->
-        <!--<IntervalPicker class="mdl-textfield&#45;&#45;full-width" v-model="props.editingRow.zip" :outControl="true" :edit="true" label="Время доставки ЗИП"></IntervalPicker>-->
-        <!--</form>-->
-        <!--<div slot="actions">-->
-        <!--<mdl-button @click.native="props.closeEdit()">Отменить</mdl-button>-->
-        <!--<mdl-button primary="" @click.native="props.saveRow()">Сохранить</mdl-button>-->
-        <!--</div>-->
-        <!--</mdl-dialog>-->
-        <!--</template>-->
-        <!--</EditedTable>-->
     </div>
 </template>
 
