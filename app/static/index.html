@@ -12,7 +12,7 @@
   <div class="mdl-spinner mdl-js-spinner is-active" style="width:60px; height:60px"></div>
 </div>
 <div id="app">
-  <router-view v-if="this.settings !== null"></router-view>
+  <router-view v-if="this.ready"></router-view>
 </div>
 <script>
   require('nw.gui').Window.get().maximize();

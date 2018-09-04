@@ -78,15 +78,11 @@
         };
       },
     },
-    created() {
-      this.loadData({
+    async created() {
+      await this.loadData({
         api: work,
         infoLoader: this.getInfo,
         struct,
-      }).then(() => {
-        for (let row of this.$store.state.table.all) {
-          work.update(row)
-        }
       });
     },
   };

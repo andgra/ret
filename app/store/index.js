@@ -5,8 +5,6 @@ import settings from '~store/modules/settings'
 
 Vue.use(Vuex);
 
-// const debug = process.env.NODE_ENV !== 'production'
-
 export default new Vuex.Store({
   modules: {
     table,
@@ -31,6 +29,4 @@ export default new Vuex.Store({
       state.snackbarEmitter.$emit('msgSent', {message});
     },
   },
-  // strict: debug,
-  // plugins: debug ? [createLogger()] : []
 })

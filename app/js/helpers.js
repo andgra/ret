@@ -48,8 +48,6 @@ let getRequests = function () {
 };
 
 
-
-
 let compareNumbers = function (a, b) {
   return a - b;
 };
@@ -136,14 +134,13 @@ let clone = (item) => {
 };
 
 
-
 let delay = function (t) {
   return new Promise(function (resolve) {
     setTimeout(resolve, t);
   });
 };
 
-let findInGrid = function(grid, id) {
+let findInGrid = function (grid, id) {
   let rowNum; // номер найденной строки
   let foundCell; // найденная ячейка
   for (let j = 0; j < grid.length; j++) {
@@ -151,7 +148,7 @@ let findInGrid = function(grid, id) {
     for (let i = 0; i < row.length; i++) {
       let cell = row[i];
       if (cell.fullId === id) {
-        rowNum = j;
+        rowNum    = j;
         foundCell = cell;
       }
     }
@@ -159,6 +156,58 @@ let findInGrid = function(grid, id) {
   return {rowNum, cell: foundCell};
 };
 
+/**
+ * Приведение типов перед добавлением в базу
+ * @param {object} item
+ * @param {object} dots
+ * @returns {object}
+ */
+function sanitize(item, dots) {
+  for (let id in dots) {
+    let node = dots[id];
+    if (node.children && node.children.length) {
+      continue;
+    }
+    let path      = id.split('.');
+    let childPath = path[path.length - 1];
+    path.pop();
+    let parentPath = path.join('.');
+    let parent     = getInObj(item, clone(parentPath));
+    if (node.sortType) {
+      parent[childPath] = cast(parent[childPath], node.sortType);
+    }
+  }
+  return item;
+}
 
-export {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recSetValue, clone, delay, findInGrid};
-export default {isNumeric, getInObj, cast, getRequests, compareNumbers, isArray, isObject, isFunction, recSetValue, clone, delay, findInGrid};
+
+export {
+  isNumeric,
+  getInObj,
+  cast,
+  getRequests,
+  compareNumbers,
+  isArray,
+  isObject,
+  isFunction,
+  recSetValue,
+  clone,
+  delay,
+  findInGrid,
+  sanitize
+};
+export default {
+  isNumeric,
+  getInObj,
+  cast,
+  getRequests,
+  compareNumbers,
+  isArray,
+  isObject,
+  isFunction,
+  recSetValue,
+  clone,
+  delay,
+  findInGrid,
+  sanitize
+};

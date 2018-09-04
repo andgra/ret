@@ -8,6 +8,9 @@ import router from '~js/routes';
 import store from "~store";
 import {mapState, mapActions} from 'vuex';
 
+// миграция для БД
+import {migrate} from '~js/modules/migration';
+
 if (IS_DEVELOPMENT) {
   nwin.showDevTools();
 }
@@ -19,16 +22,24 @@ console.log('core loaded');
 require('~js/test');
 
 let app = new Vue({
+  data() {
+    return {
+      ready: false,
+    };
+  },
   router,
   store,
   computed: {
     ...mapState('settings', {settings: 'options'}),
   },
   methods: {
-    ...mapActions('settings', ['fetchSettings'])
+    ...mapActions('settings', ['fetchSettings', 'saveSettings']),
+    ...mapActions('migration', ['checkMigrations']),
   },
-  created() {
-    this.fetchSettings();
+  async created() {
+    await this.fetchSettings();
+    await migrate.call(this);
+    this.ready = true;
   }
 }).$mount('#app');
 

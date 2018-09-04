@@ -1,8 +1,8 @@
-import api from '~api';
+import Api from '~api';
 import db from '~js/db';
 let {workTable} = db;
 
-class work extends api{
+class Work extends Api{
     constructor() {
         super();
         this.table = workTable;
@@ -21,5 +21,5 @@ class work extends api{
     }
 }
 
-export {work};
-export default new work;
+export {Work};
+export default new Work;

@@ -75,18 +75,15 @@
     computed: {
       ...mapState('table', ['rows', 'info', 'loading', 'all']),
     },
-    created() {
-      this.loadData({
+    async created() {
+      await this.loadData({
         api: defect,
         infoLoader: this.getInfo,
         dataFetched: this.dataFetched,
         struct,
-      }).then(() => {
-        for (let row of this.$store.state.table.all) {
-          defect.update(row)
-        }
-        this.watchCollection(['all'], () => this.updateStats(this.info, this.all), {deep: true});
       });
+
+      this.watchCollection(['all'], () => this.updateStats(this.info, this.all), {deep: true});
     },
     methods: {
       ...mapActions('table', ['loadData']),

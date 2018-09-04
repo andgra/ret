@@ -11,7 +11,6 @@
                         <mdl-textfield floating-label="цвет заливки" v-model="editRow.backgroundColor" type="color" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete label="в/ч" v-model="editRow.obj" :options="info.obj" :strict="true" class="mdl-textfield--full-width"></mdl-autocomplete>
                         <mdl-autocomplete label="дислокация" v-model="editRow.place" :options="info.place" :strict="false" class="mdl-textfield--full-width"></mdl-autocomplete>
-                        <!--<mdl-textfield floating-label="дислокация" v-model="editRow.place" class="mdl-textfield--full-width"></mdl-textfield>-->
                         <mdl-select id="editingRet" label="РЭТ" v-model="editRow.ret" :options="info.ret" class="mdl-textfield--full-width"></mdl-select>
                         <mdl-textfield floating-label="наличие пн" v-model="editRow.pn" class="mdl-textfield--full-width"></mdl-textfield>
                         <mdl-autocomplete id="editingTypeReq" label="тип РЭТ по штату" v-model.lazy="editRow.type.req" :options="info.type.req" class="mdl-textfield--full-width"></mdl-autocomplete>
@@ -371,16 +370,12 @@
         };
       },
     },
-    created() {
-      this.loadData({
+    async created() {
+      await this.loadData({
         api: set,
         infoLoader: this.getInfo,
         dataFetched: this.dataFetched,
         struct,
-      }).then(() => {
-        for (let row of this.$store.state.table.all) {
-          set.update(row)
-        }
       });
       // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
       this.$watch('editRow.type.req', (newVal) => {
@@ -396,8 +391,6 @@
           }
         }
       });
-      // this.getData();
-      // this.test('asd');
     },
   };
 </script>

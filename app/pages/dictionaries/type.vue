@@ -22,15 +22,15 @@
                 {
                   id: "res", title: "", children:
                     [
-                      {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                      {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                      {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, sortType: 'number'},
+                      {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, sortType: 'number'},
                     ]
                 },
                 {
                   id: "life", title: "", children:
                     [
-                      {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
-                      {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, tablesaw: {type: "number"}},
+                      {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, sortType: 'number'},
+                      {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, sortType: 'number'},
                     ]
                 }
               ]

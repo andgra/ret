@@ -1,8 +1,8 @@
-import api from '~api';
+import Api from '~api';
 import db from '~js/db';
 let {setTable} = db;
 
-class set extends api {
+class Set extends Api {
   constructor() {
     super();
     this.table = setTable;
@@ -29,32 +29,7 @@ class set extends api {
       }).exec((err, rows) => !err ? resolve(rows) : reject(err));
     });
   }
-
-  // sanitize(item, dots) {
-    // item.year                  = +item.year;
-    // item.repair.year           = +item.repair.year;
-    // item.est.res.kr            = +item.est.res.kr;
-    // item.est.res.cancel        = +item.est.res.cancel;
-    // item.est.life.kr           = +item.est.life.kr;
-    // item.est.life.cancel       = +item.est.life.cancel;
-    // item.elabor.elabor.before  = +item.elabor.elabor.before;
-    // item.elabor.elabor.after   = +item.elabor.elabor.after;
-    // item.elabor.elabor.total   = +item.elabor.elabor.total;
-    // item.elabor.dev.before     = +item.elabor.dev.before;
-    // item.elabor.dev.after      = +item.elabor.dev.after;
-    // item.elabor.dev.total      = +item.elabor.dev.total;
-    // item.stock.year.kr.num     = +item.stock.year.kr.num;
-    // item.stock.year.kr.per     = +item.stock.year.kr.per;
-    // item.stock.year.cancel.num = +item.stock.year.cancel.num;
-    // item.stock.year.cancel.per = +item.stock.year.cancel.per;
-    // item.stock.hour.kr.num     = +item.stock.hour.kr.num;
-    // item.stock.hour.kr.per     = +item.stock.hour.kr.per;
-    // item.stock.hour.cancel.num = +item.stock.hour.cancel.num;
-    // item.stock.hour.cancel.per = +item.stock.hour.cancel.per;
-    //
-    // return item;
-  // }
 }
 
-export {set};
-export default new set;
+export {Set};
+export default new Set;

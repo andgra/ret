@@ -1,4 +1,4 @@
-import api from '~api';
+import Api from '~api';
 import set from '~api/set';
 import dictionary from '~api/dictionary';
 import filters from '~js/modules/filters';
@@ -6,7 +6,7 @@ import db from '~js/db';
 
 let {overrunTable} = db;
 
-class overrun extends api {
+class Overrun extends Api {
   constructor() {
     super();
     this.table = overrunTable;
@@ -102,5 +102,5 @@ class overrun extends api {
   }
 }
 
-export {overrun};
-export default new overrun;
+export {Overrun};
+export default new Overrun;

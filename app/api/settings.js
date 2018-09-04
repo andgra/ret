@@ -1,8 +1,8 @@
-import api from '~api';
+import Api from '~api';
 import db from '~js/db';
 let {settingsTable} = db;
 
-class settings extends api {
+class Settings extends Api {
   constructor() {
     super();
     this.table = settingsTable;
@@ -49,5 +49,5 @@ class settings extends api {
   }
 }
 
-export {settings};
-export default new settings;
+export {Settings};
+export default new Settings;

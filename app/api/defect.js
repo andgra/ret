@@ -1,8 +1,8 @@
-import api from '~api';
+import Api from '~api';
 import db from '~js/db';
 let {defectTable} = db;
 
-class defect extends api {
+class Defect extends Api {
   constructor() {
     super();
     this.table = defectTable;
@@ -33,5 +33,5 @@ class defect extends api {
   }
 }
 
-export {defect};
-export default new defect;
+export {Defect};
+export default new Defect;

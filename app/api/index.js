@@ -1,6 +1,6 @@
 import {cast, getInObj, clone, isObject} from '~js/helpers';
 
-class api {
+class Api {
   constructor() {
     this.table = 'db';
   }
@@ -67,25 +67,6 @@ class api {
     });
   }
 
-  // Приведение типов перед добавлением в базу
-  sanitize(item, dots) {
-    for (let id in dots) {
-      let node = dots[id];
-      if (node.children && node.children.length) {
-        continue;
-      }
-      let path = id.split('.');
-      let childPath = path[path.length - 1];
-      path.pop();
-      let parentPath = path.join('.');
-      let parent = getInObj(item, clone(parentPath));
-      if(node.sortType) {
-        parent[childPath] = cast(parent[childPath], node.sortType);
-      }
-    }
-    return item;
-  }
-
   updateOrCreate(attributes, item) {
     return new Promise((resolve, reject) => {
       delete item._id;
@@ -99,4 +80,4 @@ class api {
   }
 }
 
-export default api;
+export default Api;

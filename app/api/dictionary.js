@@ -1,8 +1,8 @@
-import api from '~api';
+import Api from '~api';
 import db from '~js/db';
 let {dictionaryTable} = db;
 
-class dictionary extends api {
+class Dictionary extends Api {
   constructor() {
     super();
     this.table = dictionaryTable;
@@ -27,5 +27,5 @@ class dictionary extends api {
   }
 }
 
-export {dictionary};
-export default new dictionary;
+export {Dictionary};
+export default new Dictionary;

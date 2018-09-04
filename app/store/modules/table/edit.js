@@ -1,5 +1,5 @@
 // import {LOAD_ROWS, LOADED_ROWS} from '~store/types'
-import {clone} from '~js/helpers';
+import {clone, sanitize} from '~js/helpers';
 
 export default {
   namespaced: true,
@@ -35,7 +35,7 @@ export default {
       // Добавляем или обновляем запись
       let item = state.editRow;
       delete item.index;
-      item = rootState.table.api.sanitize(item, getters.dots);
+      item = sanitize(item, getters.dots);
       if (rootState.table.options.saveRow) {
         result = await rootState.table.options.saveRow(item);
       } else {
