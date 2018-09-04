@@ -57,8 +57,7 @@
           settings.all()
         ]);
         let rows    = awaited[0];
-        let year    = awaited[1].resultsYear ? awaited[1].resultsYear : Number(moment().format('YYYY'));
-        console.log(rows, year);
+        let year    = +(awaited[1].resultsYear ? awaited[1].resultsYear : moment().format('YYYY'));
 
         let intervals = {
           'January': {
