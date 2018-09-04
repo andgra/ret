@@ -43,7 +43,9 @@ async function migrate() {
     }
   }
 
-  await this.saveSettings({lastMigration});
+  if (lastMigration !== currentVersion) {
+    await this.saveSettings({lastMigration});
+  }
 
   return lastMigration;
 }
