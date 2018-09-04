@@ -43,7 +43,7 @@
   let struct =
         [
           {hidden: true, id: "backgroundColor", title: "цвет заливки", default: '#ffffff', type: 'color', edit: true},
-          {id: "obj", title: "в/ч", type: 'select', default: "", filterType: "select"},
+          {id: "obj", title: "в/ч", type: 'autocomplete', default: "", filterType: "select"},
           {id: "place", title: "дислокация", type: 'text', default: ""},
 //            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", filterType: "select"},
         {id: "type", title: "Тип РЭТ", type: 'autocomplete', default: "", filterType: "select"},
