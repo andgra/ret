@@ -343,7 +343,7 @@
       ...mapGetters('table/structure', ['lastOfGrid']),
     },
     methods: {
-      ...mapMutations('table/edit', ['UPDATE_EDIT_ROW']),
+      ...mapMutations('table/edit', ['updateEditRow']),
       ...mapActions('table', ['loadData']),
       ...mapActions('table/edit', ['saveEdit', 'cancelEdit']),
       async dataFetched({data, all}) {
@@ -386,7 +386,7 @@
             return;
           let est = clone(found.est);
           if (est && isObject(est)) {
-            this.UPDATE_EDIT_ROW({...this.editRow, est});
+            this.updateEditRow({...this.editRow, est});
             this.$store.dispatch('notify', 'Ресурс РЭТ подставлен');
           }
         }
