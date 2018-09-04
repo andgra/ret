@@ -34,9 +34,6 @@
         query: {
           where: {dict: 'condition'},
         },
-        options: {
-          dates: false,
-        },
       });
     },
   };

@@ -34,9 +34,6 @@
         query: {
           where: {dict: 'obj'},
         },
-        options: {
-          dates: false,
-        },
       });
     },
   };

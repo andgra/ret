@@ -34,9 +34,6 @@
         query: {
           where: {dict: 'repair'},
         },
-        options: {
-          dates: false,
-        },
       });
     },
   };

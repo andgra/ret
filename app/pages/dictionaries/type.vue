@@ -53,9 +53,6 @@
         query: {
           where: {dict: 'type'},
         },
-        options: {
-          dates: false,
-        },
       });
     },
   };

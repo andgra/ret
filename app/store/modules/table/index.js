@@ -178,10 +178,8 @@ export default {
         commit('SET_COUNT_METHOD', countMethod);
       }
 
-      if (options) {
-        commit('SET_OPTIONS', options);
-      }
-      commit('UPDATE_DEFAULT_QUERY', {...state.defaultQuery, ...query});
+      commit('SET_OPTIONS', {...{}, ...options});
+      commit('UPDATE_DEFAULT_QUERY', {...defaultQuery, ...query});
       commit('UPDATE_QUERY', state.defaultQuery);
       commit('LOAD_DATA');
 

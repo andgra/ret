@@ -34,9 +34,6 @@
         query: {
           where: {dict: 'ret'},
         },
-        options: {
-          dates: false,
-        },
       });
     },
   };
