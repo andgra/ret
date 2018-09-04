@@ -14,7 +14,7 @@
     export default {
         props: {
             value: {
-                type: Number
+                type: Number|String
             },
             label: {
                 type: String,
@@ -63,9 +63,10 @@
         methods: {
             computeData() {
                 let data = {};
-                data.days = Math.floor(Math.floor(this.value / 60) / 24);
-                data.hours = Math.floor((this.value) / 60) - data.days * 24;
-                data.minutes = this.value - (data.hours + data.days * 24) * 60;
+                let value = +this.value;
+                data.days = Math.floor(Math.floor(value / 60) / 24);
+                data.hours = Math.floor((value) / 60) - data.days * 24;
+                data.minutes = value - (data.hours + data.days * 24) * 60;
                 return data;
             },
             toggleEdit() {

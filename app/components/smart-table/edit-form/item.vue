@@ -27,6 +27,25 @@
                 class="mdl-textfield--full-width"
             ></mdl-autocomplete>
         </template>
+        <template v-else-if="node.type === 'datetime' || node.type === 'date'">
+            <DateTimePicker
+                :id="node.fullId"
+                :label="formattedTitle(node.title)"
+                v-model="fieldModel"
+                class="mdl-textfield--full-width"
+                :time="node.type !== 'date'"
+            ></DateTimePicker>
+        </template>
+        <template v-else-if="node.type === 'interval'">
+            <IntervalPicker
+                class="mdl-textfield--full-width"
+                :id="node.fullId"
+                :label="formattedTitle(node.title)"
+                v-model="fieldModel"
+                :outControl="true"
+                :edit="!node.readonly"
+            ></IntervalPicker>
+        </template>
         <template v-else>
             <mdl-textfield
                 :readonly="!!node.readonly"
@@ -56,7 +75,7 @@
       ...mapGetters('table/structure', ['lastOfGrid']),
       fieldModel: {
         get() {
-          return this.getValue({row: this.editRow, cols: this.lastOfGrid, path: this.node.fullId});
+          return this.getValueToInput({row: this.editRow, cols: this.lastOfGrid, path: this.node.fullId});
         },
         set(value) {
           this.updateEditRow(this.updateByDots(this.editRow, this.node.fullId, value));

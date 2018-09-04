@@ -1,12 +1,14 @@
 <template>
-    <div class="datetimepicker mdl-textfield mdl-js-textfield mdl-textfield--floating-label" :class="{'is-dirty':getValue()}">
+    <div class="datetimepicker mdl-textfield mdl-js-textfield mdl-textfield--floating-label" :class="{'is-dirty':formatted}">
         <div :class="{'datetimepicker_min-width':inline,'display-inline-block':inline}">
-            <input :id="id" :name="name" :value="getValue()" ref="focusTarget" class="mdl-textfield__input">
+            <input :id="id" :name="name" :value="formatted" ref="focusTarget" class="mdl-textfield__input">
             <label class="mdl-textfield__label">{{label}}</label>
         </div>
     </div>
 </template>
 <script>
+    import moment from 'moment';
+
     export default {
         props: {
             id: {
@@ -45,11 +47,12 @@
             }
         },
         methods: {
-            getValue() {
-                return this.value ? moment(this.value).format(`DD.MM.YYYY${this.time?' HH:mm':''}`) : ''
-            }
         },
-        computed: {},
+        computed: {
+          formatted() {
+            return this.value ? moment(this.value).format(`DD.MM.YYYY${this.time?' HH:mm':''}`) : ''
+          }
+        },
         created() {
         },
         mounted() {

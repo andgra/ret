@@ -44,6 +44,20 @@ export default {
     }
     return value;
   },
+  getValueToInput({row, path, cols}) {
+    let value   = getInObj(row, path);
+    let options = cols.filter(item => {return item.id && item.id === path}).first();
+    if (options) {
+      if (options.cb) {
+        value = options.cb(value, row);
+      }
+
+      if (options.format) {
+        value = options.format(value);
+      }
+    }
+    return value;
+  },
   formattedTitle(title) {
     return title.replace(/\<br\>/, ' ').replace('\s+', ' ');
   },

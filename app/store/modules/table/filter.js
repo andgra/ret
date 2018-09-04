@@ -60,7 +60,7 @@ export default {
       let checkedOptions = maybeOptions.filter(v => allOptions.indexOf(JSON.stringify(v)) !== -1);
       return checkedOptions.length === allOptions.length;
     },
-    isCheckedWholeOptions(state, getters) {
+    isDiscardedNone(state, getters) {
       return JSON.stringify(getters.searchedOptions) === JSON.stringify(getters.filterOptions);
     },
     isAllIndeterminate(state, getters) {
@@ -114,7 +114,7 @@ export default {
   actions: {
     async applyFilter({commit, state, getters, dispatch}) {
       commit('closePopup');
-      if (getters.isCheckedWholeOptions) {
+      if (getters.isDiscardedNone && getters.isAllChecked) {
         // отмечены все, т.е. фильтр снимаем
         commit('setCheckedOptions', []);
       }

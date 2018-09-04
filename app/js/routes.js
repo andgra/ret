@@ -8,7 +8,7 @@ Vue.config.productionTip = false;
 // 0. При использовании модульной системы (напр. vue-cli),
 // импортируйте Vue и VueRouter и затем вызовите `Vue.use(VueRouter)`
 
-import LayoutTable from '~layouts/app.vue';
+import AppLayout from '~layouts/app.vue';
 import Settings from '~pages/settings/main.vue';
 import Seeds from '~pages/dev/seeds.vue';
 // import Print from '~pages/settings/print.vue';
@@ -19,7 +19,7 @@ import Seeds from '~pages/dev/seeds.vue';
 // import DictRepair from '~pages/dictionaries/repair.vue';
 //
 import SetsTable from '~pages/tables/sets.vue';
-// import DefectsEdit from '~pages/tables/defects.vue';
+import DefectsEdit from '~pages/tables/defects.vue';
 import WorksTable from '~pages/tables/works.vue';
 import OverrunTable from '~pages/tables/overrun.vue';
 //
@@ -40,12 +40,13 @@ moment.locale('ru');
 // Вложенные пути будут рассмотрены далее.
 const routes = [
   {
-    path: '', component: LayoutTable,
+    path: '', component: AppLayout,
     children: [...[
       {path: '/settings', component: Settings},
       {path: '/tables/sets', component: SetsTable},
       {path: '/tables/works', component: WorksTable},
       {path: '/tables/overrun', component: OverrunTable},
+      {path: '/tables/defects', component: DefectsEdit},
     ], ...(IS_DEVELOPMENT ? [
       {path: '/dev/seeds', component: Seeds},
     ] : [])],
