@@ -173,7 +173,9 @@ function sanitize(item, dots) {
     path.pop();
     let parentPath = path.join('.');
     let parent     = getInObj(item, clone(parentPath));
-    if (node.sortType) {
+    if (node.ignoreDb) {
+      delete(parent[childPath]);
+    } else if (node.sortType) {
       parent[childPath] = cast(parent[childPath], node.sortType);
     }
   }

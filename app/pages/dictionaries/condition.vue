@@ -13,8 +13,11 @@
   import {mapActions, mapState} from 'vuex';
   import dictionary from '~api/dictionary';
 
+  let dictName = 'condition';
+
   let struct =
         [
+          {id: "dict", title: " ", type: 'hidden', default: dictName, edit: true, hidden: true},
           {id: "value", title: "Значение", type: 'text', default: ""},
 //            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
       ];
@@ -32,7 +35,7 @@
         api: dictionary,
         struct,
         query: {
-          where: {dict: 'condition'},
+          where: {dict: dictName},
         },
       });
     },

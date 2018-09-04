@@ -13,8 +13,11 @@
   import {mapActions, mapState} from 'vuex';
   import dictionary from '~api/dictionary';
 
+  let dictName = 'type';
+
   let struct =
         [
+          {id: "dict", title: " ", type: 'hidden', default: dictName, edit: true, hidden: true},
           {id: "value", title: "Значение", type: 'text', default: ""},
           {
             id: "est", title: "Установленный ресурс РЭТ", children:
@@ -51,7 +54,7 @@
         api: dictionary,
         struct,
         query: {
-          where: {dict: 'type'},
+          where: {dict: dictName},
         },
       });
     },

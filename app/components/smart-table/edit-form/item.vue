@@ -2,6 +2,7 @@
     <div>
         <template v-if="node.type === 'color'">
             <mdl-textfield
+                :id="node.fullId"
                 :floating-label="formattedTitle(node.title)"
                 v-model="fieldModel"
                 type="color"
@@ -46,8 +47,16 @@
                 :edit="!node.readonly"
             ></IntervalPicker>
         </template>
+        <template v-else-if="node.type === 'hidden'">
+            <input
+                :id="node.fullId"
+                v-model="fieldModel"
+                type="hidden"
+            />
+        </template>
         <template v-else>
             <mdl-textfield
+                :id="node.fullId"
                 :readonly="!!node.readonly"
                 :floating-label="formattedTitle(node.title)"
                 v-model="fieldModel"

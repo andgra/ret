@@ -70,6 +70,7 @@ export default {
             sortType: 'date',
             style: {whiteSpace: 'nowrap'},
             edit: false,
+            ignoreDb: true,
           },
           {
             id: 'updatedAt',
@@ -78,6 +79,7 @@ export default {
             sortType: 'date',
             style: {whiteSpace: 'nowrap'},
             edit: false,
+            ignoreDb: true,
           },
         ];
 
