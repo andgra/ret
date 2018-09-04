@@ -21,7 +21,7 @@
     </template>
     <template v-else>
         <tr>
-            <td :colspan="entireColspan" class="text-center" :style="cellOfEmptyRowsStyle">Нет записей</td>
+            <td :colspan="entireColspan + 10" class="text-center" :style="cellOfEmptyRowsStyle">Нет записей</td>
         </tr>
     </template>
     </tbody>
