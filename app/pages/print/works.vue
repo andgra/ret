@@ -48,14 +48,15 @@
       async setRows() {
         let awaited = await Promise.all([
           work.all({
-            $where: function () {
-              return !this.departure || this.departure==="";
+            where: {
+              $where: function () {
+                return !this.departure || this.departure === "";
+              }
             }
           }),
         ]);
-        let rows    = awaited[0];
-        console.log(rows);
-        this.rows = rows;
+
+        this.rows = awaited[0];
       }
     },
     async created() {
