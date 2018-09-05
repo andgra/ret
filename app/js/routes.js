@@ -10,7 +10,10 @@ Vue.config.productionTip = false;
 
 import AppLayout from '~layouts/app.vue';
 import Settings from '~pages/settings/main.vue';
-import Seeds from '~pages/dev/seeds.vue';
+let Seeds;
+if (IS_DEVELOPMENT) {
+  Seeds = require('~pages/dev/seeds.vue').default;
+}
 // import Print from '~pages/settings/print.vue';
 // словари
 import DictCondition from '~pages/dictionaries/condition.vue';

@@ -31,6 +31,29 @@ class Defect extends Api {
       }).exec((err, rows) => !err ? resolve(rows) : reject(err));
     });
   }
+
+  get struct() {
+    return [
+      {hidden: true, id: "backgroundColor", title: "цвет заливки", default: '#ffffff', type: 'color', edit: true},
+      {id: "obj", title: "в/ч", type: 'autocomplete', default: "", filterType: "select"},
+      {id: "place", title: "дислокация", type: 'text', default: ""},
+      {
+        id: "ret",
+        title: "РЭТ",
+        type: 'select',
+        items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}],
+        default: "rls",
+        filterType: "select"
+      },
+      {id: "type", title: "Тип РЭТ", type: 'autocomplete', default: "", filterType: "select"},
+      {id: "zav", title: "зав. №", type: 'text', default: ""},
+      {id: "failure", title: "дата и время <br>отказа", type: 'datetime', default: "", sortType: 'date'},
+      {id: "faulty", title: "неисправная <br>система", type: 'text', default: ""},
+      {id: "measures", title: "принимаемые меры", type: 'text', default: ""},
+      {id: "recovery", title: "дата и время <br>восстановления", type: 'datetime', default: "", sortType: 'date'},
+      {id: "zip", title: "Время доставки <br>ЗИП", type: 'interval', default: 0, width: 150, sortType: 'number'},
+    ];
+  }
 }
 
 export {Defect};

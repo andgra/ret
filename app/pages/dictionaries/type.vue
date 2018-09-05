@@ -15,31 +15,7 @@
 
   let dictName = 'type';
 
-  let struct =
-        [
-          {id: "dict", title: " ", type: 'hidden', default: dictName, edit: true, hidden: true},
-          {id: "value", title: "Значение", type: 'text', default: ""},
-          {
-            id: "est", title: "Установленный ресурс РЭТ", children:
-              [
-                {
-                  id: "res", title: "", children:
-                    [
-                      {id: "kr", title: "ресурс до<br>КР (час.)", type: 'number', default: 0, sortType: 'number'},
-                      {id: "cancel", title: "ресурс до<br>списания (час.)", type: 'number', default: 0, sortType: 'number'},
-                    ]
-                },
-                {
-                  id: "life", title: "", children:
-                    [
-                      {id: "kr", title: "срок службы<br>до КР (лет)", type: 'number', default: 0, sortType: 'number'},
-                      {id: "cancel", title: "срок службы<br>до списания (лет)", type: 'number', default: 0, sortType: 'number'},
-                    ]
-                }
-              ]
-          },
-          //            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
-        ];
+  let struct = dictionary.getTypeStruct(dictName);
 
   export default {
     computed: {

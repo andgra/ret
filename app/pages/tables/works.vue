@@ -40,22 +40,7 @@
   import work from '~api/work';
   import dictionary from '~api/dictionary';
 
-  let struct =
-        [
-          {hidden: true, id: "backgroundColor", title: "цвет заливки", default: '#ffffff', type: 'color', edit: true},
-          {id: "obj", title: "в/ч", type: 'autocomplete', default: "", filterType: "select"},
-          {id: "place", title: "дислокация", type: 'text', default: ""},
-//            {id: "ret", title: "РЭТ", type: 'select', items: [{name: 'РЛС', value: 'rls'}, {name: 'АСУ', value: 'asu'}], default: "rls", filterType: "select"},
-        {id: "type", title: "Тип РЭТ", type: 'autocomplete', default: "", filterType: "select"},
-        {id: "zav", title: "зав. №", type: 'text', default: ""},
-        {id: "arrival", title: "Дата прибытия", type: 'date', default: "", sortType: 'date'},
-        {id: "title", title: "Наименование работ, <br>обслуживаемая система <br>ВВСТ", type: 'text', default: ""},
-        {id: "factory", title: "Предприятие <br>промышленности", type: 'text', default: ""},
-        {id: "people", title: "Кол-во <br>чел.", type: 'number', default: 0, sortType: 'number'},
-        {id: "senior", title: "Старший бригады <br>ФИО, моб. тел.", type: 'text', default: ""},
-        {id: "envoy", title: "Представитель от <br>в/ч (подразделения)", type: 'text', default: ""},
-        {id: "departure", title: "Дата <br>убытия", type: 'date', default: "", sortType: 'date'},
-      ];
+  let struct = work.struct;
 
 
   export default {

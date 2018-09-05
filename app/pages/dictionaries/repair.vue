@@ -15,12 +15,7 @@
 
   let dictName = 'repair';
 
-  let struct =
-        [
-          {id: "dict", title: " ", type: 'hidden', default: dictName, edit: true, hidden: true},
-          {id: "value", title: "Значение", type: 'text', default: ""},
-//            {id: "default", title: "Выбрано по умолчанию", type: 'checkbox', default: false},
-      ];
+  let struct = dictionary.getStruct(dictName);
 
   export default {
     computed: {
