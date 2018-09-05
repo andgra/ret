@@ -74,6 +74,7 @@ module.exports = {
       '~sass': path.resolve(__dirname, 'app/sass/'),
       '~components': path.resolve(__dirname, 'app/components/'),
       '~migrations': path.resolve(__dirname, 'app/migrations/'),
+      '~seeds': path.resolve(__dirname, 'app/seeds/'),
       '~mixins': path.resolve(__dirname, 'app/mixins/'),
       '~js': path.resolve(__dirname, 'app/js'),
       '~layouts': path.resolve(__dirname, 'app/layouts'),
