@@ -7,9 +7,7 @@ import {sanitize} from '~js/helpers';
 import Structure from '~js/modules/structure';
 
 async function sanitizeDefects() {
-  let struct = defect.struct;
-
-  let structure = new Structure(struct);
+  let structure = new Structure(defect.struct);
 
   let items = await defect.all();
   let todo = [];
@@ -20,10 +18,7 @@ async function sanitizeDefects() {
 }
 
 async function sanitizeWorks() {
-  let struct = work.struct;
-
-
-  let structure = new Structure(struct);
+  let structure = new Structure(work.struct);
 
   let items = await work.all();
   let todo = [];
@@ -34,10 +29,7 @@ async function sanitizeWorks() {
 }
 
 async function sanitizeSets() {
-  let struct = set.struct;
-
-
-  let structure = new Structure(struct);
+  let structure = new Structure(set.struct);
 
   let items = await set.all();
   let todo = [];

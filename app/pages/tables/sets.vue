@@ -124,6 +124,16 @@
           condition: infoArray[4],
         };
       },
+      setEst() {
+        let found = this.info.type.req.find(item => (item.name === this.editRow.type.req));
+        if (!found)
+          return;
+        let est = clone(found.est);
+        if (est && isObject(est)) {
+          this.updateEditRow({...this.editRow, est});
+          this.$store.dispatch('notify', 'Ресурс РЭТ подставлен');
+        }
+      },
     },
     async created() {
       await this.loadData({
@@ -133,17 +143,11 @@
         struct,
       });
       // при изменении типа РЭТ по штату менять установленный ресурс РЭТ
-      this.$watch('editRow.type.req', (newVal) => {
+      this.$watch('editRow.type.req', () => {
         if (this.info && this.editRow && this.info.type && this.info.type.req && this.info.type.req.length
-          && !this.editRow.est.res.kr && !this.editRow.est.res.cancel && !this.editRow.est.life.kr && !this.editRow.est.life.cancel) {
-          let found = this.info.type.req.find(item => (item.name === newVal));
-          if (!found)
-            return;
-          let est = clone(found.est);
-          if (est && isObject(est)) {
-            this.updateEditRow({...this.editRow, est});
-            this.$store.dispatch('notify', 'Ресурс РЭТ подставлен');
-          }
+          && !this.editRow.est.res.kr && !this.editRow.est.res.cancel && !this.editRow.est.life.kr && !this.editRow.est.life.cancel
+        ) {
+          this.setEst();
         }
       });
     },

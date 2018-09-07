@@ -62,6 +62,17 @@ class Dictionary extends Api {
         ]
     }];
   }
+
+  async loadDicts(dictsToLoad) {
+    let dicts = {};
+    dictsToLoad.forEach(name => dicts[name] = this.getDict(name));
+    dicts = await Promise.allObject(dicts);
+    for (let name in dicts) {
+      dicts[name] = dicts[name].map(item => item.value);
+    }
+
+    return dicts;
+  }
 }
 
 export {Dictionary};
