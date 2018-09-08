@@ -130,9 +130,10 @@ class Overrun extends Api {
     await this.delete({$or: toDelete}, true);
 
     // обновляем overrun для smart-table
-    for (let row of rows) {
+    for (let i in rows) {
+      let row = rows[i];
       let {doc} = await this.updateOrCreate({_id: row._id}, row);
-      row       = doc;
+      rows[i] = doc;
     }
 
     return rows;

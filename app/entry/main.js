@@ -19,7 +19,9 @@ window.Promise = Promise;
 
 console.log('core loaded');
 
-require('~js/test');
+if (IS_DEVELOPMENT) {
+  require('~js/test');
+}
 
 let app = new Vue({
   data() {

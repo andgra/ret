@@ -16,6 +16,7 @@
   import setsSeed from '~seeds/sets';
   import defectsSeed from '~seeds/defects';
   import worksSeed from '~seeds/works';
+  import overrunSeed from '~seeds/overrun';
   import {clone} from '~js/helpers';
   import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
   
@@ -26,14 +27,22 @@
           {
             title: 'sets',
             run: setsSeed,
+            sort: 1,
           },
           {
             title: 'defects',
             run: defectsSeed,
+            sort: 1,
           },
           {
             title: 'works',
             run: worksSeed,
+            sort: 1,
+          },
+          {
+            title: 'overrun',
+            run: overrunSeed,
+            sort: 2,
           },
         ],
       }
