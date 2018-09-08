@@ -25,6 +25,8 @@
       ...mapActions('table', ['loadData']),
     },
     async created() {
+      this.$store.commit('table/LOAD_DATA');
+
       await overrun.generateData();
       
       await this.loadData({
