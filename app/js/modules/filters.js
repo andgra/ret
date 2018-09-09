@@ -22,6 +22,8 @@ export default {
     return moment(value).isValid() ? moment(value).format('DD.MM.YYYY HH:mm') : '';
   },
   myInterval(value) {
+    value = Math.round(value);
+
     let data     = {};
     data.days    = Math.floor(Math.floor(value / 60) / 24);
     data.hours   = Math.floor((value) / 60) - data.days * 24;

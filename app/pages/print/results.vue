@@ -231,8 +231,8 @@
           finalGroups[name]['total'] = totalGroup;
 
           for (let obj in finalGroups[name]) {
-            finalGroups[name][obj].avgTimeZip = finalGroups[name][obj].total ? finalGroups[name][obj].timeZip / finalGroups[name][obj].total : 0;
-            finalGroups[name][obj].avgTime    = finalGroups[name][obj].total ? finalGroups[name][obj].time / finalGroups[name][obj].total : 0;
+            finalGroups[name][obj].avgTimeZip = Math.round(finalGroups[name][obj].total ? finalGroups[name][obj].timeZip / finalGroups[name][obj].total : 0);
+            finalGroups[name][obj].avgTime    = Math.round(finalGroups[name][obj].total ? finalGroups[name][obj].time / finalGroups[name][obj].total : 0);
             finalGroups[name][obj].period     = intervals[name].title;
             res.push(finalGroups[name][obj]);
           }
