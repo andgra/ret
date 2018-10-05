@@ -8,7 +8,11 @@
                 <th rowspan="2">Положено (ед.)</th>
                 <th colspan="3">Имеется</th>
                 <th rowspan="2">Годовой ресурс</th>
-                <th rowspan="2">Расход<br>за 1кв. + 2кв.</th>
+                <th rowspan="2">Расход<br>за 1кв.</th>
+                <th rowspan="2">Расход<br>за 2кв.</th>
+                <th rowspan="2">Расход<br>за 3кв.</th>
+                <th rowspan="2">Расход<br>за 4кв.</th>
+                <th rowspan="2">Расход за год</th>
                 <th rowspan="2" width="40px">Расход ресурса</th>
                 <th rowspan="2">Вывод</th>
             </tr>
@@ -26,6 +30,10 @@
                 <td>{{row.active}}</td>
                 <td>{{row.inactive}}</td>
                 <td>{{row.yearRes}}</td>
+                <td>{{row.consumParts.p1}}</td>
+                <td>{{row.consumParts.p2}}</td>
+                <td>{{row.consumParts.p3}}</td>
+                <td>{{row.consumParts.p4}}</td>
                 <td>{{row.consum}}</td>
                 <td>{{row.consumRate}}%</td>
                 <td>{{row.overrun}}</td>
@@ -61,7 +69,12 @@
           active: 0,
           inactive: 0,
           yearRes: 0,
-          consum: 0,
+          consumParts: {
+            p1: 0,
+            p2: 0,
+            p3: 0,
+            p4: 0,
+          },
         };
         for (let row of this.rows) {
           total.req += Number(row.req);
@@ -69,9 +82,13 @@
           total.active += Number(row.active);
           total.inactive += Number(row.inactive);
           total.yearRes += Number(row.yearRes);
-          total.consum += Number(row.consum);
+          total.consumParts.p1 += +row.consumParts.p1;
+          total.consumParts.p2 += +row.consumParts.p2;
+          total.consumParts.p3 += +row.consumParts.p3;
+          total.consumParts.p4 += +row.consumParts.p4;
           total.consumRate += Number(row.consumRate);
         }
+        total.consum     = overrun.computeConsum(total.consumParts);
         total.consumRate = !!total.yearRes ? filters.r0(filters.NaN(total.consum / total.yearRes * 100)) : 0;
         total.overrun    = total.consumRate > 100 ? 'перерасход' : '-';
 
@@ -81,8 +98,7 @@
         return [...this.rows, this.total];
       }
     },
-    methods: {
-    },
+    methods: {},
     async created() {
       this.rows = await overrun.generateData();
       this.printDataReady();
