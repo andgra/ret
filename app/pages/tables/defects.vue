@@ -3,6 +3,7 @@
         <smart-table v-if="loading < 2">
             <template slot="header">
                 <h4 class="table-title">Справка по состоянию РЭТ</h4>
+                <h5 class="table-title bordered-top">Сводка невостановленных РЭТ:</h5>
                 <div class="table-responsive">
                     <table class="mdl-data-table mdl-js-data-table border-all-cells edited-table wide margin-bot">
                         <tbody>
@@ -32,6 +33,7 @@
                         </tbody>
                     </table>
                 </div>
+                <h5 class="table-title bordered-top">Таблица состояний по всем РЭТ:</h5>
             </template>
         </smart-table>
         <loading v-else></loading>
@@ -101,7 +103,7 @@
         for (let obj of info.obj) {
           for (let ret of info.ret) {
             stats[obj.value][ret.value] = all.filter(function (item) {
-              return item.obj === obj.value && item.ret === ret.value;
+              return !item.recovery && item.obj === obj.value && item.ret === ret.value;
             }).length;
             stats[obj.value].total += stats[obj.value][ret.value];
           }
