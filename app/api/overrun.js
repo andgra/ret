@@ -16,7 +16,16 @@ class Overrun extends Api {
     return this.all();
   }
 
+  computeConsum(parts) {
+    let sum = 0;
+    for (let k in parts) {
+      sum += +parts[k];
+    }
+    return sum;
+  }
+
   get struct() {
+    let self = this;
     return [
       {hidden: true, id: "backgroundColor", title: "цвет заливки", default: '#ffffff', type: 'color', edit: true},
       {id: "type", title: "Наименование ВВТ", type: 'text', default: "", readonly: true},
@@ -24,8 +33,47 @@ class Overrun extends Api {
       {id: "real", title: "Всего имеется", type: 'text', default: 0, readonly: true},
       {id: "active", title: "В эксплатуации", type: 'text', default: 0, readonly: true},
       {id: "inactive", title: "Не эксплотируется", type: 'text', default: 0, readonly: true},
-      {id: "yearRes", title: "Годовой ресурс", type: 'text', default: 0},
-      {id: "consum", title: "Расход за 1кв. + 2кв.", type: 'text', default: 0},
+      {id: "yearRes", title: "Годовой ресурс", type: 'number', default: 0},
+      {
+        id: "consumParts", title: "", children:
+          [
+            {
+              id: "p1",
+              title: "Расход за 1кв.",
+              type: 'number',
+              default: 0,
+            },
+            {
+              id: "p2",
+              title: "Расход за 2кв.",
+              type: 'number',
+              default: 0,
+            },
+            {
+              id: "p3",
+              title: "Расход за 3кв.",
+              type: 'number',
+              default: 0,
+            },
+            {
+              id: "p4",
+              title: "Расход за 4кв.",
+              type: 'number',
+              default: 0,
+            },
+          ]
+      },
+      {
+        id: "consum",
+        title: "Расход за год",
+        type: 'text',
+        cb(value, entity) {
+          value = entity.consum = self.computeConsum(entity.consumParts);
+          return value
+        },
+        default: 0,
+        readonly: true,
+      },
       {
         id: "consumRate",
         title: "Расход ресурса",
@@ -105,11 +153,18 @@ class Overrun extends Api {
     let rows  = [];
     // сливаем данные из словаря и overrun
     for (let type of types.all) {
-      let dbRow      = dbRows.find(item => (item.type === type));
-      let yearRes    = !!dbRow ? (!!dbRow.yearRes ? dbRow.yearRes : 0) : 0,
-          consum     = !!dbRow ? (!!dbRow.consum ? dbRow.consum : 0) : 0,
-          consumRate = !!yearRes ? filters.r0(filters.NaN(consum / yearRes * 100)) : 0,
-          overrun    = consumRate > 100 ? 'перерасход' : '-';
+      let dbRow = dbRows.find(item => (item.type === type));
+
+      let p1 = !!dbRow && !!dbRow.consumParts && !!dbRow.consumParts.p1 ? dbRow.consumParts.p1 : 0,
+          p2 = !!dbRow && !!dbRow.consumParts && !!dbRow.consumParts.p2 ? dbRow.consumParts.p2 : 0,
+          p3 = !!dbRow && !!dbRow.consumParts && !!dbRow.consumParts.p3 ? dbRow.consumParts.p3 : 0,
+          p4 = !!dbRow && !!dbRow.consumParts && !!dbRow.consumParts.p4 ? dbRow.consumParts.p4 : 0;
+
+      let yearRes     = !!dbRow ? (!!dbRow.yearRes ? dbRow.yearRes : 0) : 0,
+          consumParts = {p1, p2, p3, p4},
+          consum      = this.computeConsum(consumParts),
+          consumRate  = !!yearRes ? filters.r0(filters.NaN(consum / yearRes * 100)) : 0,
+          overrun     = consumRate > 100 ? 'перерасход' : '-';
       rows.push({
         _id: dbRow ? dbRow._id : '',
         type,
@@ -118,6 +173,7 @@ class Overrun extends Api {
         active: !!types.active[type] ? types.active[type] : 0,
         inactive: !!types.inactive[type] ? types.inactive[type] : 0,
         yearRes,
+        consumParts,
         consum,
         consumRate,
         overrun
@@ -131,9 +187,9 @@ class Overrun extends Api {
 
     // обновляем overrun для smart-table
     for (let i in rows) {
-      let row = rows[i];
+      let row   = rows[i];
       let {doc} = await this.updateOrCreate({_id: row._id}, row);
-      rows[i] = doc;
+      rows[i]   = doc;
     }
 
     return rows;
